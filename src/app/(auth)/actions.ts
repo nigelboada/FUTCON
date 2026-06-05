@@ -49,7 +49,7 @@ export async function signUp(formData: FormData) {
     redirect('/login?message=Compte creat. Revisa el correu abans d’iniciar sessió.')
   }
 
-  redirect('/dashboard')
+  redirect('/onboarding')
 }
 
 export async function signIn(formData: FormData) {

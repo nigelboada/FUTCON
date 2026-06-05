@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { signOut } from '@/app/(auth)/actions'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
@@ -10,6 +11,13 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
+type DashboardPageProps = {
+  searchParams: Promise<{
+    message?: string
+    error?: string
+  }>
+}
+
 const roleLabels: Record<string, string> = {
   player: 'Jugador',
   coach: 'Entrenador / cos tècnic',
@@ -17,7 +25,16 @@ const roleLabels: Record<string, string> = {
   staff: 'Professional de l’staff',
 }
 
-export default async function DashboardPage() {
+const availabilityLabels: Record<string, string> = {
+  available: 'Disponible',
+  open_to_offers: 'Escolto ofertes',
+  unavailable: 'No disponible',
+}
+
+export default async function DashboardPage({
+  searchParams,
+}: DashboardPageProps) {
+  const params = await searchParams
   const supabase = await createClient()
 
   const {
@@ -30,7 +47,7 @@ export default async function DashboardPage() {
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('display_name, city, province, availability, verification')
+    .select('display_name, bio, city, province, availability, verification')
     .eq('id', user.id)
     .single()
 
@@ -54,11 +71,23 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-muted px-4 py-8">
       <div className="mx-auto max-w-3xl space-y-6">
+        {params.message ? (
+          <div className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700">
+            {params.message}
+          </div>
+        ) : null}
+
+        {params.error ? (
+          <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {params.error}
+          </div>
+        ) : null}
+
         <Card>
           <CardHeader>
             <CardTitle>Panell principal</CardTitle>
             <CardDescription>
-              Has iniciat sessió correctament a FUTCON.
+              Gestiona el teu perfil i la informació bàsica del compte.
             </CardDescription>
           </CardHeader>
 
@@ -74,10 +103,22 @@ export default async function DashboardPage() {
                 {profile?.display_name ?? 'Perfil pendent de carregar'}
               </p>
 
+              {profile?.bio ? (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {profile.bio}
+                </p>
+              ) : null}
+
               <div className="mt-3 grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
                 <p>Ciutat: {profile?.city ?? 'No indicada'}</p>
                 <p>Província: {profile?.province ?? 'No indicada'}</p>
-                <p>Disponibilitat: {profile?.availability ?? 'No indicada'}</p>
+                <p>
+                  Disponibilitat:{' '}
+                  {profile?.availability
+                    ? availabilityLabels[profile.availability] ??
+                      profile.availability
+                    : 'No indicada'}
+                </p>
               </div>
             </div>
 
@@ -95,11 +136,17 @@ export default async function DashboardPage() {
               </div>
             </div>
 
-            <form action={signOut}>
-              <Button type="submit" variant="outline">
-                Tancar sessió
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button asChild>
+                <Link href="/profile/edit">Editar perfil</Link>
               </Button>
-            </form>
+
+              <form action={signOut}>
+                <Button type="submit" variant="outline">
+                  Tancar sessió
+                </Button>
+              </form>
+            </div>
           </CardContent>
         </Card>
       </div>

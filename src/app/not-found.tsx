@@ -4,7 +4,8 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card'
 
 export default function NotFoundPage() {

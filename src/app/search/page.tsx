@@ -38,6 +38,9 @@ type SearchProfile = {
   staff_kind: string | null
   staff_services: string | null
   price_range: string | null
+
+  review_count: number | null
+  average_rating: number | string | null
 }
 
 const roleOptions = [

@@ -3,6 +3,10 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { startConversation } from '@/app/conversations/actions'
+import { submitReview } from './actions'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+
 
 import {
   Card,
@@ -15,6 +19,10 @@ import {
 type PublicProfilePageProps = {
   params: Promise<{
     id: string
+  }>
+  searchParams: Promise<{
+    error?: string
+    message?: string
   }>
 }
 
@@ -189,8 +197,11 @@ function RoleSpecificInfo({ profile }: { profile: PublicProfile }) {
 
 export default async function PublicProfilePage({
   params,
+  searchParams,
 }: PublicProfilePageProps) {
+
   const { id } = await params
+  const query = await searchParams
   const supabase = await createClient()
 
 
@@ -217,6 +228,37 @@ export default async function PublicProfilePage({
   } = await supabase.auth.getUser()
 
   const isOwnProfile = user?.id === profile.profile_id
+
+  const { data: reviewSummary } = await supabase
+  .from('profile_review_summary_view')
+  .select('review_count, average_rating')
+  .eq('reviewed_profile_id', profile.profile_id)
+  .maybeSingle()
+
+  const { data: reviewsData } = await supabase
+    .from('profile_reviews_view')
+    .select(
+      'id, reviewer_profile_id, reviewer_display_name, rating, comment, created_at'
+    )
+    .eq('reviewed_profile_id', profile.profile_id)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  const { data: currentUserReview } =
+    user && !isOwnProfile
+      ? await supabase
+          .from('reviews')
+          .select('rating, comment')
+          .eq('reviewer_profile_id', user.id)
+          .eq('reviewed_profile_id', profile.profile_id)
+          .maybeSingle()
+      : { data: null }
+
+  const reviews = reviewsData ?? []
+  const reviewCount = reviewSummary?.review_count ?? 0
+  const averageRating = reviewSummary?.average_rating
+    ? Number(reviewSummary.average_rating)
+    : null
 
   const availability = profile.availability ?? 'available'
   const location = getLocation(profile)
@@ -259,6 +301,18 @@ export default async function PublicProfilePage({
           </CardHeader>
 
           <CardContent className="space-y-8">
+            {query.message ? (
+              <div className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700">
+                {query.message}
+              </div>
+            ) : null}
+
+            {query.error ? (
+              <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {query.error}
+              </div>
+            ) : null}
+
             <section className="space-y-4">
               <div>
                 <h2 className="text-lg font-semibold">Informació general</h2>
@@ -317,6 +371,109 @@ export default async function PublicProfilePage({
                 )}
               </div>
             </section>
+
+            <section className="space-y-4 rounded-md border bg-background p-4">
+              <div>
+                <h2 className="text-lg font-semibold">Valoracions</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Les valoracions permeten reforçar la confiança entre usuaris de la
+                  plataforma.
+                </p>
+              </div>
+
+
+
+              <div className="rounded-md border p-4">
+                <p className="text-sm text-muted-foreground">Puntuació mitjana</p>
+                <p className="mt-1 text-2xl font-semibold">
+                  {averageRating ? `${averageRating.toFixed(1)} / 5` : 'Sense valoracions'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {reviewCount} valoració{reviewCount === 1 ? '' : 'ns'}
+                </p>
+              </div>
+
+              {!user ? (
+                <div className="rounded-md border p-4">
+                  <p className="text-sm text-muted-foreground">
+                    Inicia sessió per valorar aquest perfil.
+                  </p>
+
+                  <Button asChild className="mt-3">
+                    <Link href="/login">Iniciar sessió</Link>
+                  </Button>
+                </div>
+              ) : isOwnProfile ? (
+                <div className="rounded-md border p-4 text-sm text-muted-foreground">
+                  No pots valorar el teu propi perfil.
+                </div>
+              ) : (
+                <form action={submitReview} className="space-y-4 rounded-md border p-4">
+                  <input
+                    type="hidden"
+                    name="reviewedProfileId"
+                    value={profile.profile_id}
+                  />
+
+                  <div className="space-y-2">
+                    <Label htmlFor="rating">Puntuació</Label>
+                    <select
+                      id="rating"
+                      name="rating"
+                      defaultValue={currentUserReview?.rating ?? 5}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      required
+                    >
+                      <option value="5">5 - Excel·lent</option>
+                      <option value="4">4 - Bona</option>
+                      <option value="3">3 - Correcta</option>
+                      <option value="2">2 - Millorable</option>
+                      <option value="1">1 - Dolenta</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="comment">Comentari</Label>
+                    <Textarea
+                      id="comment"
+                      name="comment"
+                      defaultValue={currentUserReview?.comment ?? ''}
+                      placeholder="Escriu una recomanació breu o una valoració del perfil."
+                      rows={4}
+                    />
+                  </div>
+
+                  <Button type="submit">Desar valoració</Button>
+                </form>
+              )}
+
+              {reviews.length > 0 ? (
+                <div className="space-y-3">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="rounded-md border p-4">
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="font-medium">{review.reviewer_display_name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {review.rating} / 5
+                        </p>
+                      </div>
+
+                      {review.comment ? (
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {review.comment}
+                        </p>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Encara no hi ha valoracions publicades per aquest perfil.
+                </p>
+              )}
+            
+            </section>
+
           </CardContent>
         </Card>
       </div>

@@ -27,6 +27,9 @@ type ProfileCardProps = {
     staff_kind: string | null
     staff_services: string | null
     price_range: string | null
+
+    review_count: number | null
+    average_rating: number | string | null
   }
 }
 
@@ -48,6 +51,22 @@ const availabilityClassNames: Record<string, string> = {
   open_to_offers: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
   unavailable: 'border-red-500 bg-red-500/10 text-red-700',
 }
+
+
+function formatAverageRating(value: number | string | null) {
+  if (value === null || value === undefined) {
+    return null
+  }
+
+  const parsed = Number(value)
+
+  if (Number.isNaN(parsed)) {
+    return null
+  }
+
+  return parsed.toFixed(1)
+}
+
 
 function getRoleDetail(profile: ProfileCardProps['profile']) {
   if (profile.role === 'player') {
@@ -84,6 +103,8 @@ function getRoleDetail(profile: ProfileCardProps['profile']) {
 export function ProfileCard({ profile }: ProfileCardProps) {
   const availability = profile.availability ?? 'available'
   const roleDetail = getRoleDetail(profile)
+  const averageRating = formatAverageRating(profile.average_rating)
+  const reviewCount = profile.review_count ?? 0
 
   return (
     <Card>
@@ -94,6 +115,12 @@ export function ProfileCard({ profile }: ProfileCardProps) {
 
             <p className="mt-1 text-sm text-muted-foreground">
               {roleLabels[profile.role] ?? profile.role}
+            </p>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              {averageRating
+                ? `${averageRating} / 5 · ${reviewCount} valoració${reviewCount === 1 ? '' : 'ns'}`
+                : 'Sense valoracions'}
             </p>
           </div>
 

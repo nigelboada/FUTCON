@@ -145,6 +145,10 @@ export default async function DashboardPage({
                 <a href="/search">Cercar perfils</a>
               </Button>
 
+              <Button asChild variant="secondary">
+                <Link href="/conversations">Missatges</Link>
+              </Button>
+
               <form action={signOut}>
                 <Button type="submit" variant="outline">
                   Tancar sessió

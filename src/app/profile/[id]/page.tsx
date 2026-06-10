@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
+import { startConversation } from '@/app/conversations/actions'
+
 import {
   Card,
   CardContent,
@@ -191,6 +193,8 @@ export default async function PublicProfilePage({
   const { id } = await params
   const supabase = await createClient()
 
+
+
   const { data, error } = await supabase
     .from('profile_search_view')
     .select('*')
@@ -207,6 +211,12 @@ export default async function PublicProfilePage({
 
   const profiles = data as PublicProfile[]
   const profile = profiles[0]
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const isOwnProfile = user?.id === profile.profile_id
 
   const availability = profile.availability ?? 'available'
   const location = getLocation(profile)
@@ -281,15 +291,31 @@ export default async function PublicProfilePage({
 
             <section className="rounded-md border bg-background p-4">
               <h2 className="text-lg font-semibold">Contacte</h2>
+
               <p className="mt-2 text-sm text-muted-foreground">
-                El sistema de missatgeria interna s’implementarà en una iteració
-                posterior. Aquesta secció queda preparada com a punt d’entrada
-                per iniciar converses entre usuaris.
+                Pots iniciar una conversa interna amb aquest perfil per fer un primer
+                contacte dins de FUTCON.
               </p>
 
-              <Button disabled className="mt-4">
-                Contactar pròximament
-              </Button>
+              <div className="mt-4">
+                {!user ? (
+                  <Button asChild>
+                    <Link href="/login">Inicia sessió per contactar</Link>
+                  </Button>
+                ) : isOwnProfile ? (
+                  <Button disabled>No pots contactar amb el teu propi perfil</Button>
+                ) : (
+                  <form action={startConversation}>
+                    <input
+                      type="hidden"
+                      name="targetProfileId"
+                      value={profile.profile_id}
+                    />
+
+                    <Button type="submit">Contactar</Button>
+                  </form>
+                )}
+              </div>
             </section>
           </CardContent>
         </Card>

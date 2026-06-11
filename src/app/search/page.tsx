@@ -206,7 +206,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           ) : (
             <div className="rounded-lg border bg-background p-6 text-center text-muted-foreground">
-              No s’han trobat perfils amb aquests filtres.
+              <p className="text-lg font-semibold">No hi ha resultats</p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                No s’han trobat perfils que coincideixin amb els filtres aplicats.
+                Prova de canviar el rol, la ubicació o la disponibilitat.
+              </p>
+
+              <Button asChild className="mt-4" variant="secondary">
+                <a href="/search">Netejar filtres</a>
+              </Button>
             </div>
           )}
         </section>

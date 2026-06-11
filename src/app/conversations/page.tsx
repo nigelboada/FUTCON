@@ -118,9 +118,16 @@ export default async function ConversationsPage() {
           </div>
         ) : (
           <Card>
-            <CardContent className="p-6 text-center text-muted-foreground">
-              Encara no tens converses. Ves al cercador i contacta amb un perfil
-              per iniciar-ne una.
+            <CardContent className="p-10 text-center">
+              <p className="text-lg font-semibold">Encara no tens converses</p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                Quan contactis amb un jugador, entrenador, club o professional, la
+                conversa apareixerà aquí.
+              </p>
+
+              <Button asChild className="mt-4" variant="secondary">
+                <Link href="/search">Cercar perfils</Link>
+              </Button>
             </CardContent>
           </Card>
         )}

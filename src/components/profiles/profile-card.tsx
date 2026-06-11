@@ -40,6 +40,13 @@ const roleLabels: Record<string, string> = {
   staff: 'Professional de l’staff',
 }
 
+const verificationLabels: Record<string, string> = {
+  unverified: 'No verificat',
+  pending: 'Verificació pendent',
+  verified: 'Verificat',
+  rejected: 'No verificat',
+}
+
 const availabilityLabels: Record<string, string> = {
   available: 'Disponible',
   open_to_offers: 'Escolto ofertes',
@@ -51,7 +58,6 @@ const availabilityClassNames: Record<string, string> = {
   open_to_offers: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
   unavailable: 'border-red-500 bg-red-500/10 text-red-700',
 }
-
 
 function formatAverageRating(value: number | string | null) {
   if (value === null || value === undefined) {
@@ -66,7 +72,6 @@ function formatAverageRating(value: number | string | null) {
 
   return parsed.toFixed(1)
 }
-
 
 function getRoleDetail(profile: ProfileCardProps['profile']) {
   if (profile.role === 'player') {
@@ -105,27 +110,33 @@ export function ProfileCard({ profile }: ProfileCardProps) {
   const roleDetail = getRoleDetail(profile)
   const averageRating = formatAverageRating(profile.average_rating)
   const reviewCount = profile.review_count ?? 0
+  const location =
+    [profile.city, profile.province].filter(Boolean).join(', ') ||
+    'Ubicació no indicada'
 
   return (
-    <Card>
-      <CardHeader className="space-y-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <Card className="flex h-full flex-col transition hover:-translate-y-0.5 hover:shadow-md">
+      <CardHeader className="space-y-4">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <CardTitle>{profile.display_name}</CardTitle>
+            <CardTitle className="text-xl">{profile.display_name}</CardTitle>
 
-            <p className="mt-1 text-sm text-muted-foreground">
-              {roleLabels[profile.role] ?? profile.role}
-            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <span className="rounded-full border px-3 py-1 text-xs font-medium">
+                {roleLabels[profile.role] ?? profile.role}
+              </span>
 
-            <p className="mt-1 text-sm text-muted-foreground">
-              {averageRating
-                ? `${averageRating} / 5 · ${reviewCount} valoració${reviewCount === 1 ? '' : 'ns'}`
-                : 'Sense valoracions'}
-            </p>
+              <span className="rounded-full border px-3 py-1 text-xs font-medium">
+                {profile.verification
+                  ? verificationLabels[profile.verification] ??
+                    profile.verification
+                  : 'No verificat'}
+              </span>
+            </div>
           </div>
 
           <span
-            className={`w-fit rounded-full border px-3 py-1 text-xs font-medium ${
+            className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium ${
               availabilityClassNames[availability] ?? 'border bg-muted'
             }`}
           >
@@ -134,20 +145,38 @@ export function ProfileCard({ profile }: ProfileCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="flex flex-1 flex-col space-y-4">
         {roleDetail ? (
-          <p className="text-sm text-muted-foreground">{roleDetail}</p>
+          <p className="text-sm font-medium text-muted-foreground">
+            {roleDetail}
+          </p>
         ) : null}
 
-        <div className="text-sm text-muted-foreground">
-          {[profile.city, profile.province].filter(Boolean).join(', ') ||
-            'Ubicació no indicada'}
+        <p className="text-sm text-muted-foreground">{location}</p>
+
+        <div className="rounded-lg border bg-muted/40 p-3">
+          <p className="text-sm font-medium">
+            {averageRating
+              ? `${averageRating} / 5`
+              : 'Sense valoracions'}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {reviewCount} valoració{reviewCount === 1 ? '' : 'ns'}
+          </p>
         </div>
 
-        {profile.bio ? <p className="text-sm">{profile.bio}</p> : null}
+        {profile.bio ? (
+          <p className="line-clamp-3 text-sm text-muted-foreground">
+            {profile.bio}
+          </p>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Aquest perfil encara no ha afegit una biografia.
+          </p>
+        )}
 
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button asChild variant="outline">
+        <div className="mt-auto pt-2">
+          <Button asChild className="w-full">
             <Link href={`/profile/${profile.profile_id}`}>Veure perfil</Link>
           </Button>
         </div>

@@ -213,3 +213,31 @@ export async function updateFullProfile(formData: FormData) {
 
   redirect('/dashboard?message=Perfil actualitzat correctament.')
 }
+
+export async function requestProfileVerification(formData: FormData) {
+  const supabase = await createClient()
+
+  const requestMessage = getStringValue(formData, 'requestMessage')
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { error } = await supabase.rpc('request_profile_verification', {
+    request_message: requestMessage || null,
+  })
+
+  if (error) {
+    redirect(`/profile/edit?error=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/profile/edit')
+  revalidatePath(`/profile/${user.id}`)
+
+  redirect('/profile/edit?message=Sol·licitud de verificació enviada correctament.')
+}

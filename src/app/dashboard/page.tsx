@@ -103,7 +103,7 @@ export default async function DashboardPage({
 
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-8">
-      <div className="mx-auto max-w-7xl space-y-6">
+      <div className="futcon-fade-up mx-auto max-w-7xl space-y-6">
         {params.message ? (
           <div className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700">
             {params.message}

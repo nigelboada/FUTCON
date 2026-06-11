@@ -46,8 +46,8 @@ export default async function HomePage() {
   } = await supabase.auth.getUser()
 
   return (
-    <main className="min-h-screen bg-muted/50">
-      <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+    <main className="futcon-hero-bg min-h-screen bg-muted/50">
+      <section className="futcon-hero-content futcon-fade-up mx-auto grid max-w-7xl gap-10 px-4 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-8">
           <div className="space-y-4">
             <p className="w-fit rounded-full border bg-background px-3 py-1 text-sm text-muted-foreground">
@@ -103,10 +103,10 @@ export default async function HomePage() {
         </Card>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-16">
+      <section className="futcon-hero-content mx-auto max-w-7xl px-4 pb-16">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {featureCards.map((feature) => (
-            <Card key={feature.title}>
+            <Card key={feature.title} className="futcon-card-hover">
               <CardHeader>
                 <CardTitle className="text-lg">{feature.title}</CardTitle>
               </CardHeader>

@@ -115,7 +115,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
     'Ubicació no indicada'
 
   return (
-    <Card className="flex h-full flex-col transition hover:-translate-y-0.5 hover:shadow-md">
+    <Card className="futcon-card-hover flex h-full flex-col">
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>

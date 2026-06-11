@@ -343,34 +343,7 @@ export default async function PublicProfilePage({
               </div>
             ))}
 
-            <section className="rounded-md border bg-background p-4">
-              <h2 className="text-lg font-semibold">Contacte</h2>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                Pots iniciar una conversa interna amb aquest perfil per fer un primer
-                contacte dins de FUTCON.
-              </p>
-
-              <div className="mt-4">
-                {!user ? (
-                  <Button asChild>
-                    <Link href="/login">Inicia sessió per contactar</Link>
-                  </Button>
-                ) : isOwnProfile ? (
-                  <Button disabled>No pots contactar amb el teu propi perfil</Button>
-                ) : (
-                  <form action={startConversation}>
-                    <input
-                      type="hidden"
-                      name="targetProfileId"
-                      value={profile.profile_id}
-                    />
-
-                    <Button type="submit">Contactar</Button>
-                  </form>
-                )}
-              </div>
-            </section>
+            
 
             <section className="space-y-4 rounded-md border bg-background p-4">
               <div>
@@ -472,6 +445,35 @@ export default async function PublicProfilePage({
                 </p>
               )}
             
+            </section>
+
+            <section className="rounded-md border bg-background p-4">
+              <h2 className="text-lg font-semibold">Contacte</h2>
+
+              <p className="mt-2 text-sm text-muted-foreground">
+                Pots iniciar una conversa interna amb aquest perfil per fer un primer
+                contacte dins de FUTCON.
+              </p>
+
+              <div className="mt-4">
+                {!user ? (
+                  <Button asChild>
+                    <Link href="/login">Inicia sessió per contactar</Link>
+                  </Button>
+                ) : isOwnProfile ? (
+                  <Button disabled>No pots contactar amb el teu propi perfil</Button>
+                ) : (
+                  <form action={startConversation}>
+                    <input
+                      type="hidden"
+                      name="targetProfileId"
+                      value={profile.profile_id}
+                    />
+
+                    <Button type="submit">Contactar</Button>
+                  </form>
+                )}
+              </div>
             </section>
 
           </CardContent>

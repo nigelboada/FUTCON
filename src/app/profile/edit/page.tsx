@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { updateFullProfile } from './actions'
+import { requestProfileVerification, updateFullProfile } from './actions'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 type ProfileEditPageProps = {
   searchParams: Promise<{
     error?: string
+    message?: string
   }>
 }
 
@@ -70,12 +71,34 @@ const staffTypeLabels = [
   },
 ]
 
+const verificationLabels: Record<string, string> = {
+  unverified: 'No verificat',
+  pending: 'Verificació pendent',
+  verified: 'Perfil verificat',
+  rejected: 'Verificació rebutjada',
+}
+
+const verificationDescriptions: Record<string, string> = {
+  unverified: 'Encara no has sol·licitat la verificació del perfil.',
+  pending: 'La sol·licitud de verificació està pendent de revisió.',
+  verified: 'Aquest perfil ha estat verificat.',
+  rejected: 'La verificació ha estat rebutjada. Pots tornar a sol·licitar-la.',
+}
+
+const verificationClassNames: Record<string, string> = {
+  unverified: 'border-muted bg-muted text-muted-foreground',
+  pending: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
+  verified: 'border-green-500 bg-green-500/10 text-green-700',
+  rejected: 'border-red-500 bg-red-500/10 text-red-700',
+}
+
 export default async function ProfileEditPage({
   searchParams,
 }: ProfileEditPageProps) {
   const params = await searchParams
   const supabase = await createClient()
 
+  // Authenticate user session
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -84,6 +107,7 @@ export default async function ProfileEditPage({
     redirect('/login')
   }
 
+  // Fetch roles associated with the profile
   const { data: roles } = await supabase
     .from('profile_roles')
     .select('role')
@@ -95,9 +119,10 @@ export default async function ProfileEditPage({
 
   const primaryRole = roles[0].role as UserRole
 
+  // Fetch core profile information
   const { data: profile, error } = await supabase
     .from('profiles')
-    .select('display_name, bio, city, province, availability')
+    .select('display_name, bio, city, province, availability, verification')
     .eq('id', user.id)
     .single()
 
@@ -105,6 +130,7 @@ export default async function ProfileEditPage({
     redirect('/dashboard?error=No s’ha pogut carregar el perfil.')
   }
 
+  // Conditional fetches based on primary role (Table-Per-Type pattern support)
   const { data: playerProfile } =
     primaryRole === 'player'
       ? await supabase
@@ -169,12 +195,19 @@ export default async function ProfileEditPage({
           </CardHeader>
 
           <CardContent>
+            {params.message ? (
+              <div className="mb-4 rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700">
+                {params.message}
+              </div>
+            ) : null}
+
             {params.error ? (
               <div className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {params.error}
               </div>
             ) : null}
 
+            {/* Main Form: updateFullProfile Server Action */}
             <form action={updateFullProfile} className="space-y-8">
               <input type="hidden" name="role" value={primaryRole} />
 
@@ -276,6 +309,7 @@ export default async function ProfileEditPage({
                 </div>
               </section>
 
+              {/* Player Role Subform View */}
               {primaryRole === 'player' ? (
                 <section className="space-y-5 border-t pt-6">
                   <div>
@@ -369,6 +403,7 @@ export default async function ProfileEditPage({
                 </section>
               ) : null}
 
+              {/* Coach Role Subform View */}
               {primaryRole === 'coach' ? (
                 <section className="space-y-5 border-t pt-6">
                   <div>
@@ -441,6 +476,7 @@ export default async function ProfileEditPage({
                 </section>
               ) : null}
 
+              {/* Club Role Subform View */}
               {primaryRole === 'club' ? (
                 <section className="space-y-5 border-t pt-6">
                   <div>
@@ -499,6 +535,7 @@ export default async function ProfileEditPage({
                 </section>
               ) : null}
 
+              {/* Staff Role Subform View */}
               {primaryRole === 'staff' ? (
                 <section className="space-y-5 border-t pt-6">
                   <div>
@@ -581,6 +618,7 @@ export default async function ProfileEditPage({
                 </section>
               ) : null}
 
+              {/* Core Actions Buttons inside primary form */}
               <div className="flex flex-col gap-3 border-t pt-6 sm:flex-row">
                 <Button type="submit">Guardar canvis</Button>
 
@@ -589,6 +627,61 @@ export default async function ProfileEditPage({
                 </Button>
               </div>
             </form>
+
+            
+            <section className="mt-8 space-y-4 border-t pt-6">
+              <div>
+                <h2 className="text-lg font-semibold">Confiança i verificació</h2>
+                <p className="text-sm text-muted-foreground">
+                  La verificació permet reforçar la credibilitat del perfil dins de FUTCON.
+                </p>
+              </div>
+
+              <div className="rounded-md border bg-background p-4">
+                <p className="text-sm text-muted-foreground">Estat actual</p>
+
+                <span
+                  className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-medium ${
+                    verificationClassNames[profile.verification ?? 'unverified']
+                  }`}
+                >
+                  {verificationLabels[profile.verification ?? 'unverified']}
+                </span>
+
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {verificationDescriptions[profile.verification ?? 'unverified']}
+                </p>
+              </div>
+
+              {profile.verification === 'verified' ? (
+                <div className="rounded-md border bg-green-500/10 p-4 text-sm text-green-700">
+                  El teu perfil ja consta com a verificat.
+                </div>
+              ) : profile.verification === 'pending' ? (
+                <div className="rounded-md border bg-yellow-500/10 p-4 text-sm text-yellow-700">
+                  La teva sol·licitud de verificació està pendent de revisió.
+                </div>
+              ) : (
+                <form action={requestProfileVerification} className="space-y-3 rounded-md border bg-background p-4">
+                  <div className="space-y-2">
+                    <label htmlFor="requestMessage" className="text-sm font-medium">
+                      Missatge opcional
+                    </label>
+
+                    <textarea
+                      id="requestMessage"
+                      name="requestMessage"
+                      rows={3}
+                      className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      placeholder="Ex: Sol·licito la verificació perquè soc responsable d’un club / jugador federat / professional de l’staff..."
+                    />
+                  </div>
+
+                  <Button type="submit">Sol·licitar verificació</Button>
+                </form>
+              )}
+            </section>
+
           </CardContent>
         </Card>
       </div>

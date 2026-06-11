@@ -37,6 +37,10 @@ export async function AppHeader() {
         .maybeSingle()
     : { data: null }
 
+  const { data: isAdmin } = user
+    ? await supabase.rpc('is_app_admin')
+    : { data: false }
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
       <div className="mx-auto flex min-h-16 max-w-7xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
@@ -63,6 +67,12 @@ export async function AppHeader() {
                   <Link href={item.href}>{item.label}</Link>
                 </Button>
               ))}
+
+              {isAdmin ? (
+                <Button asChild variant="ghost" size="sm">
+                  <Link href="/admin">Admin</Link>
+                </Button>
+              ) : null}
 
               <div className="hidden h-6 w-px bg-border md:block" />
 

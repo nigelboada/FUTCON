@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 type Message = {
@@ -32,6 +32,12 @@ export function ConversationMessages({
   initialMessages,
 }: ConversationMessagesProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   useEffect(() => {
     const supabase = createClient()
@@ -107,6 +113,8 @@ export function ConversationMessages({
           </div>
         )
       })}
+
+      <div ref={messagesEndRef} />
     </div>
   )
 }

@@ -76,15 +76,16 @@ export async function AppHeader() {
 
               <div className="hidden h-6 w-px bg-border md:block" />
 
-              <span className="max-w-40 truncate text-sm text-muted-foreground">
-                {profile?.display_name ?? user.email}
-              </span>
-
               <form action={signOut}>
                 <Button type="submit" variant="outline" size="sm">
                   Tancar sessió
                 </Button>
               </form>
+
+              <span className="max-w-40 truncate text-sm text-muted-foreground">
+                {profile?.display_name ?? user.email}
+              </span>
+
             </>
           ) : (
             <>

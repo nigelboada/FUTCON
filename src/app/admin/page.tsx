@@ -159,77 +159,101 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
           {pendingRequests.length > 0 ? (
             <div className="grid gap-4 lg:grid-cols-2">
-              {pendingRequests.map((request) => (
-                <Card key={request.id} className="futcon-card-hover">
-                  <CardHeader>
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <CardTitle>{request.profile_display_name}</CardTitle>
-                        <CardDescription>
-                          {request.profile_roles}
-                          {' · '}
-                          {[request.profile_city, request.profile_province]
-                            .filter(Boolean)
-                            .join(', ') || 'Ubicació no indicada'}
-                        </CardDescription>
-                      </div>
+              {pendingRequests.map((request) => {
+                const isOwnVerificationRequest = request.profile_id === user.id
 
-                      <span
-                        className={`w-fit rounded-full border px-3 py-1 text-xs font-medium ${
-                          statusClassNames[request.status]
-                        }`}
-                      >
-                        {statusLabels[request.status] ?? request.status}
-                      </span>
-                    </div>
-                  </CardHeader>
+                return (
+                    <Card key={request.id} className="futcon-card-hover">
+                            
+                            
 
-                  <CardContent className="space-y-4">
-                    <div className="rounded-md border bg-background p-4">
-                      <p className="text-sm text-muted-foreground">
-                        Missatge de la sol·licitud
-                      </p>
-                      <p className="mt-2 text-sm">
-                        {request.request_message ||
-                          'L’usuari no ha afegit cap missatge.'}
-                      </p>
-                    </div>
+                    
+                    
+                    <CardHeader>
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                            <CardTitle>{request.profile_display_name}</CardTitle>
+                            <CardDescription>
+                            {request.profile_roles}
+                            {' · '}
+                            {[request.profile_city, request.profile_province]
+                                .filter(Boolean)
+                                .join(', ') || 'Ubicació no indicada'}
+                            </CardDescription>
+                        </div>
 
-                    <p className="text-sm text-muted-foreground">
-                      Sol·licitada el {formatDate(request.created_at)}
-                    </p>
+                        <span
+                            className={`w-fit rounded-full border px-3 py-1 text-xs font-medium ${
+                            statusClassNames[request.status]
+                            }`}
+                        >
+                            {statusLabels[request.status] ?? request.status}
+                        </span>
+                        </div>
+                    </CardHeader>
 
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      <Button asChild variant="outline">
-                        <Link href={`/profile/${request.profile_id}`}>
-                          Veure perfil
-                        </Link>
-                      </Button>
+                    <CardContent className="space-y-4">
+                        <div className="rounded-md border bg-background p-4">
+                        <p className="text-sm text-muted-foreground">
+                            Missatge de la sol·licitud
+                        </p>
+                        <p className="mt-2 text-sm">
+                            {request.request_message ||
+                            'L’usuari no ha afegit cap missatge.'}
+                        </p>
+                        </div>
 
-                      <form action={approveVerificationRequest}>
-                        <input
-                          type="hidden"
-                          name="requestId"
-                          value={request.id}
-                        />
-                        <Button type="submit">Aprovar</Button>
-                      </form>
+                        <p className="text-sm text-muted-foreground">
+                        Sol·licitada el {formatDate(request.created_at)}
+                        </p>
 
-                      <form action={rejectVerificationRequest}>
-                        <input
-                          type="hidden"
-                          name="requestId"
-                          value={request.id}
-                        />
-                        <Button type="submit" variant="destructive">
-                          Rebutjar
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                        <Button asChild variant="outline">
+                            <Link href={`/profile/${request.profile_id}`}>
+                            Veure perfil
+                            </Link>
                         </Button>
-                      </form>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+                        
+                        {isOwnVerificationRequest ? (
+                            <div className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">
+                                Aquesta sol·licitud ha de ser resolta per un altre administrador.
+                            </div>
+                            ) : (
+                            <>
+                                <form action={approveVerificationRequest}>
+                                <input
+                                    type="hidden"
+                                    name="requestId"
+                                    value={request.id}
+                                />
+                                <Button type="submit">Aprovar</Button>
+                                </form>
+
+                                <form action={rejectVerificationRequest}>
+                                <input
+                                    type="hidden"
+                                    name="requestId"
+                                    value={request.id}
+                                />
+                                <Button type="submit" variant="destructive">
+                                    Rebutjar
+                                </Button>
+                                </form>
+                            </>
+                        )}
+
+
+
+
+                        </div>
+                    </CardContent>
+                    </Card>
+                )
+              })}
+
             </div>
+
           ) : (
             <Card>
               <CardContent className="p-10 text-center">

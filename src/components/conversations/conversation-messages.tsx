@@ -36,7 +36,10 @@ export function ConversationMessages({
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    messagesEndRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+    })
   }, [messages])
 
   useEffect(() => {

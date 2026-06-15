@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { FeedbackMessage } from '@/components/layout/feedback-message'
 
 type ConversationPageProps = {
   params: Promise<{
@@ -69,7 +70,7 @@ export default async function ConversationPage({
   const { data: otherProfile } = otherParticipant
     ? await supabase
         .from('profiles')
-        .select('display_name')
+        .select('display_name, city, province, verification')
         .eq('id', otherParticipant.profile_id)
         .single()
     : { data: null }
@@ -83,58 +84,87 @@ export default async function ConversationPage({
   const messages = (messageData ?? []) as Message[]
 
   return (
-    <main className="min-h-screen bg-muted px-4 py-8">
-      <div className="mx-auto max-w-3xl space-y-6">
+    <main className="min-h-screen bg-muted/50 px-4 py-8">
+      <div className="futcon-fade-up mx-auto max-w-5xl space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <Link
-            href="/conversations"
-            className="text-sm text-muted-foreground underline"
-          >
-            Tornar als missatges
-          </Link>
-
           <Button asChild variant="outline">
+            <Link href="/conversations">Tornar als missatges</Link>
+          </Button>
+
+          <Button asChild variant="secondary">
             <Link href="/search">Cercar perfils</Link>
           </Button>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Conversa amb {otherProfile?.display_name ?? 'perfil'}
-            </CardTitle>
+        <Card className="overflow-hidden border-2">
+          <CardHeader className="border-b bg-background">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Conversa amb</p>
+                <CardTitle className="text-2xl">
+                  {otherProfile?.display_name ?? 'Perfil'}
+                </CardTitle>
+
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {[otherProfile?.city, otherProfile?.province]
+                    .filter(Boolean)
+                    .join(', ') || 'Ubicació no indicada'}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {otherParticipant ? (
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/profile/${otherParticipant.profile_id}`}>
+                      Veure perfil
+                    </Link>
+                  </Button>
+                ) : null}
+              </div>
+            </div>
           </CardHeader>
 
-          <CardContent className="space-y-6">
-            {query.error ? (
-              <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {query.error}
-              </div>
-            ) : null}
+          <CardContent className="space-y-6 p-0">
+            <div className="space-y-3 px-4 pt-4">
+              <FeedbackMessage error={query.error} />
 
-            {messagesError ? (
-              <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {messagesError.message}
-              </div>
-            ) : null}
+              {messagesError ? (
+                <FeedbackMessage error={messagesError.message} />
+              ) : null}
+            </div>
 
-            <ConversationMessages
-              conversationId={id}
-              currentProfileId={user.id}
-              initialMessages={messages}
-            />
+            <div className="mx-4 max-h-[58vh] overflow-y-auto rounded-xl border bg-muted/40 p-4">
+              <ConversationMessages
+                conversationId={id}
+                currentProfileId={user.id}
+                initialMessages={messages}
+              />
+            </div>
 
-            <form action={sendMessage} className="space-y-3 border-t pt-4">
+            <form
+              action={sendMessage}
+              className="border-t bg-background p-4"
+            >
               <input type="hidden" name="conversationId" value={id} />
 
-              <Textarea
-                name="content"
-                placeholder="Escriu un missatge..."
-                rows={4}
-                required
-              />
+              <div className="space-y-3">
+                <Textarea
+                  name="content"
+                  placeholder="Escriu un missatge..."
+                  rows={3}
+                  required
+                  className="resize-none"
+                />
 
-              <Button type="submit">Enviar missatge</Button>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    Els missatges s’actualitzen en temps real dins de la
+                    conversa.
+                  </p>
+
+                  <Button type="submit">Enviar missatge</Button>
+                </div>
+              </div>
             </form>
           </CardContent>
         </Card>

@@ -174,8 +174,8 @@ export default async function ProfileEditPage({
       : { data: null }
 
   return (
-    <main className="min-h-screen bg-muted px-4 py-8">
-      <div className="mx-auto max-w-3xl space-y-6">
+    <main className="min-h-screen bg-muted/50 px-4 py-8">
+      <div className="futcon-fade-up mx-auto max-w-5xl space-y-6">
         <div>
           <Link
             href="/dashboard"
@@ -185,7 +185,7 @@ export default async function ProfileEditPage({
           </Link>
         </div>
 
-        <Card>
+        <Card className="border-2">
           <CardHeader>
             <CardTitle>Editar perfil</CardTitle>
             <CardDescription>
@@ -207,11 +207,11 @@ export default async function ProfileEditPage({
               </div>
             ) : null}
 
-            {/* Main Form: updateFullProfile Server Action */}
-            <form action={updateFullProfile} className="space-y-8">
+            
+            <form action={updateFullProfile} className="space-y-10">
               <input type="hidden" name="role" value={primaryRole} />
 
-              <section className="space-y-5">
+              <section className="space-y-5 rounded-xl border bg-background p-5">
                 <div className="rounded-md border bg-background p-4">
                   <p className="text-sm text-muted-foreground">Rol assignat</p>
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -311,7 +311,7 @@ export default async function ProfileEditPage({
 
               {/* Player Role Subform View */}
               {primaryRole === 'player' ? (
-                <section className="space-y-5 border-t pt-6">
+                <section className="space-y-5 rounded-xl border bg-background p-5">
                   <div>
                     <h2 className="text-lg font-semibold">
                       Informació de jugador
@@ -405,7 +405,7 @@ export default async function ProfileEditPage({
 
               {/* Coach Role Subform View */}
               {primaryRole === 'coach' ? (
-                <section className="space-y-5 border-t pt-6">
+                <section className="space-y-5 rounded-xl border bg-background p-5">
                   <div>
                     <h2 className="text-lg font-semibold">
                       Informació d’entrenador
@@ -478,7 +478,7 @@ export default async function ProfileEditPage({
 
               {/* Club Role Subform View */}
               {primaryRole === 'club' ? (
-                <section className="space-y-5 border-t pt-6">
+                <section className="space-y-5 rounded-xl border bg-background p-5">
                   <div>
                     <h2 className="text-lg font-semibold">
                       Informació de club
@@ -537,7 +537,7 @@ export default async function ProfileEditPage({
 
               {/* Staff Role Subform View */}
               {primaryRole === 'staff' ? (
-                <section className="space-y-5 border-t pt-6">
+                <section className="space-y-5 rounded-xl border bg-background p-5">
                   <div>
                     <h2 className="text-lg font-semibold">
                       Informació de professional de l’staff
@@ -629,7 +629,7 @@ export default async function ProfileEditPage({
             </form>
 
             
-            <section className="mt-8 space-y-4 border-t pt-6">
+            <section className="mt-8 space-y-4 rounded-xl border bg-background p-5">
               <div>
                 <h2 className="text-lg font-semibold">Confiança i verificació</h2>
                 <p className="text-sm text-muted-foreground">

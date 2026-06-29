@@ -8,6 +8,10 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
+
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
+
 const featureCards = [
   {
     title: 'Perfils diferenciats',
@@ -41,6 +45,9 @@ const userTypes = [
 export default async function HomePage() {
   const supabase = await createClient()
 
+  const locale = await getLocale()
+  const m = getMessages(locale)
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -51,46 +58,44 @@ export default async function HomePage() {
         <div className="space-y-8">
           <div className="space-y-4">
             <p className="w-fit rounded-full border bg-background px-3 py-1 text-sm text-muted-foreground">
-              Marketplace per al futbol amateur
+              {m.home.eyebrow}
             </p>
 
             <h1 className="max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">
-              Connecta clubs, jugadors i professionals del futbol amateur.
+              {m.home.title}
             </h1>
 
             <p className="max-w-2xl text-lg text-muted-foreground">
-              FUTCON és una plataforma orientada a facilitar la descoberta de
-              perfils, el primer contacte i la generació de confiança dins de
-              l’ecosistema del futbol amateur.
+              {m.home.description}
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             {user ? (
               <Button asChild size="lg">
-                <Link href="/dashboard">Anar al dashboard</Link>
+                <Link href="/dashboard">{m.home.dashboardCta}</Link>
               </Button>
             ) : (
               <>
                 <Button asChild size="lg">
-                  <Link href="/register">Crear compte</Link>
+                  <Link href="/register">{m.home.registerCta}</Link>
                 </Button>
 
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/login">Iniciar sessió</Link>
+                  <Link href="/login">{m.home.loginCta}</Link>
                 </Button>
               </>
             )}
 
             <Button asChild size="lg" variant="secondary">
-              <Link href="/search">Explorar perfils</Link>
+              <Link href="/search">{m.home.exploreCta}</Link>
             </Button>
           </div>
         </div>
 
         <Card className="border-2">
           <CardHeader>
-            <CardTitle>Per a qui és FUTCON?</CardTitle>
+            <CardTitle>{m.home.targetTitle}</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-3">
@@ -105,7 +110,7 @@ export default async function HomePage() {
 
       <section className="futcon-hero-content mx-auto max-w-7xl px-4 pb-16">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {featureCards.map((feature) => (
+          {m.home.features.map((feature) => (
             <Card key={feature.title} className="futcon-card-hover">
               <CardHeader>
                 <CardTitle className="text-lg">{feature.title}</CardTitle>

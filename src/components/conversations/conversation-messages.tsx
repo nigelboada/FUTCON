@@ -15,10 +15,14 @@ type ConversationMessagesProps = {
   conversationId: string
   currentProfileId: string
   initialMessages: Message[]
+  localeTag: string
+  labels: {
+    emptyThread: string
+  }
 }
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('ca-ES', {
+function formatDate(value: string, localeTag: string) {
+  return new Intl.DateTimeFormat(localeTag, {
     hour: '2-digit',
     minute: '2-digit',
     day: '2-digit',
@@ -30,6 +34,8 @@ export function ConversationMessages({
   conversationId,
   currentProfileId,
   initialMessages,
+  localeTag,
+  labels,
 }: ConversationMessagesProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
 
@@ -81,8 +87,7 @@ export function ConversationMessages({
   if (messages.length === 0) {
     return (
       <div className="rounded-md border bg-background p-6 text-center text-sm text-muted-foreground">
-        Encara no hi ha missatges. Escriu el primer missatge per iniciar la
-        conversa.
+        {labels.emptyThread}
       </div>
     )
   }
@@ -110,7 +115,7 @@ export function ConversationMessages({
                     : 'text-muted-foreground'
                 }`}
               >
-                {formatDate(message.created_at)}
+                {formatDate(message.created_at, localeTag)}
               </p>
             </div>
           </div>

@@ -12,6 +12,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
 type ConversationPageProps = {
   params: Promise<{
@@ -37,6 +39,8 @@ export default async function ConversationPage({
   const { id } = await params
   const query = await searchParams
   const supabase = await createClient()
+  const locale = await getLocale()
+  const m = getMessages(locale)
 
   const {
     data: { user },
@@ -88,11 +92,11 @@ export default async function ConversationPage({
       <div className="futcon-fade-up mx-auto max-w-5xl space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Button asChild variant="outline">
-            <Link href="/conversations">Tornar als missatges</Link>
+            <Link href="/conversations">{m.conversations.backToMessages}</Link>
           </Button>
 
           <Button asChild variant="secondary">
-            <Link href="/search">Cercar perfils</Link>
+            <Link href="/search">{m.common.searchProfiles}</Link>
           </Button>
         </div>
 
@@ -100,15 +104,17 @@ export default async function ConversationPage({
           <CardHeader className="border-b bg-background">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Conversa amb</p>
+                <p className="text-sm text-muted-foreground">
+                  {m.conversations.conversationWith}
+                </p>
                 <CardTitle className="text-2xl">
-                  {otherProfile?.display_name ?? 'Perfil'}
+                  {otherProfile?.display_name ?? m.conversations.profileFallback}
                 </CardTitle>
 
                 <p className="mt-1 text-sm text-muted-foreground">
                   {[otherProfile?.city, otherProfile?.province]
                     .filter(Boolean)
-                    .join(', ') || 'Ubicació no indicada'}
+                    .join(', ') || m.common.locationNotSpecified}
                 </p>
               </div>
 
@@ -116,7 +122,7 @@ export default async function ConversationPage({
                 {otherParticipant ? (
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/profile/${otherParticipant.profile_id}`}>
-                      Veure perfil
+                      {m.common.viewProfile}
                     </Link>
                   </Button>
                 ) : null}
@@ -138,19 +144,18 @@ export default async function ConversationPage({
                 conversationId={id}
                 currentProfileId={user.id}
                 initialMessages={messages}
+                localeTag={m.localeTag}
+                labels={{ emptyThread: m.conversations.emptyThread }}
               />
             </div>
 
-            <form
-              action={sendMessage}
-              className="border-t bg-background p-4"
-            >
+            <form action={sendMessage} className="border-t bg-background p-4">
               <input type="hidden" name="conversationId" value={id} />
 
               <div className="space-y-3">
                 <Textarea
                   name="content"
-                  placeholder="Escriu un missatge..."
+                  placeholder={m.conversations.messagePlaceholder}
                   rows={3}
                   required
                   className="resize-none"
@@ -158,11 +163,10 @@ export default async function ConversationPage({
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs text-muted-foreground">
-                    Els missatges s’actualitzen en temps real dins de la
-                    conversa.
+                    {m.conversations.realtimeNote}
                   </p>
 
-                  <Button type="submit">Enviar missatge</Button>
+                  <Button type="submit">{m.conversations.sendMessage}</Button>
                 </div>
               </div>
             </form>

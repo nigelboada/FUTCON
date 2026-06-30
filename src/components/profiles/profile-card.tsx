@@ -2,6 +2,18 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
+type ProfileCardLabels = {
+  roles: Record<string, string>
+  verification: Record<string, string>
+  availability: Record<string, string>
+  viewProfile: string
+  noRating: string
+  noBio: string
+  reviewSingular: string
+  reviewPlural: string
+  locationNotSpecified: string
+}
+
 type ProfileCardProps = {
   profile: {
     profile_id: string
@@ -31,26 +43,7 @@ type ProfileCardProps = {
     review_count: number | null
     average_rating: number | string | null
   }
-}
-
-const roleLabels: Record<string, string> = {
-  player: 'Jugador',
-  coach: 'Entrenador / cos tècnic',
-  club: 'Club o responsable',
-  staff: 'Professional de l’staff',
-}
-
-const verificationLabels: Record<string, string> = {
-  unverified: 'No verificat',
-  pending: 'Verificació pendent',
-  verified: 'Verificat',
-  rejected: 'No verificat',
-}
-
-const availabilityLabels: Record<string, string> = {
-  available: 'Disponible',
-  open_to_offers: 'Escolto ofertes',
-  unavailable: 'No disponible',
+  labels: ProfileCardLabels
 }
 
 const availabilityClassNames: Record<string, string> = {
@@ -105,14 +98,14 @@ function getRoleDetail(profile: ProfileCardProps['profile']) {
   return ''
 }
 
-export function ProfileCard({ profile }: ProfileCardProps) {
+export function ProfileCard({ profile, labels }: ProfileCardProps) {
   const availability = profile.availability ?? 'available'
   const roleDetail = getRoleDetail(profile)
   const averageRating = formatAverageRating(profile.average_rating)
   const reviewCount = profile.review_count ?? 0
   const location =
     [profile.city, profile.province].filter(Boolean).join(', ') ||
-    'Ubicació no indicada'
+    labels.locationNotSpecified
 
   return (
     <Card className="futcon-card-hover flex h-full flex-col">
@@ -123,14 +116,14 @@ export function ProfileCard({ profile }: ProfileCardProps) {
 
             <div className="mt-2 flex flex-wrap gap-2">
               <span className="rounded-full border px-3 py-1 text-xs font-medium">
-                {roleLabels[profile.role] ?? profile.role}
+                {labels.roles[profile.role] ?? profile.role}
               </span>
 
               <span className="rounded-full border px-3 py-1 text-xs font-medium">
                 {profile.verification
-                  ? verificationLabels[profile.verification] ??
+                  ? labels.verification[profile.verification] ??
                     profile.verification
-                  : 'No verificat'}
+                  : labels.verification.unverified}
               </span>
             </div>
           </div>
@@ -140,7 +133,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
               availabilityClassNames[availability] ?? 'border bg-muted'
             }`}
           >
-            {availabilityLabels[availability] ?? availability}
+            {labels.availability[availability] ?? availability}
           </span>
         </div>
       </CardHeader>
@@ -156,12 +149,11 @@ export function ProfileCard({ profile }: ProfileCardProps) {
 
         <div className="rounded-lg border bg-muted/40 p-3">
           <p className="text-sm font-medium">
-            {averageRating
-              ? `${averageRating} / 5`
-              : 'Sense valoracions'}
+            {averageRating ? `${averageRating} / 5` : labels.noRating}
           </p>
           <p className="text-xs text-muted-foreground">
-            {reviewCount} valoració{reviewCount === 1 ? '' : 'ns'}
+            {reviewCount}{' '}
+            {reviewCount === 1 ? labels.reviewSingular : labels.reviewPlural}
           </p>
         </div>
 
@@ -170,14 +162,14 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             {profile.bio}
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            Aquest perfil encara no ha afegit una biografia.
-          </p>
+          <p className="text-sm text-muted-foreground">{labels.noBio}</p>
         )}
 
         <div className="mt-auto pt-2">
           <Button asChild className="w-full">
-            <Link href={`/profile/${profile.profile_id}`}>Veure perfil</Link>
+            <Link href={`/profile/${profile.profile_id}`}>
+              {labels.viewProfile}
+            </Link>
           </Button>
         </div>
       </CardContent>

@@ -13,6 +13,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
 type ProfileEditPageProps = {
   searchParams: Promise<{
@@ -22,68 +24,6 @@ type ProfileEditPageProps = {
 }
 
 type UserRole = 'player' | 'coach' | 'club' | 'staff'
-
-const availabilityOptions = [
-  {
-    value: 'available',
-    label: 'Disponible',
-    description: 'Busco equip, club o oportunitats professionals.',
-  },
-  {
-    value: 'open_to_offers',
-    label: 'Escolto ofertes',
-    description: 'Actualment tinc vinculació, però estic obert a propostes.',
-  },
-  {
-    value: 'unavailable',
-    label: 'No disponible',
-    description: 'No busco noves oportunitats en aquest moment.',
-  },
-]
-
-const roleLabels: Record<UserRole, string> = {
-  player: 'Jugador',
-  coach: 'Entrenador / cos tècnic',
-  club: 'Club o responsable',
-  staff: 'Professional de l’staff',
-}
-
-const staffTypeLabels = [
-  {
-    value: 'physiotherapist',
-    label: 'Fisioterapeuta',
-  },
-  {
-    value: 'nutritionist',
-    label: 'Nutricionista',
-  },
-  {
-    value: 'physical_trainer',
-    label: 'Preparador físic',
-  },
-  {
-    value: 'analyst',
-    label: 'Analista',
-  },
-  {
-    value: 'other',
-    label: 'Altres',
-  },
-]
-
-const verificationLabels: Record<string, string> = {
-  unverified: 'No verificat',
-  pending: 'Verificació pendent',
-  verified: 'Perfil verificat',
-  rejected: 'Verificació rebutjada',
-}
-
-const verificationDescriptions: Record<string, string> = {
-  unverified: 'Encara no has sol·licitat la verificació del perfil.',
-  pending: 'La sol·licitud de verificació està pendent de revisió.',
-  verified: 'Aquest perfil ha estat verificat.',
-  rejected: 'La verificació ha estat rebutjada. Pots tornar a sol·licitar-la.',
-}
 
 const verificationClassNames: Record<string, string> = {
   unverified: 'border-muted bg-muted text-muted-foreground',
@@ -97,8 +37,35 @@ export default async function ProfileEditPage({
 }: ProfileEditPageProps) {
   const params = await searchParams
   const supabase = await createClient()
+  const locale = await getLocale()
+  const m = getMessages(locale)
 
-  // Authenticate user session
+  const availabilityOptions = [
+    {
+      value: 'available',
+      label: m.availability.available,
+      description: m.profileEdit.availabilityDescriptions.available,
+    },
+    {
+      value: 'open_to_offers',
+      label: m.availability.open_to_offers,
+      description: m.profileEdit.availabilityDescriptions.open_to_offers,
+    },
+    {
+      value: 'unavailable',
+      label: m.availability.unavailable,
+      description: m.profileEdit.availabilityDescriptions.unavailable,
+    },
+  ]
+
+  const staffTypeLabels = [
+    { value: 'physiotherapist', label: m.staffKinds.physiotherapist },
+    { value: 'nutritionist', label: m.staffKinds.nutritionist },
+    { value: 'physical_trainer', label: m.staffKinds.physical_trainer },
+    { value: 'analyst', label: m.staffKinds.analyst },
+    { value: 'other', label: m.staffKinds.other },
+  ]
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -107,7 +74,6 @@ export default async function ProfileEditPage({
     redirect('/login')
   }
 
-  // Fetch roles associated with the profile
   const { data: roles } = await supabase
     .from('profile_roles')
     .select('role')
@@ -119,7 +85,6 @@ export default async function ProfileEditPage({
 
   const primaryRole = roles[0].role as UserRole
 
-  // Fetch core profile information
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('display_name, bio, city, province, availability, verification')
@@ -127,10 +92,9 @@ export default async function ProfileEditPage({
     .single()
 
   if (error || !profile) {
-    redirect('/dashboard?error=No s’ha pogut carregar el perfil.')
+    redirect(`/dashboard?error=${encodeURIComponent(m.profileEdit.loadError)}`)
   }
 
-  // Conditional fetches based on primary role (Table-Per-Type pattern support)
   const { data: playerProfile } =
     primaryRole === 'player'
       ? await supabase
@@ -173,6 +137,8 @@ export default async function ProfileEditPage({
           .maybeSingle()
       : { data: null }
 
+  const verification = profile.verification ?? 'unverified'
+
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-8">
       <div className="futcon-fade-up mx-auto max-w-5xl space-y-6">
@@ -181,17 +147,14 @@ export default async function ProfileEditPage({
             href="/dashboard"
             className="text-sm text-muted-foreground underline"
           >
-            Tornar al panell
+            {m.common.backToDashboard}
           </Link>
         </div>
 
         <Card className="border-2">
           <CardHeader>
-            <CardTitle>Editar perfil</CardTitle>
-            <CardDescription>
-              Actualitza la informació comuna i específica del teu perfil a
-              FUTCON.
-            </CardDescription>
+            <CardTitle>{m.profileEdit.title}</CardTitle>
+            <CardDescription>{m.profileEdit.description}</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -207,35 +170,41 @@ export default async function ProfileEditPage({
               </div>
             ) : null}
 
-            
             <form action={updateFullProfile} className="space-y-10">
               <input type="hidden" name="role" value={primaryRole} />
 
               <section className="space-y-5 rounded-xl border bg-background p-5">
                 <div className="rounded-md border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">Rol assignat</p>
+                  <p className="text-sm text-muted-foreground">
+                    {m.profileEdit.assignedRole}
+                  </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {roles.map((item) => (
                       <span
                         key={item.role}
                         className="rounded-full border px-3 py-1 text-sm"
                       >
-                        {roleLabels[item.role as UserRole] ?? item.role}
+                        {item.role in m.roles
+                          ? m.roles[item.role as keyof typeof m.roles]
+                          : item.role}
                       </span>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <h2 className="text-lg font-semibold">Informació comuna</h2>
+                  <h2 className="text-lg font-semibold">
+                    {m.profileEdit.commonInfo}
+                  </h2>
                   <p className="text-sm text-muted-foreground">
-                    Aquesta informació és compartida per qualsevol tipus de
-                    perfil.
+                    {m.profileEdit.commonInfoDescription}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="displayName">Nom visible</Label>
+                  <Label htmlFor="displayName">
+                    {m.profileEdit.displayName}
+                  </Label>
                   <Input
                     id="displayName"
                     name="displayName"
@@ -246,42 +215,44 @@ export default async function ProfileEditPage({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio">Biografia breu</Label>
+                  <Label htmlFor="bio">{m.profileEdit.bio}</Label>
                   <Textarea
                     id="bio"
                     name="bio"
                     defaultValue={profile.bio ?? ''}
-                    placeholder="Explica breument qui ets, què busques o quina experiència tens."
+                    placeholder={m.profileEdit.bioPlaceholder}
                     rows={5}
                   />
                 </div>
 
                 <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="city">Ciutat</Label>
+                    <Label htmlFor="city">{m.profileEdit.city}</Label>
                     <Input
                       id="city"
                       name="city"
                       type="text"
                       defaultValue={profile.city ?? ''}
-                      placeholder="Ex: Girona"
+                      placeholder={m.profileEdit.placeholders.city}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="province">Província</Label>
+                    <Label htmlFor="province">{m.profileEdit.province}</Label>
                     <Input
                       id="province"
                       name="province"
                       type="text"
                       defaultValue={profile.province ?? ''}
-                      placeholder="Ex: Girona"
+                      placeholder={m.profileEdit.placeholders.province}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="availability">Disponibilitat</Label>
+                  <Label htmlFor="availability">
+                    {m.profileEdit.availability}
+                  </Label>
 
                   <select
                     id="availability"
@@ -309,248 +280,175 @@ export default async function ProfileEditPage({
                 </div>
               </section>
 
-              {/* Player Role Subform View */}
               {primaryRole === 'player' ? (
                 <section className="space-y-5 rounded-xl border bg-background p-5">
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      Informació de jugador
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      Camps específics per construir la fitxa esportiva del
-                      jugador.
-                    </p>
-                  </div>
+                  <SectionIntro
+                    title={m.profileEdit.playerInfo}
+                    description={m.profileEdit.playerInfoDescription}
+                  />
 
                   <div className="grid gap-5 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="position">Posició</Label>
-                      <Input
-                        id="position"
-                        name="position"
-                        defaultValue={playerProfile?.position ?? ''}
-                        placeholder="Ex: Davanter centre"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="preferredFoot">Cama hàbil</Label>
-                      <Input
-                        id="preferredFoot"
-                        name="preferredFoot"
-                        defaultValue={playerProfile?.preferred_foot ?? ''}
-                        placeholder="Ex: Dreta"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="playerCategory">Categoria</Label>
-                      <Input
-                        id="playerCategory"
-                        name="playerCategory"
-                        defaultValue={playerProfile?.category ?? ''}
-                        placeholder="Ex: 3a Catalana"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="playerCurrentClub">Club actual</Label>
-                      <Input
-                        id="playerCurrentClub"
-                        name="playerCurrentClub"
-                        defaultValue={playerProfile?.current_club ?? ''}
-                        placeholder="Ex: CF Banyoles"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="playerExperienceYears">
-                        Anys d’experiència
-                      </Label>
-                      <Input
-                        id="playerExperienceYears"
-                        name="playerExperienceYears"
-                        type="number"
-                        min={0}
-                        defaultValue={playerProfile?.experience_years ?? ''}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="birthYear">Any de naixement</Label>
-                      <Input
-                        id="birthYear"
-                        name="birthYear"
-                        type="number"
-                        min={1950}
-                        max={2020}
-                        defaultValue={playerProfile?.birth_year ?? ''}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="heightCm">Alçada en cm</Label>
-                      <Input
-                        id="heightCm"
-                        name="heightCm"
-                        type="number"
-                        min={100}
-                        max={230}
-                        defaultValue={playerProfile?.height_cm ?? ''}
-                      />
-                    </div>
+                    <Field
+                      id="position"
+                      name="position"
+                      label={m.profileEdit.position}
+                      defaultValue={playerProfile?.position ?? ''}
+                      placeholder={m.profileEdit.placeholders.position}
+                    />
+                    <Field
+                      id="preferredFoot"
+                      name="preferredFoot"
+                      label={m.profileEdit.preferredFoot}
+                      defaultValue={playerProfile?.preferred_foot ?? ''}
+                      placeholder={m.profileEdit.placeholders.preferredFoot}
+                    />
+                    <Field
+                      id="playerCategory"
+                      name="playerCategory"
+                      label={m.profileEdit.playerCategory}
+                      defaultValue={playerProfile?.category ?? ''}
+                      placeholder={m.profileEdit.placeholders.playerCategory}
+                    />
+                    <Field
+                      id="playerCurrentClub"
+                      name="playerCurrentClub"
+                      label={m.profileEdit.playerCurrentClub}
+                      defaultValue={playerProfile?.current_club ?? ''}
+                      placeholder={m.profileEdit.placeholders.playerCurrentClub}
+                    />
+                    <Field
+                      id="playerExperienceYears"
+                      name="playerExperienceYears"
+                      label={m.profileEdit.experienceYears}
+                      type="number"
+                      min={0}
+                      defaultValue={playerProfile?.experience_years ?? ''}
+                    />
+                    <Field
+                      id="birthYear"
+                      name="birthYear"
+                      label={m.profileEdit.birthYear}
+                      type="number"
+                      min={1950}
+                      max={2020}
+                      defaultValue={playerProfile?.birth_year ?? ''}
+                    />
+                    <Field
+                      id="heightCm"
+                      name="heightCm"
+                      label={m.profileEdit.heightCm}
+                      type="number"
+                      min={100}
+                      max={230}
+                      defaultValue={playerProfile?.height_cm ?? ''}
+                    />
                   </div>
                 </section>
               ) : null}
 
-              {/* Coach Role Subform View */}
               {primaryRole === 'coach' ? (
                 <section className="space-y-5 rounded-xl border bg-background p-5">
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      Informació d’entrenador
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      Camps específics per mostrar experiència i perfil tècnic.
-                    </p>
-                  </div>
+                  <SectionIntro
+                    title={m.profileEdit.coachInfo}
+                    description={m.profileEdit.coachInfoDescription}
+                  />
 
                   <div className="grid gap-5 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="coachCategory">Categoria</Label>
-                      <Input
-                        id="coachCategory"
-                        name="coachCategory"
-                        defaultValue={coachProfile?.category ?? ''}
-                        placeholder="Ex: Juvenil Preferent"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="coachCurrentClub">Club actual</Label>
-                      <Input
-                        id="coachCurrentClub"
-                        name="coachCurrentClub"
-                        defaultValue={coachProfile?.current_club ?? ''}
-                        placeholder="Ex: UE Figueres"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="coachExperienceYears">
-                        Anys d’experiència
-                      </Label>
-                      <Input
-                        id="coachExperienceYears"
-                        name="coachExperienceYears"
-                        type="number"
-                        min={0}
-                        defaultValue={coachProfile?.experience_years ?? ''}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="coachingLicense">
-                        Llicència o formació
-                      </Label>
-                      <Input
-                        id="coachingLicense"
-                        name="coachingLicense"
-                        defaultValue={coachProfile?.coaching_license ?? ''}
-                        placeholder="Ex: UEFA C"
-                      />
-                    </div>
-
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="preferredAgeGroup">
-                        Etapa o edat preferida
-                      </Label>
-                      <Input
-                        id="preferredAgeGroup"
-                        name="preferredAgeGroup"
-                        defaultValue={coachProfile?.preferred_age_group ?? ''}
-                        placeholder="Ex: Futbol base, amateur sènior..."
-                      />
-                    </div>
+                    <Field
+                      id="coachCategory"
+                      name="coachCategory"
+                      label={m.profileEdit.coachCategory}
+                      defaultValue={coachProfile?.category ?? ''}
+                      placeholder={m.profileEdit.placeholders.coachCategory}
+                    />
+                    <Field
+                      id="coachCurrentClub"
+                      name="coachCurrentClub"
+                      label={m.profileEdit.coachCurrentClub}
+                      defaultValue={coachProfile?.current_club ?? ''}
+                      placeholder={m.profileEdit.placeholders.coachCurrentClub}
+                    />
+                    <Field
+                      id="coachExperienceYears"
+                      name="coachExperienceYears"
+                      label={m.profileEdit.experienceYears}
+                      type="number"
+                      min={0}
+                      defaultValue={coachProfile?.experience_years ?? ''}
+                    />
+                    <Field
+                      id="coachingLicense"
+                      name="coachingLicense"
+                      label={m.profileEdit.coachingLicense}
+                      defaultValue={coachProfile?.coaching_license ?? ''}
+                      placeholder={m.profileEdit.placeholders.coachingLicense}
+                    />
+                    <Field
+                      id="preferredAgeGroup"
+                      name="preferredAgeGroup"
+                      label={m.profileEdit.preferredAgeGroup}
+                      defaultValue={coachProfile?.preferred_age_group ?? ''}
+                      placeholder={m.profileEdit.placeholders.preferredAgeGroup}
+                      className="md:col-span-2"
+                    />
                   </div>
                 </section>
               ) : null}
 
-              {/* Club Role Subform View */}
               {primaryRole === 'club' ? (
                 <section className="space-y-5 rounded-xl border bg-background p-5">
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      Informació de club
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      Camps específics per identificar l’entitat o responsable
-                      esportiu.
-                    </p>
-                  </div>
+                  <SectionIntro
+                    title={m.profileEdit.clubInfo}
+                    description={m.profileEdit.clubInfoDescription}
+                  />
 
                   <div className="grid gap-5 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="clubName">Nom del club</Label>
-                      <Input
-                        id="clubName"
-                        name="clubName"
-                        defaultValue={clubProfile?.club_name ?? ''}
-                        placeholder="Ex: CF Banyoles"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="clubCategory">Categoria principal</Label>
-                      <Input
-                        id="clubCategory"
-                        name="clubCategory"
-                        defaultValue={clubProfile?.category ?? ''}
-                        placeholder="Ex: 2a Catalana"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="website">Web</Label>
-                      <Input
-                        id="website"
-                        name="website"
-                        type="url"
-                        defaultValue={clubProfile?.website ?? ''}
-                        placeholder="https://..."
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="contactRole">Rol de contacte</Label>
-                      <Input
-                        id="contactRole"
-                        name="contactRole"
-                        defaultValue={clubProfile?.contact_role ?? ''}
-                        placeholder="Ex: Coordinador esportiu"
-                      />
-                    </div>
+                    <Field
+                      id="clubName"
+                      name="clubName"
+                      label={m.profileEdit.clubName}
+                      defaultValue={clubProfile?.club_name ?? ''}
+                      placeholder={m.profileEdit.placeholders.clubName}
+                      required
+                    />
+                    <Field
+                      id="clubCategory"
+                      name="clubCategory"
+                      label={m.profileEdit.clubCategory}
+                      defaultValue={clubProfile?.category ?? ''}
+                      placeholder={m.profileEdit.placeholders.clubCategory}
+                    />
+                    <Field
+                      id="website"
+                      name="website"
+                      label={m.profileEdit.website}
+                      type="url"
+                      defaultValue={clubProfile?.website ?? ''}
+                      placeholder={m.profileEdit.placeholders.website}
+                    />
+                    <Field
+                      id="contactRole"
+                      name="contactRole"
+                      label={m.profileEdit.contactRole}
+                      defaultValue={clubProfile?.contact_role ?? ''}
+                      placeholder={m.profileEdit.placeholders.contactRole}
+                    />
                   </div>
                 </section>
               ) : null}
 
-              {/* Staff Role Subform View */}
               {primaryRole === 'staff' ? (
                 <section className="space-y-5 rounded-xl border bg-background p-5">
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      Informació de professional de l’staff
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      Camps específics per mostrar serveis, experiència i
-                      disponibilitat professional.
-                    </p>
-                  </div>
+                  <SectionIntro
+                    title={m.profileEdit.staffInfo}
+                    description={m.profileEdit.staffInfoDescription}
+                  />
 
                   <div className="grid gap-5 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="staffKind">Tipus de professional</Label>
+                      <Label htmlFor="staffKind">
+                        {m.profileEdit.staffKind}
+                      </Label>
                       <select
                         id="staffKind"
                         name="staffKind"
@@ -568,28 +466,21 @@ export default async function ProfileEditPage({
                       </select>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="staffExperienceYears">
-                        Anys d’experiència
-                      </Label>
-                      <Input
-                        id="staffExperienceYears"
-                        name="staffExperienceYears"
-                        type="number"
-                        min={0}
-                        defaultValue={staffProfile?.experience_years ?? ''}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="priceRange">Rang de preu orientatiu</Label>
-                      <Input
-                        id="priceRange"
-                        name="priceRange"
-                        defaultValue={staffProfile?.price_range ?? ''}
-                        placeholder="Ex: 20-30 €/sessió"
-                      />
-                    </div>
+                    <Field
+                      id="staffExperienceYears"
+                      name="staffExperienceYears"
+                      label={m.profileEdit.experienceYears}
+                      type="number"
+                      min={0}
+                      defaultValue={staffProfile?.experience_years ?? ''}
+                    />
+                    <Field
+                      id="priceRange"
+                      name="priceRange"
+                      label={m.profileEdit.priceRange}
+                      defaultValue={staffProfile?.price_range ?? ''}
+                      placeholder={m.profileEdit.placeholders.priceRange}
+                    />
 
                     <div className="flex items-center gap-2 pt-7">
                       <input
@@ -600,17 +491,19 @@ export default async function ProfileEditPage({
                         className="h-4 w-4"
                       />
                       <Label htmlFor="worksRemotely">
-                        Ofereixo serveis remots
+                        {m.profileEdit.worksRemotely}
                       </Label>
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="services">Serveis oferts</Label>
+                      <Label htmlFor="services">
+                        {m.profileEdit.services}
+                      </Label>
                       <Textarea
                         id="services"
                         name="services"
                         defaultValue={staffProfile?.services ?? ''}
-                        placeholder="Ex: recuperació de lesions, readaptació, nutrició esportiva..."
+                        placeholder={m.profileEdit.placeholders.services}
                         rows={4}
                       />
                     </div>
@@ -618,54 +511,61 @@ export default async function ProfileEditPage({
                 </section>
               ) : null}
 
-              {/* Core Actions Buttons inside primary form */}
               <div className="flex flex-col gap-3 border-t pt-6 sm:flex-row">
-                <Button type="submit">Guardar canvis</Button>
+                <Button type="submit">{m.common.saveChanges}</Button>
 
                 <Button asChild variant="outline">
-                  <Link href="/dashboard">Cancel·lar</Link>
+                  <Link href="/dashboard">{m.common.cancel}</Link>
                 </Button>
               </div>
             </form>
 
-            
             <section className="mt-8 space-y-4 rounded-xl border bg-background p-5">
-              <div>
-                <h2 className="text-lg font-semibold">Confiança i verificació</h2>
-                <p className="text-sm text-muted-foreground">
-                  La verificació permet reforçar la credibilitat del perfil dins de FUTCON.
-                </p>
-              </div>
+              <SectionIntro
+                title={m.profileEdit.verificationTitle}
+                description={m.profileEdit.verificationDescription}
+              />
 
               <div className="rounded-md border bg-background p-4">
-                <p className="text-sm text-muted-foreground">Estat actual</p>
+                <p className="text-sm text-muted-foreground">
+                  {m.profileEdit.currentStatus}
+                </p>
 
                 <span
                   className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-medium ${
-                    verificationClassNames[profile.verification ?? 'unverified']
+                    verificationClassNames[verification]
                   }`}
                 >
-                  {verificationLabels[profile.verification ?? 'unverified']}
+                  {m.verification[verification as keyof typeof m.verification] ??
+                    verification}
                 </span>
 
                 <p className="mt-3 text-sm text-muted-foreground">
-                  {verificationDescriptions[profile.verification ?? 'unverified']}
+                  {m.profileEdit.verificationDescriptions[
+                    verification as keyof typeof m.profileEdit.verificationDescriptions
+                  ] ?? verification}
                 </p>
               </div>
 
               {profile.verification === 'verified' ? (
                 <div className="rounded-md border bg-green-500/10 p-4 text-sm text-green-700">
-                  El teu perfil ja consta com a verificat.
+                  {m.profileEdit.alreadyVerified}
                 </div>
               ) : profile.verification === 'pending' ? (
                 <div className="rounded-md border bg-yellow-500/10 p-4 text-sm text-yellow-700">
-                  La teva sol·licitud de verificació està pendent de revisió.
+                  {m.profileEdit.verificationPending}
                 </div>
               ) : (
-                <form action={requestProfileVerification} className="space-y-3 rounded-md border bg-background p-4">
+                <form
+                  action={requestProfileVerification}
+                  className="space-y-3 rounded-md border bg-background p-4"
+                >
                   <div className="space-y-2">
-                    <label htmlFor="requestMessage" className="text-sm font-medium">
-                      Missatge opcional
+                    <label
+                      htmlFor="requestMessage"
+                      className="text-sm font-medium"
+                    >
+                      {m.profileEdit.optionalMessage}
                     </label>
 
                     <textarea
@@ -673,18 +573,74 @@ export default async function ProfileEditPage({
                       name="requestMessage"
                       rows={3}
                       className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      placeholder="Ex: Sol·licito la verificació perquè soc responsable d’un club / jugador federat / professional de l’staff..."
+                      placeholder={m.profileEdit.requestPlaceholder}
                     />
                   </div>
 
-                  <Button type="submit">Sol·licitar verificació</Button>
+                  <Button type="submit">
+                    {m.profileEdit.requestVerification}
+                  </Button>
                 </form>
               )}
             </section>
-
           </CardContent>
         </Card>
       </div>
     </main>
+  )
+}
+
+function SectionIntro({
+  title,
+  description,
+}: {
+  title: string
+  description: string
+}) {
+  return (
+    <div>
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p className="text-sm text-muted-foreground">{description}</p>
+    </div>
+  )
+}
+
+function Field({
+  id,
+  name,
+  label,
+  defaultValue,
+  placeholder,
+  type = 'text',
+  min,
+  max,
+  required,
+  className,
+}: {
+  id: string
+  name: string
+  label: string
+  defaultValue: string | number
+  placeholder?: string
+  type?: string
+  min?: number
+  max?: number
+  required?: boolean
+  className?: string
+}) {
+  return (
+    <div className={`space-y-2 ${className ?? ''}`}>
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        name={name}
+        type={type}
+        min={min}
+        max={max}
+        defaultValue={defaultValue}
+        placeholder={placeholder}
+        required={required}
+      />
+    </div>
   )
 }

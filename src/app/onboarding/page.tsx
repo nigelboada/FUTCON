@@ -3,6 +3,8 @@ import { selectInitialRole } from './actions'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
 type OnboardingPageProps = {
   searchParams: Promise<{
@@ -10,42 +12,13 @@ type OnboardingPageProps = {
   }>
 }
 
-const roles = [
-  {
-    value: 'player',
-    title: 'Jugador',
-    description:
-      'Crea un perfil esportiu, mostra la teva disponibilitat i facilita que clubs o entrenadors et trobin.',
-    highlights: ['Posició', 'Categoria', 'Club actual', 'Disponibilitat'],
-  },
-  {
-    value: 'coach',
-    title: 'Entrenador / cos tècnic',
-    description:
-      'Mostra la teva experiència tècnica, categoria, formació i disponibilitat per a nous projectes.',
-    highlights: ['Experiència', 'Llicència', 'Categoria', 'Club actual'],
-  },
-  {
-    value: 'club',
-    title: 'Club o responsable',
-    description:
-      'Cerca perfils, contacta amb jugadors o professionals i representa una entitat esportiva.',
-    highlights: ['Nom del club', 'Categoria', 'Ubicació', 'Contacte'],
-  },
-  {
-    value: 'staff',
-    title: 'Professional de l’staff',
-    description:
-      'Ofereix serveis vinculats al rendiment, salut, preparació física o suport tècnic.',
-    highlights: ['Serveis', 'Preu orientatiu', 'Experiència', 'Treball remot'],
-  },
-]
-
 export default async function OnboardingPage({
   searchParams,
 }: OnboardingPageProps) {
   const params = await searchParams
   const supabase = await createClient()
+  const locale = await getLocale()
+  const m = getMessages(locale)
 
   const {
     data: { user },
@@ -70,16 +43,15 @@ export default async function OnboardingPage({
       <div className="futcon-fade-up mx-auto max-w-6xl space-y-8">
         <section className="space-y-3">
           <p className="w-fit rounded-full border bg-background px-3 py-1 text-sm text-muted-foreground">
-            Configuració inicial
+            {m.onboarding.eyebrow}
           </p>
 
           <h1 className="max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
-            Selecciona el teu rol dins de FUTCON
+            {m.onboarding.title}
           </h1>
 
           <p className="max-w-2xl text-muted-foreground">
-            Aquesta selecció permet adaptar el teu perfil, els camps d’edició i
-            la informació que es mostrarà al cercador.
+            {m.onboarding.description}
           </p>
         </section>
 
@@ -87,7 +59,7 @@ export default async function OnboardingPage({
 
         <form action={selectInitialRole} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
-            {roles.map((role) => (
+            {m.onboarding.roles.map((role) => (
               <label
                 key={role.value}
                 className="futcon-card-hover cursor-pointer rounded-xl border bg-background p-5"
@@ -127,15 +99,14 @@ export default async function OnboardingPage({
 
           <div className="flex flex-col gap-3 rounded-xl border bg-background p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-medium">Rol inicial del perfil</p>
+              <p className="font-medium">{m.onboarding.initialRoleTitle}</p>
               <p className="text-sm text-muted-foreground">
-                Més endavant el model permetria associar més d’un rol a un
-                mateix perfil.
+                {m.onboarding.initialRoleDescription}
               </p>
             </div>
 
             <Button type="submit" size="lg">
-              Continuar
+              {m.onboarding.continue}
             </Button>
           </div>
         </form>

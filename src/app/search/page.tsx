@@ -3,6 +3,8 @@ import { ProfileCard } from '@/components/profiles/profile-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
 type SearchPageProps = {
   searchParams: Promise<{
@@ -43,21 +45,6 @@ type SearchProfile = {
   average_rating: number | string | null
 }
 
-const roleOptions = [
-  { value: 'all', label: 'Tots els rols' },
-  { value: 'player', label: 'Jugadors' },
-  { value: 'coach', label: 'Entrenadors / cos tècnic' },
-  { value: 'club', label: 'Clubs o responsables' },
-  { value: 'staff', label: 'Professionals de l’staff' },
-]
-
-const availabilityOptions = [
-  { value: 'all', label: 'Qualsevol disponibilitat' },
-  { value: 'available', label: 'Disponible' },
-  { value: 'open_to_offers', label: 'Escolto ofertes' },
-  { value: 'unavailable', label: 'No disponible' },
-]
-
 function normalizeParam(value: string | undefined) {
   return typeof value === 'string' ? value.trim() : ''
 }
@@ -65,12 +52,30 @@ function normalizeParam(value: string | undefined) {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams
   const supabase = await createClient()
+  const locale = await getLocale()
+  const m = getMessages(locale)
 
   const q = normalizeParam(params.q)
   const role = normalizeParam(params.role)
   const city = normalizeParam(params.city)
   const province = normalizeParam(params.province)
   const availability = normalizeParam(params.availability)
+  const plural = profilesPluralSuffix(locale)
+
+  const roleOptions = [
+    { value: 'all', label: m.rolePlural.all },
+    { value: 'player', label: m.rolePlural.player },
+    { value: 'coach', label: m.rolePlural.coach },
+    { value: 'club', label: m.rolePlural.club },
+    { value: 'staff', label: m.rolePlural.staff },
+  ]
+
+  const availabilityOptions = [
+    { value: 'all', label: m.availability.all },
+    { value: 'available', label: m.availability.available },
+    { value: 'open_to_offers', label: m.availability.open_to_offers },
+    { value: 'unavailable', label: m.availability.unavailable },
+  ]
 
   let query = supabase
     .from('profile_search_view')
@@ -100,32 +105,36 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { data, error } = await query
 
   const profiles = (data ?? []) as SearchProfile[]
+  const resultPlural = profiles.length === 1 ? '' : plural
+  const profileCardLabels = {
+    roles: { ...m.roles },
+    verification: { ...m.verification },
+    availability: { ...m.availability },
+    ...m.profileCard,
+  }
 
   return (
     <main className="min-h-screen bg-muted px-4 py-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <section>
-          <h1 className="text-3xl font-bold">Cercar perfils</h1>
-          <p className="mt-2 text-muted-foreground">
-            Troba jugadors, entrenadors, clubs i professionals del futbol
-            amateur.
-          </p>
+          <h1 className="text-3xl font-bold">{m.search.title}</h1>
+          <p className="mt-2 text-muted-foreground">{m.search.description}</p>
         </section>
 
         <section className="rounded-lg border bg-background p-4">
           <form className="grid gap-4 md:grid-cols-5" action="/search">
             <div className="space-y-2 md:col-span-1">
-              <Label htmlFor="q">Nom</Label>
+              <Label htmlFor="q">{m.search.name}</Label>
               <Input
                 id="q"
                 name="q"
-                placeholder="Ex: Marc"
+                placeholder={m.search.namePlaceholder}
                 defaultValue={q}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role">Rol</Label>
+              <Label htmlFor="role">{m.search.role}</Label>
               <select
                 id="role"
                 name="role"
@@ -141,27 +150,27 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="city">Ciutat</Label>
+              <Label htmlFor="city">{m.search.city}</Label>
               <Input
                 id="city"
                 name="city"
-                placeholder="Ex: Girona"
+                placeholder={m.search.cityPlaceholder}
                 defaultValue={city}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="province">Província</Label>
+              <Label htmlFor="province">{m.search.province}</Label>
               <Input
                 id="province"
                 name="province"
-                placeholder="Ex: Girona"
+                placeholder={m.search.provincePlaceholder}
                 defaultValue={province}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="availability">Disponibilitat</Label>
+              <Label htmlFor="availability">{m.search.availability}</Label>
               <select
                 id="availability"
                 name="availability"
@@ -177,10 +186,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
 
             <div className="flex items-end gap-3 md:col-span-5">
-              <Button type="submit">Aplicar filtres</Button>
+              <Button type="submit">{m.search.applyFilters}</Button>
 
               <Button asChild variant="outline">
-                <a href="/search">Netejar</a>
+                <a href="/search">{m.search.clear}</a>
               </Button>
             </div>
           </form>
@@ -194,26 +203,30 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         <section>
           <p className="mb-4 text-sm text-muted-foreground">
-            {profiles.length} resultat{profiles.length === 1 ? '' : 's'} trobat
-            {profiles.length === 1 ? '' : 's'}.
+            {m.search.resultsFound
+              .replace('{count}', String(profiles.length))
+              .replaceAll('{plural}', resultPlural)}
           </p>
 
           {profiles.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2">
               {profiles.map((profile) => (
-                <ProfileCard key={`${profile.profile_id}-${profile.role}`} profile={profile} />
+                <ProfileCard
+                  key={`${profile.profile_id}-${profile.role}`}
+                  profile={profile}
+                  labels={profileCardLabels}
+                />
               ))}
             </div>
           ) : (
             <div className="rounded-lg border bg-background p-6 text-center text-muted-foreground">
-              <p className="text-lg font-semibold">No hi ha resultats</p>
+              <p className="text-lg font-semibold">{m.search.noResultsTitle}</p>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                No s’han trobat perfils que coincideixin amb els filtres aplicats.
-                Prova de canviar el rol, la ubicació o la disponibilitat.
+                {m.search.noResultsDescription}
               </p>
 
               <Button asChild className="mt-4" variant="secondary">
-                <a href="/search">Netejar filtres</a>
+                <a href="/search">{m.search.clearFilters}</a>
               </Button>
             </div>
           )}
@@ -221,4 +234,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </div>
     </main>
   )
+}
+
+function profilesPluralSuffix(locale: string) {
+  return locale === 'en' ? 's' : 's'
 }

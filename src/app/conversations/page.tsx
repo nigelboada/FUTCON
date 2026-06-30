@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
 type ConversationOverview = {
   conversation_id: string
@@ -16,19 +18,12 @@ type ConversationOverview = {
   updated_at: string
 }
 
-const roleLabels: Record<string, string> = {
-  player: 'Jugador',
-  coach: 'Entrenador / cos tècnic',
-  club: 'Club o responsable',
-  staff: 'Professional de l’staff',
-}
-
-function formatDate(value: string | null) {
+function formatDate(value: string | null, localeTag: string, fallback: string) {
   if (!value) {
-    return 'Sense missatges'
+    return fallback
   }
 
-  return new Intl.DateTimeFormat('ca-ES', {
+  return new Intl.DateTimeFormat(localeTag, {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',
@@ -38,6 +33,8 @@ function formatDate(value: string | null) {
 
 export default async function ConversationsPage() {
   const supabase = await createClient()
+  const locale = await getLocale()
+  const m = getMessages(locale)
 
   const {
     data: { user },
@@ -60,14 +57,14 @@ export default async function ConversationsPage() {
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Missatges</h1>
+            <h1 className="text-3xl font-bold">{m.conversations.title}</h1>
             <p className="mt-2 text-muted-foreground">
-              Converses iniciades amb altres perfils de FUTCON.
+              {m.conversations.description}
             </p>
           </div>
 
           <Button asChild variant="outline">
-            <Link href="/search">Cercar perfils</Link>
+            <Link href="/search">{m.common.searchProfiles}</Link>
           </Button>
         </div>
 
@@ -90,26 +87,32 @@ export default async function ConversationsPage() {
                 <CardContent className="space-y-3">
                   <p className="text-sm text-muted-foreground">
                     {conversation.other_role
-                      ? roleLabels[conversation.other_role] ?? conversation.other_role
-                      : 'Rol no indicat'}
+                      ? m.roles[
+                          conversation.other_role as keyof typeof m.roles
+                        ] ?? conversation.other_role
+                      : m.common.roleNotSpecified}
                     {' · '}
                     {[conversation.other_city, conversation.other_province]
                       .filter(Boolean)
-                      .join(', ') || 'Ubicació no indicada'}
+                      .join(', ') || m.common.locationNotSpecified}
                   </p>
 
                   <p className="text-sm">
                     {conversation.last_message_content ??
-                      'Encara no hi ha missatges en aquesta conversa.'}
+                      m.conversations.noConversationMessages}
                   </p>
 
                   <p className="text-xs text-muted-foreground">
-                    {formatDate(conversation.last_message_at)}
+                    {formatDate(
+                      conversation.last_message_at,
+                      m.localeTag,
+                      m.common.noMessages
+                    )}
                   </p>
 
                   <Button asChild>
                     <Link href={`/conversations/${conversation.conversation_id}`}>
-                      Obrir conversa
+                      {m.conversations.openConversation}
                     </Link>
                   </Button>
                 </CardContent>
@@ -119,14 +122,15 @@ export default async function ConversationsPage() {
         ) : (
           <Card>
             <CardContent className="p-10 text-center">
-              <p className="text-lg font-semibold">Encara no tens converses</p>
+              <p className="text-lg font-semibold">
+                {m.conversations.emptyTitle}
+              </p>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                Quan contactis amb un jugador, entrenador, club o professional, la
-                conversa apareixerà aquí.
+                {m.conversations.emptyDescription}
               </p>
 
               <Button asChild className="mt-4" variant="secondary">
-                <Link href="/search">Cercar perfils</Link>
+                <Link href="/search">{m.common.searchProfiles}</Link>
               </Button>
             </CardContent>
           </Card>

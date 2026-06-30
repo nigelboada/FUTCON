@@ -9,6 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
 type DashboardPageProps = {
   searchParams: Promise<{
@@ -25,31 +27,10 @@ type ConversationOverview = {
   last_message_at: string | null
 }
 
-const roleLabels: Record<string, string> = {
-  player: 'Jugador',
-  coach: 'Entrenador / cos tècnic',
-  club: 'Club o responsable',
-  staff: 'Professional de l’staff',
-}
-
-const availabilityLabels: Record<string, string> = {
-  available: 'Disponible',
-  open_to_offers: 'Escolto ofertes',
-  unavailable: 'No disponible',
-}
-
 const availabilityClassNames: Record<string, string> = {
   available: 'border-green-500 bg-green-500/10 text-green-700',
   open_to_offers: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
   unavailable: 'border-red-500 bg-red-500/10 text-red-700',
-}
-
-function formatAvailability(value: string | null | undefined) {
-  if (!value) {
-    return 'No indicada'
-  }
-
-  return availabilityLabels[value] ?? value
 }
 
 export default async function DashboardPage({
@@ -57,6 +38,26 @@ export default async function DashboardPage({
 }: DashboardPageProps) {
   const params = await searchParams
   const supabase = await createClient()
+  const locale = await getLocale()
+  const m = getMessages(locale)
+
+  function formatRole(value: string | null | undefined) {
+    if (!value) {
+      return m.common.roleNotSpecified
+    }
+
+    return value in m.roles ? m.roles[value as keyof typeof m.roles] : value
+  }
+
+  function formatAvailability(value: string | null | undefined) {
+    if (!value) {
+      return m.common.notSpecified
+    }
+
+    return value in m.availability
+      ? m.availability[value as keyof typeof m.availability]
+      : value
+  }
 
   const {
     data: { user },
@@ -120,32 +121,36 @@ export default async function DashboardPage({
           <Card>
             <CardHeader>
               <CardTitle className="text-3xl">
-                Benvingut, {profile?.display_name ?? 'usuari'}
+                {m.dashboard.welcome.replace(
+                  '{name}',
+                  profile?.display_name ?? m.common.unknownUser
+                )}
               </CardTitle>
-              <CardDescription>
-                Gestiona el teu perfil, consulta oportunitats i accedeix als
-                teus missatges.
-              </CardDescription>
+              <CardDescription>{m.dashboard.description}</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-6">
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="rounded-lg border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">Rol</p>
+                  <p className="text-sm text-muted-foreground">
+                    {m.dashboard.role}
+                  </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {roles.map((item) => (
                       <span
                         key={item.role}
                         className="rounded-full border px-3 py-1 text-sm"
                       >
-                        {roleLabels[item.role] ?? item.role}
+                        {formatRole(item.role)}
                       </span>
                     ))}
                   </div>
                 </div>
 
                 <div className="rounded-lg border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">Disponibilitat</p>
+                  <p className="text-sm text-muted-foreground">
+                    {m.dashboard.availability}
+                  </p>
                   <span
                     className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-medium ${
                       availabilityClassNames[availability] ?? 'border bg-muted'
@@ -156,41 +161,44 @@ export default async function DashboardPage({
                 </div>
 
                 <div className="rounded-lg border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">Ubicació</p>
+                  <p className="text-sm text-muted-foreground">
+                    {m.dashboard.location}
+                  </p>
                   <p className="mt-2 font-medium">
                     {[profile?.city, profile?.province]
                       .filter(Boolean)
-                      .join(', ') || 'No indicada'}
+                      .join(', ') || m.common.notSpecified}
                   </p>
                 </div>
               </div>
 
               {profile?.bio ? (
                 <div className="rounded-lg border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">Biografia</p>
+                  <p className="text-sm text-muted-foreground">
+                    {m.dashboard.biography}
+                  </p>
                   <p className="mt-2 text-sm">{profile.bio}</p>
                 </div>
               ) : (
                 <div className="rounded-lg border bg-background p-4">
-                  <p className="font-medium">Completa la teva biografia</p>
+                  <p className="font-medium">{m.dashboard.completeBioTitle}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Una descripció breu ajuda altres usuaris a entendre millor
-                    el teu perfil.
+                    {m.dashboard.completeBioDescription}
                   </p>
                 </div>
               )}
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button asChild>
-                  <Link href="/profile/edit">Editar perfil</Link>
+                  <Link href="/profile/edit">{m.dashboard.editProfile}</Link>
                 </Button>
 
                 <Button asChild variant="secondary">
-                  <Link href="/search">Cercar perfils</Link>
+                  <Link href="/search">{m.dashboard.searchProfiles}</Link>
                 </Button>
 
                 <Button asChild variant="outline">
-                  <Link href="/conversations">Veure missatges</Link>
+                  <Link href="/conversations">{m.dashboard.viewMessages}</Link>
                 </Button>
               </div>
             </CardContent>
@@ -198,23 +206,23 @@ export default async function DashboardPage({
 
           <Card>
             <CardHeader>
-              <CardTitle>Accions ràpides</CardTitle>
+              <CardTitle>{m.dashboard.quickActionsTitle}</CardTitle>
               <CardDescription>
-                Accessos principals per continuar utilitzant FUTCON.
+                {m.dashboard.quickActionsDescription}
               </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-3">
               <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/search">Explorar perfils disponibles</Link>
+                <Link href="/search">{m.dashboard.exploreAvailableProfiles}</Link>
               </Button>
 
               <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/profile/edit">Actualitzar disponibilitat</Link>
+                <Link href="/profile/edit">{m.dashboard.updateAvailability}</Link>
               </Button>
 
               <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/conversations">Consultar converses</Link>
+                <Link href="/conversations">{m.dashboard.checkConversations}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -223,9 +231,9 @@ export default async function DashboardPage({
         <section className="grid gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Últimes converses</CardTitle>
+              <CardTitle>{m.dashboard.latestConversations}</CardTitle>
               <CardDescription>
-                Converses recents iniciades amb altres perfils.
+                {m.dashboard.latestConversationsDescription}
               </CardDescription>
             </CardHeader>
 
@@ -244,30 +252,29 @@ export default async function DashboardPage({
                             {conversation.other_display_name}
                           </p>
                           <p className="mt-1 text-sm text-muted-foreground">
-                            {conversation.other_role
-                              ? roleLabels[conversation.other_role] ??
-                                conversation.other_role
-                              : 'Rol no indicat'}
+                            {formatRole(conversation.other_role)}
                           </p>
                         </div>
                       </div>
 
                       <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
                         {conversation.last_message_content ??
-                          'Conversa creada, encara sense missatges.'}
+                          m.dashboard.conversationCreated}
                       </p>
                     </Link>
                   ))}
                 </div>
               ) : (
                 <div className="rounded-lg border bg-background p-6 text-center">
-                  <p className="font-medium">Encara no tens converses</p>
+                  <p className="font-medium">
+                    {m.dashboard.emptyConversationsTitle}
+                  </p>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Ves al cercador, obre un perfil i inicia una conversa.
+                    {m.dashboard.emptyConversationsDescription}
                   </p>
 
                   <Button asChild className="mt-4" variant="secondary">
-                    <Link href="/search">Cercar perfils</Link>
+                    <Link href="/search">{m.dashboard.searchProfiles}</Link>
                   </Button>
                 </div>
               )}
@@ -276,17 +283,14 @@ export default async function DashboardPage({
 
           <Card>
             <CardHeader>
-              <CardTitle>Estat del Sprint actual</CardTitle>
-              <CardDescription>
-                Resum funcional del prototip implementat.
-              </CardDescription>
+              <CardTitle>{m.dashboard.sprintTitle}</CardTitle>
+              <CardDescription>{m.dashboard.sprintDescription}</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>Registre, login i rols implementats.</p>
-              <p>Cercador, filtres i perfils públics disponibles.</p>
-              <p>Xat intern amb actualització en temps real operatiu.</p>
-              <p>Valoracions i puntuació mitjana visibles.</p>
+              {m.dashboard.sprintItems.map((item) => (
+                <p key={item}>{item}</p>
+              ))}
             </CardContent>
           </Card>
         </section>

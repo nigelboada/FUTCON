@@ -13,6 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
 type AdminPageProps = {
   searchParams: Promise<{
@@ -35,13 +37,6 @@ type VerificationRequest = {
   profile_roles: string
 }
 
-const statusLabels: Record<string, string> = {
-  pending: 'Pendent',
-  verified: 'Verificat',
-  rejected: 'Rebutjat',
-  unverified: 'No verificat',
-}
-
 const statusClassNames: Record<string, string> = {
   pending: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
   verified: 'border-green-500 bg-green-500/10 text-green-700',
@@ -49,12 +44,12 @@ const statusClassNames: Record<string, string> = {
   unverified: 'border-muted bg-muted text-muted-foreground',
 }
 
-function formatDate(value: string | null) {
+function formatDate(value: string | null, localeTag: string, fallback: string) {
   if (!value) {
-    return 'No resolt'
+    return fallback
   }
 
-  return new Intl.DateTimeFormat('ca-ES', {
+  return new Intl.DateTimeFormat(localeTag, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -66,6 +61,8 @@ function formatDate(value: string | null) {
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const params = await searchParams
   const supabase = await createClient()
+  const locale = await getLocale()
+  const m = getMessages(locale)
 
   const {
     data: { user },
@@ -78,7 +75,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const { data: isAdmin, error: adminError } = await supabase.rpc('is_app_admin')
 
   if (adminError || !isAdmin) {
-    redirect('/dashboard?error=No tens permisos per accedir al panell d’administració.')
+    redirect(`/dashboard?error=${encodeURIComponent(m.admin.permissionError)}`)
   }
 
   const { data, error } = await supabase
@@ -95,16 +92,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       <div className="futcon-fade-up mx-auto max-w-7xl space-y-6">
         <section className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Administració</p>
-            <h1 className="text-3xl font-bold">Panell d’administració</h1>
+            <p className="text-sm text-muted-foreground">{m.admin.eyebrow}</p>
+            <h1 className="text-3xl font-bold">{m.admin.title}</h1>
             <p className="mt-2 max-w-2xl text-muted-foreground">
-              Revisa i gestiona les sol·licituds de verificació dels perfils de
-              FUTCON.
+              {m.admin.description}
             </p>
           </div>
 
           <Button asChild variant="outline">
-            <Link href="/dashboard">Tornar al dashboard</Link>
+            <Link href="/dashboard">{m.common.backToDashboard}</Link>
           </Button>
         </section>
 
@@ -130,30 +126,30 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           <Card>
             <CardHeader>
               <CardTitle>{requests.length}</CardTitle>
-              <CardDescription>Sol·licituds totals</CardDescription>
+              <CardDescription>{m.admin.totalRequests}</CardDescription>
             </CardHeader>
           </Card>
 
           <Card>
             <CardHeader>
               <CardTitle>{pendingRequests.length}</CardTitle>
-              <CardDescription>Pendents de revisió</CardDescription>
+              <CardDescription>{m.admin.pendingReview}</CardDescription>
             </CardHeader>
           </Card>
 
           <Card>
             <CardHeader>
               <CardTitle>{resolvedRequests.length}</CardTitle>
-              <CardDescription>Resoltes</CardDescription>
+              <CardDescription>{m.admin.resolved}</CardDescription>
             </CardHeader>
           </Card>
         </section>
 
         <section className="space-y-4">
           <div>
-            <h2 className="text-xl font-semibold">Sol·licituds pendents</h2>
+            <h2 className="text-xl font-semibold">{m.admin.pendingTitle}</h2>
             <p className="text-sm text-muted-foreground">
-              Revisa els perfils que han demanat verificació.
+              {m.admin.pendingDescription}
             </p>
           </div>
 
@@ -163,106 +159,100 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 const isOwnVerificationRequest = request.profile_id === user.id
 
                 return (
-                    <Card key={request.id} className="futcon-card-hover">
-                            
-                            
-
-                    
-                    
+                  <Card key={request.id} className="futcon-card-hover">
                     <CardHeader>
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
-                            <CardTitle>{request.profile_display_name}</CardTitle>
-                            <CardDescription>
+                          <CardTitle>{request.profile_display_name}</CardTitle>
+                          <CardDescription>
                             {request.profile_roles}
                             {' · '}
                             {[request.profile_city, request.profile_province]
-                                .filter(Boolean)
-                                .join(', ') || 'Ubicació no indicada'}
-                            </CardDescription>
+                              .filter(Boolean)
+                              .join(', ') || m.common.locationNotSpecified}
+                          </CardDescription>
                         </div>
 
                         <span
-                            className={`w-fit rounded-full border px-3 py-1 text-xs font-medium ${
+                          className={`w-fit rounded-full border px-3 py-1 text-xs font-medium ${
                             statusClassNames[request.status]
-                            }`}
+                          }`}
                         >
-                            {statusLabels[request.status] ?? request.status}
+                          {m.status[request.status as keyof typeof m.status] ??
+                            request.status}
                         </span>
-                        </div>
+                      </div>
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        <div className="rounded-md border bg-background p-4">
+                      <div className="rounded-md border bg-background p-4">
                         <p className="text-sm text-muted-foreground">
-                            Missatge de la sol·licitud
+                          {m.admin.requestMessage}
                         </p>
                         <p className="mt-2 text-sm">
-                            {request.request_message ||
-                            'L’usuari no ha afegit cap missatge.'}
+                          {request.request_message || m.admin.noRequestMessage}
                         </p>
-                        </div>
+                      </div>
 
-                        <p className="text-sm text-muted-foreground">
-                        Sol·licitada el {formatDate(request.created_at)}
-                        </p>
+                      <p className="text-sm text-muted-foreground">
+                        {m.admin.requestedOn.replace(
+                          '{date}',
+                          formatDate(
+                            request.created_at,
+                            m.localeTag,
+                            m.common.unresolved
+                          )
+                        )}
+                      </p>
 
-                        <div className="flex flex-col gap-3 sm:flex-row">
+                      <div className="flex flex-col gap-3 sm:flex-row">
                         <Button asChild variant="outline">
-                            <Link href={`/profile/${request.profile_id}`}>
-                            Veure perfil
-                            </Link>
+                          <Link href={`/profile/${request.profile_id}`}>
+                            {m.common.viewProfile}
+                          </Link>
                         </Button>
 
-                        
                         {isOwnVerificationRequest ? (
-                            <div className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">
-                                Aquesta sol·licitud ha de ser resolta per un altre administrador.
-                            </div>
-                            ) : (
-                            <>
-                                <form action={approveVerificationRequest}>
-                                <input
-                                    type="hidden"
-                                    name="requestId"
-                                    value={request.id}
-                                />
-                                <Button type="submit">Aprovar</Button>
-                                </form>
+                          <div className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">
+                            {m.admin.ownRequest}
+                          </div>
+                        ) : (
+                          <>
+                            <form action={approveVerificationRequest}>
+                              <input
+                                type="hidden"
+                                name="requestId"
+                                value={request.id}
+                              />
+                              <Button type="submit">{m.admin.approve}</Button>
+                            </form>
 
-                                <form action={rejectVerificationRequest}>
-                                <input
-                                    type="hidden"
-                                    name="requestId"
-                                    value={request.id}
-                                />
-                                <Button type="submit" variant="destructive">
-                                    Rebutjar
-                                </Button>
-                                </form>
-                            </>
+                            <form action={rejectVerificationRequest}>
+                              <input
+                                type="hidden"
+                                name="requestId"
+                                value={request.id}
+                              />
+                              <Button type="submit" variant="destructive">
+                                {m.admin.reject}
+                              </Button>
+                            </form>
+                          </>
                         )}
-
-
-
-
-                        </div>
+                      </div>
                     </CardContent>
-                    </Card>
+                  </Card>
                 )
               })}
-
             </div>
-
           ) : (
             <Card>
               <CardContent className="p-10 text-center">
                 <p className="text-lg font-semibold">
-                  No hi ha sol·licituds pendents
+                  {m.admin.noPendingTitle}
                 </p>
                 <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                  Quan un usuari sol·liciti la verificació del seu perfil,
-                  apareixerà en aquesta secció.
+                  {m.admin.noPendingDescription}
                 </p>
               </CardContent>
             </Card>
@@ -271,9 +261,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
         <section className="space-y-4">
           <div>
-            <h2 className="text-xl font-semibold">Historial recent</h2>
+            <h2 className="text-xl font-semibold">{m.admin.historyTitle}</h2>
             <p className="text-sm text-muted-foreground">
-              Sol·licituds verificades o rebutjades.
+              {m.admin.historyDescription}
             </p>
           </div>
 
@@ -287,8 +277,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         {request.profile_display_name}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {request.profile_roles} · Resolució:{' '}
-                        {formatDate(request.resolved_at)}
+                        {request.profile_roles} · {m.admin.resolution}{' '}
+                        {formatDate(
+                          request.resolved_at,
+                          m.localeTag,
+                          m.common.unresolved
+                        )}
                       </p>
                     </div>
 
@@ -297,7 +291,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         statusClassNames[request.status]
                       }`}
                     >
-                      {statusLabels[request.status] ?? request.status}
+                      {m.status[request.status as keyof typeof m.status] ??
+                        request.status}
                     </span>
                   </CardContent>
                 </Card>
@@ -306,7 +301,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           ) : (
             <Card>
               <CardContent className="p-6 text-center text-sm text-muted-foreground">
-                Encara no hi ha sol·licituds resoltes.
+                {m.admin.noResolved}
               </CardContent>
             </Card>
           )}

@@ -6,8 +6,6 @@ import { startConversation } from '@/app/conversations/actions'
 import { submitReview } from './actions'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-
-
 import {
   Card,
   CardContent,
@@ -15,6 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
 type PublicProfilePageProps = {
   params: Promise<{
@@ -35,49 +35,26 @@ type PublicProfile = {
   availability: string | null
   verification: string | null
   role: string
-
   player_position: string | null
   player_category: string | null
   player_current_club: string | null
-
   coach_category: string | null
   coach_current_club: string | null
   coaching_license: string | null
-
   club_name: string | null
   club_category: string | null
-
   staff_kind: string | null
   staff_services: string | null
   price_range: string | null
 }
 
-const roleLabels: Record<string, string> = {
-  player: 'Jugador',
-  coach: 'Entrenador / cos tècnic',
-  club: 'Club o responsable',
-  staff: 'Professional de l’staff',
-}
-
-const availabilityLabels: Record<string, string> = {
-  available: 'Disponible',
-  open_to_offers: 'Escolto ofertes',
-  unavailable: 'No disponible',
-}
-
-const verificationLabels: Record<string, string> = {
-  unverified: 'No verificat',
-  pending: 'Verificació pendent',
-  verified: 'Perfil verificat',
-  rejected: 'Verificació rebutjada',
-}
-
-const staffKindLabels: Record<string, string> = {
-  physiotherapist: 'Fisioterapeuta',
-  nutritionist: 'Nutricionista',
-  physical_trainer: 'Preparador físic',
-  analyst: 'Analista',
-  other: 'Altres',
+type PublicProfileLabels = {
+  profile: ReturnType<typeof getMessages>['publicProfile']
+  roles: Record<string, string>
+  availability: Record<string, string>
+  verification: Record<string, string>
+  staffKinds: Record<string, string>
+  common: ReturnType<typeof getMessages>['common']
 }
 
 const availabilityClassNames: Record<string, string> = {
@@ -109,21 +86,32 @@ function ProfileInfoRow({
   )
 }
 
-function RoleSpecificInfo({ profile }: { profile: PublicProfile }) {
+function RoleSpecificInfo({
+  profile,
+  labels,
+}: {
+  profile: PublicProfile
+  labels: PublicProfileLabels
+}) {
+  const p = labels.profile
+
   if (profile.role === 'player') {
     return (
       <section className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold">Informació esportiva</h2>
+          <h2 className="text-lg font-semibold">{p.sportsInfo}</h2>
           <p className="text-sm text-muted-foreground">
-            Dades específiques del perfil de jugador.
+            {p.sportsInfoDescription}
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <ProfileInfoRow label="Posició" value={profile.player_position} />
-          <ProfileInfoRow label="Categoria" value={profile.player_category} />
-          <ProfileInfoRow label="Club actual" value={profile.player_current_club} />
+          <ProfileInfoRow label={p.position} value={profile.player_position} />
+          <ProfileInfoRow label={p.category} value={profile.player_category} />
+          <ProfileInfoRow
+            label={p.currentClub}
+            value={profile.player_current_club}
+          />
         </div>
       </section>
     )
@@ -133,16 +121,19 @@ function RoleSpecificInfo({ profile }: { profile: PublicProfile }) {
     return (
       <section className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold">Informació tècnica</h2>
+          <h2 className="text-lg font-semibold">{p.technicalInfo}</h2>
           <p className="text-sm text-muted-foreground">
-            Dades específiques del perfil d’entrenador o cos tècnic.
+            {p.technicalInfoDescription}
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <ProfileInfoRow label="Categoria" value={profile.coach_category} />
-          <ProfileInfoRow label="Club actual" value={profile.coach_current_club} />
-          <ProfileInfoRow label="Llicència o formació" value={profile.coaching_license} />
+          <ProfileInfoRow label={p.category} value={profile.coach_category} />
+          <ProfileInfoRow
+            label={p.currentClub}
+            value={profile.coach_current_club}
+          />
+          <ProfileInfoRow label={p.license} value={profile.coaching_license} />
         </div>
       </section>
     )
@@ -152,15 +143,15 @@ function RoleSpecificInfo({ profile }: { profile: PublicProfile }) {
     return (
       <section className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold">Informació del club</h2>
+          <h2 className="text-lg font-semibold">{p.clubInfo}</h2>
           <p className="text-sm text-muted-foreground">
-            Dades principals de l’entitat o responsable esportiu.
+            {p.clubInfoDescription}
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <ProfileInfoRow label="Nom del club" value={profile.club_name} />
-          <ProfileInfoRow label="Categoria" value={profile.club_category} />
+          <ProfileInfoRow label={p.clubName} value={profile.club_name} />
+          <ProfileInfoRow label={p.category} value={profile.club_category} />
         </div>
       </section>
     )
@@ -170,23 +161,23 @@ function RoleSpecificInfo({ profile }: { profile: PublicProfile }) {
     return (
       <section className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold">Informació professional</h2>
+          <h2 className="text-lg font-semibold">{p.professionalInfo}</h2>
           <p className="text-sm text-muted-foreground">
-            Dades específiques del perfil de professional de l’staff.
+            {p.professionalInfoDescription}
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <ProfileInfoRow
-            label="Tipus de professional"
+            label={p.professionalType}
             value={
               profile.staff_kind
-                ? staffKindLabels[profile.staff_kind] ?? profile.staff_kind
+                ? labels.staffKinds[profile.staff_kind] ?? profile.staff_kind
                 : null
             }
           />
-          <ProfileInfoRow label="Rang de preu" value={profile.price_range} />
-          <ProfileInfoRow label="Serveis oferts" value={profile.staff_services} />
+          <ProfileInfoRow label={p.priceRange} value={profile.price_range} />
+          <ProfileInfoRow label={p.services} value={profile.staff_services} />
         </div>
       </section>
     )
@@ -199,12 +190,19 @@ export default async function PublicProfilePage({
   params,
   searchParams,
 }: PublicProfilePageProps) {
-
   const { id } = await params
   const query = await searchParams
   const supabase = await createClient()
-
-
+  const locale = await getLocale()
+  const m = getMessages(locale)
+  const labels: PublicProfileLabels = {
+    profile: m.publicProfile,
+    roles: { ...m.roles },
+    availability: { ...m.availability },
+    verification: { ...m.verification },
+    staffKinds: { ...m.staffKinds },
+    common: m.common,
+  }
 
   const { data, error } = await supabase
     .from('profile_search_view')
@@ -230,10 +228,10 @@ export default async function PublicProfilePage({
   const isOwnProfile = user?.id === profile.profile_id
 
   const { data: reviewSummary } = await supabase
-  .from('profile_review_summary_view')
-  .select('review_count, average_rating')
-  .eq('reviewed_profile_id', profile.profile_id)
-  .maybeSingle()
+    .from('profile_review_summary_view')
+    .select('review_count, average_rating')
+    .eq('reviewed_profile_id', profile.profile_id)
+    .maybeSingle()
 
   const { data: reviewsData } = await supabase
     .from('profile_reviews_view')
@@ -259,7 +257,6 @@ export default async function PublicProfilePage({
   const averageRating = reviewSummary?.average_rating
     ? Number(reviewSummary.average_rating)
     : null
-
   const availability = profile.availability ?? 'available'
   const location = getLocation(profile)
 
@@ -268,7 +265,7 @@ export default async function PublicProfilePage({
       <div className="mx-auto max-w-4xl space-y-6">
         <div>
           <Link href="/search" className="text-sm text-muted-foreground underline">
-            Tornar al cercador
+            {m.common.backToSearch}
           </Link>
         </div>
 
@@ -276,9 +273,13 @@ export default async function PublicProfilePage({
           <CardHeader className="space-y-4">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div>
-                <CardTitle className="text-3xl">{profile.display_name}</CardTitle>
+                <CardTitle className="text-3xl">
+                  {profile.display_name}
+                </CardTitle>
                 <CardDescription className="mt-2">
-                  {profiles.map((item) => roleLabels[item.role] ?? item.role).join(' · ')}
+                  {profiles
+                    .map((item) => labels.roles[item.role] ?? item.role)
+                    .join(' · ')}
                 </CardDescription>
               </div>
 
@@ -288,13 +289,14 @@ export default async function PublicProfilePage({
                     availabilityClassNames[availability] ?? 'border bg-muted'
                   }`}
                 >
-                  {availabilityLabels[availability] ?? availability}
+                  {labels.availability[availability] ?? availability}
                 </span>
 
                 <span className="rounded-full border px-3 py-1 text-sm font-medium">
                   {profile.verification
-                    ? verificationLabels[profile.verification] ?? profile.verification
-                    : 'No verificat'}
+                    ? labels.verification[profile.verification] ??
+                      profile.verification
+                    : labels.verification.unverified}
                 </span>
               </div>
             </div>
@@ -315,23 +317,30 @@ export default async function PublicProfilePage({
 
             <section className="space-y-4">
               <div>
-                <h2 className="text-lg font-semibold">Informació general</h2>
+                <h2 className="text-lg font-semibold">
+                  {m.publicProfile.generalInfo}
+                </h2>
                 <p className="text-sm text-muted-foreground">
-                  Dades públiques principals del perfil.
+                  {m.publicProfile.generalInfoDescription}
                 </p>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <ProfileInfoRow label="Ubicació" value={location || null} />
                 <ProfileInfoRow
-                  label="Disponibilitat"
-                  value={availabilityLabels[availability] ?? availability}
+                  label={m.publicProfile.location}
+                  value={location || null}
+                />
+                <ProfileInfoRow
+                  label={m.publicProfile.availability}
+                  value={labels.availability[availability] ?? availability}
                 />
               </div>
 
               {profile.bio ? (
                 <div className="rounded-md border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">Biografia</p>
+                  <p className="text-sm text-muted-foreground">
+                    {m.publicProfile.biography}
+                  </p>
                   <p className="mt-2 whitespace-pre-line">{profile.bio}</p>
                 </div>
               ) : null}
@@ -339,46 +348,48 @@ export default async function PublicProfilePage({
 
             {profiles.map((item) => (
               <div key={`${item.profile_id}-${item.role}`}>
-                <RoleSpecificInfo profile={item} />
+                <RoleSpecificInfo profile={item} labels={labels} />
               </div>
             ))}
 
-            
-
             <section className="space-y-4 rounded-md border bg-background p-4">
               <div>
-                <h2 className="text-lg font-semibold">Valoracions</h2>
+                <h2 className="text-lg font-semibold">
+                  {m.publicProfile.reviewsTitle}
+                </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Les valoracions permeten reforçar la confiança entre usuaris de la
-                  plataforma.
+                  {m.publicProfile.reviewsDescription}
                 </p>
               </div>
 
-
-
               <div className="rounded-md border p-4">
-                <p className="text-sm text-muted-foreground">Puntuació mitjana</p>
+                <p className="text-sm text-muted-foreground">
+                  {m.publicProfile.averageRating}
+                </p>
                 <p className="mt-1 text-2xl font-semibold">
-                  {averageRating ? `${averageRating.toFixed(1)} / 5` : 'Sense valoracions'}
+                  {averageRating
+                    ? `${averageRating.toFixed(1)} / 5`
+                    : m.common.noRatings}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {reviewCount} valoració{reviewCount === 1 ? '' : 'ns'}
+                  {reviewCount}{' '}
+                  {reviewCount === 1 ? m.common.rating : m.common.ratings}
                 </p>
               </div>
 
               {!user ? (
                 <div className="rounded-md border p-4">
                   <p className="text-sm text-muted-foreground">
-                    Inicia sessió per valorar aquest perfil.
+                    {m.publicProfile.signInToReview}
                   </p>
 
                   <Button asChild className="mt-3">
-                    <Link href="/login">Iniciar sessió</Link>
+                    <Link href="/login">{m.common.signIn}</Link>
                   </Button>
                 </div>
               ) : isOwnProfile ? (
                 <div className="rounded-md border p-4 text-sm text-muted-foreground">
-                  No pots valorar el teu propi perfil.
+                  {m.publicProfile.cannotReviewOwnProfile}
                 </div>
               ) : (
                 <form action={submitReview} className="space-y-4 rounded-md border p-4">
@@ -389,7 +400,9 @@ export default async function PublicProfilePage({
                   />
 
                   <div className="space-y-2">
-                    <Label htmlFor="rating">Puntuació</Label>
+                    <Label htmlFor="rating">
+                      {m.publicProfile.ratingLabel}
+                    </Label>
                     <select
                       id="rating"
                       name="rating"
@@ -397,26 +410,26 @@ export default async function PublicProfilePage({
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       required
                     >
-                      <option value="5">5 - Excel·lent</option>
-                      <option value="4">4 - Bona</option>
-                      <option value="3">3 - Correcta</option>
-                      <option value="2">2 - Millorable</option>
-                      <option value="1">1 - Dolenta</option>
+                      <option value="5">{m.publicProfile.ratingOptions[5]}</option>
+                      <option value="4">{m.publicProfile.ratingOptions[4]}</option>
+                      <option value="3">{m.publicProfile.ratingOptions[3]}</option>
+                      <option value="2">{m.publicProfile.ratingOptions[2]}</option>
+                      <option value="1">{m.publicProfile.ratingOptions[1]}</option>
                     </select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="comment">Comentari</Label>
+                    <Label htmlFor="comment">{m.publicProfile.comment}</Label>
                     <Textarea
                       id="comment"
                       name="comment"
                       defaultValue={currentUserReview?.comment ?? ''}
-                      placeholder="Escriu una recomanació breu o una valoració del perfil."
+                      placeholder={m.publicProfile.commentPlaceholder}
                       rows={4}
                     />
                   </div>
 
-                  <Button type="submit">Desar valoració</Button>
+                  <Button type="submit">{m.publicProfile.saveReview}</Button>
                 </form>
               )}
 
@@ -425,7 +438,9 @@ export default async function PublicProfilePage({
                   {reviews.map((review) => (
                     <div key={review.id} className="rounded-md border p-4">
                       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-medium">{review.reviewer_display_name}</p>
+                        <p className="font-medium">
+                          {review.reviewer_display_name}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           {review.rating} / 5
                         </p>
@@ -441,27 +456,29 @@ export default async function PublicProfilePage({
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Encara no hi ha valoracions publicades per aquest perfil.
+                  {m.publicProfile.noPublishedReviews}
                 </p>
               )}
-            
             </section>
 
             <section className="rounded-md border bg-background p-4">
-              <h2 className="text-lg font-semibold">Contacte</h2>
+              <h2 className="text-lg font-semibold">
+                {m.publicProfile.contactTitle}
+              </h2>
 
               <p className="mt-2 text-sm text-muted-foreground">
-                Pots iniciar una conversa interna amb aquest perfil per fer un primer
-                contacte dins de FUTCON.
+                {m.publicProfile.contactDescription}
               </p>
 
               <div className="mt-4">
                 {!user ? (
                   <Button asChild>
-                    <Link href="/login">Inicia sessió per contactar</Link>
+                    <Link href="/login">{m.publicProfile.signInToContact}</Link>
                   </Button>
                 ) : isOwnProfile ? (
-                  <Button disabled>No pots contactar amb el teu propi perfil</Button>
+                  <Button disabled>
+                    {m.publicProfile.cannotContactOwnProfile}
+                  </Button>
                 ) : (
                   <form action={startConversation}>
                     <input
@@ -470,12 +487,11 @@ export default async function PublicProfilePage({
                       value={profile.profile_id}
                     />
 
-                    <Button type="submit">Contactar</Button>
+                    <Button type="submit">{m.publicProfile.contact}</Button>
                   </form>
                 )}
               </div>
             </section>
-
           </CardContent>
         </Card>
       </div>

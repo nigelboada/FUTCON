@@ -7,21 +7,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 
-export default function NotFoundPage() {
+export default async function NotFoundPage() {
+  const locale = await getLocale()
+  const m = getMessages(locale)
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Perfil no trobat</CardTitle>
-          <CardDescription>
-            El perfil que estàs intentant consultar no existeix o no és públic.
-          </CardDescription>
+          <CardTitle>{m.notFound.title}</CardTitle>
+          <CardDescription>{m.notFound.description}</CardDescription>
         </CardHeader>
 
         <CardContent>
           <Button asChild className="w-full">
-            <Link href="/search">Tornar al cercador</Link>
+            <Link href="/search">{m.notFound.action}</Link>
           </Button>
         </CardContent>
       </Card>

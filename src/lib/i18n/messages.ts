@@ -1,188 +1,853 @@
 import type { Locale } from './config'
 
+const ca = {
+  localeTag: 'ca-ES',
+  common: {
+    unknownUser: 'usuari',
+    notSpecified: 'No indicada',
+    roleNotSpecified: 'Rol no indicat',
+    locationNotSpecified: 'Ubicació no indicada',
+    noMessages: 'Sense missatges',
+    unresolved: 'No resolt',
+    backToDashboard: 'Tornar al dashboard',
+    backToSearch: 'Tornar al cercador',
+    searchProfiles: 'Cercar perfils',
+    viewProfile: 'Veure perfil',
+    signIn: 'Iniciar sessió',
+    cancel: 'Cancel·lar',
+    saveChanges: 'Guardar canvis',
+    rating: 'valoració',
+    ratings: 'valoracions',
+    noRatings: 'Sense valoracions',
+  },
+  roles: {
+    player: 'Jugador',
+    coach: 'Entrenador / cos tècnic',
+    club: 'Club o responsable',
+    staff: 'Professional de l’staff',
+  },
+  rolePlural: {
+    all: 'Tots els rols',
+    player: 'Jugadors',
+    coach: 'Entrenadors / cos tècnic',
+    club: 'Clubs o responsables',
+    staff: 'Professionals de l’staff',
+  },
+  availability: {
+    all: 'Qualsevol disponibilitat',
+    available: 'Disponible',
+    open_to_offers: 'Escolto ofertes',
+    unavailable: 'No disponible',
+  },
+  verification: {
+    unverified: 'No verificat',
+    pending: 'Verificació pendent',
+    verified: 'Perfil verificat',
+    rejected: 'Verificació rebutjada',
+    verifiedShort: 'Verificat',
+  },
+  staffKinds: {
+    physiotherapist: 'Fisioterapeuta',
+    nutritionist: 'Nutricionista',
+    physical_trainer: 'Preparador físic',
+    analyst: 'Analista',
+    other: 'Altres',
+  },
+  status: {
+    pending: 'Pendent',
+    verified: 'Verificat',
+    rejected: 'Rebutjat',
+    unverified: 'No verificat',
+  },
+  nav: {
+    dashboard: 'Dashboard',
+    search: 'Cercar perfils',
+    conversations: 'Missatges',
+    editProfile: 'Editar perfil',
+    admin: 'Admin',
+    signOut: 'Tancar sessió',
+    login: 'Iniciar sessió',
+    register: 'Crear compte',
+    subtitle: 'Futbol amateur connectat',
+  },
+  theme: {
+    light: 'Tema clar',
+    dark: 'Tema fosc',
+    toggle: 'Canviar tema',
+  },
+  language: {
+    label: 'Idioma',
+  },
+  home: {
+    eyebrow: 'Marketplace per al futbol amateur',
+    title: 'Connecta clubs, jugadors i professionals del futbol amateur.',
+    description:
+      'FUTCON és una plataforma orientada a facilitar la descoberta de perfils, el primer contacte i la generació de confiança dins de l’ecosistema del futbol amateur.',
+    dashboardCta: 'Anar al dashboard',
+    registerCta: 'Crear compte',
+    loginCta: 'Iniciar sessió',
+    exploreCta: 'Explorar perfils',
+    targetTitle: 'Per a qui és FUTCON?',
+    userTypes: [
+      'Jugadors que busquen oportunitats',
+      'Entrenadors i cos tècnic',
+      'Clubs i responsables esportius',
+      'Fisioterapeutes, nutricionistes i preparadors físics',
+    ],
+    features: [
+      {
+        title: 'Perfils diferenciats',
+        description:
+          'Jugadors, entrenadors, clubs i professionals de l’staff disposen d’una fitxa adaptada al seu rol.',
+      },
+      {
+        title: 'Cerca amb filtres',
+        description:
+          'Permet localitzar perfils per rol, ubicació i disponibilitat dins de l’ecosistema del futbol amateur.',
+      },
+      {
+        title: 'Comunicació interna',
+        description:
+          'Els usuaris poden iniciar converses i contactar directament amb altres perfils de la plataforma.',
+      },
+      {
+        title: 'Confiança i valoracions',
+        description:
+          'Les valoracions i la disponibilitat visible ajuden a reforçar la credibilitat dels perfils.',
+      },
+    ],
+  },
+  auth: {
+    login: {
+      eyebrow: 'Accés a FUTCON',
+      title: 'Torna a connectar amb l’ecosistema del futbol amateur.',
+      description:
+        'Accedeix al teu perfil, consulta missatges, cerca perfils i mantén actualitzada la teva disponibilitat.',
+      cardTitle: 'Iniciar sessió',
+      cardDescription: 'Introdueix les teves credencials per accedir al compte.',
+      email: 'Correu electrònic',
+      password: 'Contrasenya',
+      submit: 'Entrar',
+      noAccount: 'Encara no tens compte?',
+      createOne: 'Crea’n un',
+      emailPlaceholder: 'nom@exemple.com',
+    },
+    register: {
+      eyebrow: 'Crea el teu perfil',
+      title: 'Uneix-te a FUTCON i fes visible el teu perfil.',
+      description:
+        'Registra’t per crear un perfil adaptat al teu rol, aparèixer al cercador i contactar amb altres usuaris de la plataforma.',
+      cardTitle: 'Crear compte',
+      cardDescription:
+        'Aquest compte et permetrà configurar el perfil i seleccionar el teu rol dins de FUTCON.',
+      displayName: 'Nom visible',
+      displayNamePlaceholder: 'Ex: Marc Garcia',
+      email: 'Correu electrònic',
+      emailPlaceholder: 'nom@exemple.com',
+      password: 'Contrasenya',
+      submit: 'Crear compte',
+      hasAccount: 'Ja tens compte?',
+      signIn: 'Inicia sessió',
+    },
+  },
+  onboarding: {
+    eyebrow: 'Configuració inicial',
+    title: 'Selecciona el teu rol dins de FUTCON',
+    description:
+      'Aquesta selecció permet adaptar el teu perfil, els camps d’edició i la informació que es mostrarà al cercador.',
+    roles: [
+      {
+        value: 'player',
+        title: 'Jugador',
+        description:
+          'Crea un perfil esportiu, mostra la teva disponibilitat i facilita que clubs o entrenadors et trobin.',
+        highlights: ['Posició', 'Categoria', 'Club actual', 'Disponibilitat'],
+      },
+      {
+        value: 'coach',
+        title: 'Entrenador / cos tècnic',
+        description:
+          'Mostra la teva experiència tècnica, categoria, formació i disponibilitat per a nous projectes.',
+        highlights: ['Experiència', 'Llicència', 'Categoria', 'Club actual'],
+      },
+      {
+        value: 'club',
+        title: 'Club o responsable',
+        description:
+          'Cerca perfils, contacta amb jugadors o professionals i representa una entitat esportiva.',
+        highlights: ['Nom del club', 'Categoria', 'Ubicació', 'Contacte'],
+      },
+      {
+        value: 'staff',
+        title: 'Professional de l’staff',
+        description:
+          'Ofereix serveis vinculats al rendiment, salut, preparació física o suport tècnic.',
+        highlights: ['Serveis', 'Preu orientatiu', 'Experiència', 'Treball remot'],
+      },
+    ],
+    initialRoleTitle: 'Rol inicial del perfil',
+    initialRoleDescription:
+      'Més endavant el model permetria associar més d’un rol a un mateix perfil.',
+    continue: 'Continuar',
+  },
+  dashboard: {
+    welcome: 'Benvingut, {name}',
+    description:
+      'Gestiona el teu perfil, consulta oportunitats i accedeix als teus missatges.',
+    role: 'Rol',
+    availability: 'Disponibilitat',
+    location: 'Ubicació',
+    biography: 'Biografia',
+    completeBioTitle: 'Completa la teva biografia',
+    completeBioDescription:
+      'Una descripció breu ajuda altres usuaris a entendre millor el teu perfil.',
+    editProfile: 'Editar perfil',
+    searchProfiles: 'Cercar perfils',
+    viewMessages: 'Veure missatges',
+    quickActionsTitle: 'Accions ràpides',
+    quickActionsDescription: 'Accessos principals per continuar utilitzant FUTCON.',
+    exploreAvailableProfiles: 'Explorar perfils disponibles',
+    updateAvailability: 'Actualitzar disponibilitat',
+    checkConversations: 'Consultar converses',
+    latestConversations: 'Últimes converses',
+    latestConversationsDescription: 'Converses recents iniciades amb altres perfils.',
+    emptyConversationsTitle: 'Encara no tens converses',
+    emptyConversationsDescription:
+      'Ves al cercador, obre un perfil i inicia una conversa.',
+    conversationCreated: 'Conversa creada, encara sense missatges.',
+    sprintTitle: 'Estat del Sprint actual',
+    sprintDescription: 'Resum funcional del prototip implementat.',
+    sprintItems: [
+      'Registre, login i rols implementats.',
+      'Cercador, filtres i perfils públics disponibles.',
+      'Xat intern amb actualització en temps real operatiu.',
+      'Valoracions i puntuació mitjana visibles.',
+    ],
+  },
+  search: {
+    title: 'Cercar perfils',
+    description:
+      'Troba jugadors, entrenadors, clubs i professionals del futbol amateur.',
+    name: 'Nom',
+    namePlaceholder: 'Ex: Marc',
+    role: 'Rol',
+    city: 'Ciutat',
+    cityPlaceholder: 'Ex: Girona',
+    province: 'Província',
+    provincePlaceholder: 'Ex: Girona',
+    availability: 'Disponibilitat',
+    applyFilters: 'Aplicar filtres',
+    clear: 'Netejar',
+    clearFilters: 'Netejar filtres',
+    resultsFound: '{count} resultat{plural} trobat{plural}.',
+    noResultsTitle: 'No hi ha resultats',
+    noResultsDescription:
+      'No s’han trobat perfils que coincideixin amb els filtres aplicats. Prova de canviar el rol, la ubicació o la disponibilitat.',
+  },
+  profileCard: {
+    viewProfile: 'Veure perfil',
+    noRating: 'Sense valoracions',
+    noBio: 'Aquest perfil encara no ha afegit una biografia.',
+    reviewSingular: 'valoració',
+    reviewPlural: 'valoracions',
+    locationNotSpecified: 'Ubicació no indicada',
+  },
+  publicProfile: {
+    generalInfo: 'Informació general',
+    generalInfoDescription: 'Dades públiques principals del perfil.',
+    sportsInfo: 'Informació esportiva',
+    sportsInfoDescription: 'Dades específiques del perfil de jugador.',
+    technicalInfo: 'Informació tècnica',
+    technicalInfoDescription:
+      'Dades específiques del perfil d’entrenador o cos tècnic.',
+    clubInfo: 'Informació del club',
+    clubInfoDescription: 'Dades principals de l’entitat o responsable esportiu.',
+    professionalInfo: 'Informació professional',
+    professionalInfoDescription:
+      'Dades específiques del perfil de professional de l’staff.',
+    position: 'Posició',
+    category: 'Categoria',
+    currentClub: 'Club actual',
+    license: 'Llicència o formació',
+    clubName: 'Nom del club',
+    professionalType: 'Tipus de professional',
+    priceRange: 'Rang de preu',
+    services: 'Serveis oferts',
+    location: 'Ubicació',
+    availability: 'Disponibilitat',
+    biography: 'Biografia',
+    reviewsTitle: 'Valoracions',
+    reviewsDescription:
+      'Les valoracions permeten reforçar la confiança entre usuaris de la plataforma.',
+    averageRating: 'Puntuació mitjana',
+    signInToReview: 'Inicia sessió per valorar aquest perfil.',
+    cannotReviewOwnProfile: 'No pots valorar el teu propi perfil.',
+    ratingLabel: 'Puntuació',
+    comment: 'Comentari',
+    commentPlaceholder: 'Escriu una recomanació breu o una valoració del perfil.',
+    saveReview: 'Desar valoració',
+    noPublishedReviews: 'Encara no hi ha valoracions publicades per aquest perfil.',
+    contactTitle: 'Contacte',
+    contactDescription:
+      'Pots iniciar una conversa interna amb aquest perfil per fer un primer contacte dins de FUTCON.',
+    signInToContact: 'Inicia sessió per contactar',
+    cannotContactOwnProfile: 'No pots contactar amb el teu propi perfil',
+    contact: 'Contactar',
+    ratingOptions: {
+      5: '5 - Excel·lent',
+      4: '4 - Bona',
+      3: '3 - Correcta',
+      2: '2 - Millorable',
+      1: '1 - Dolenta',
+    },
+  },
+  profileEdit: {
+    loadError: 'No s’ha pogut carregar el perfil.',
+    title: 'Editar perfil',
+    description: 'Actualitza la informació comuna i específica del teu perfil a FUTCON.',
+    assignedRole: 'Rol assignat',
+    commonInfo: 'Informació comuna',
+    commonInfoDescription:
+      'Aquesta informació és compartida per qualsevol tipus de perfil.',
+    displayName: 'Nom visible',
+    bio: 'Biografia breu',
+    bioPlaceholder: 'Explica breument qui ets, què busques o quina experiència tens.',
+    city: 'Ciutat',
+    province: 'Província',
+    availability: 'Disponibilitat',
+    availabilityDescriptions: {
+      available: 'Busco equip, club o oportunitats professionals.',
+      open_to_offers: 'Actualment tinc vinculació, però estic obert a propostes.',
+      unavailable: 'No busco noves oportunitats en aquest moment.',
+    },
+    playerInfo: 'Informació de jugador',
+    playerInfoDescription:
+      'Camps específics per construir la fitxa esportiva del jugador.',
+    position: 'Posició',
+    preferredFoot: 'Cama hàbil',
+    playerCategory: 'Categoria',
+    playerCurrentClub: 'Club actual',
+    experienceYears: 'Anys d’experiència',
+    birthYear: 'Any de naixement',
+    heightCm: 'Alçada en cm',
+    coachInfo: 'Informació d’entrenador',
+    coachInfoDescription:
+      'Camps específics per mostrar experiència i perfil tècnic.',
+    coachCategory: 'Categoria',
+    coachCurrentClub: 'Club actual',
+    coachingLicense: 'Llicència o formació',
+    preferredAgeGroup: 'Etapa o edat preferida',
+    clubInfo: 'Informació de club',
+    clubInfoDescription:
+      'Camps específics per identificar l’entitat o responsable esportiu.',
+    clubName: 'Nom del club',
+    clubCategory: 'Categoria principal',
+    website: 'Web',
+    contactRole: 'Rol de contacte',
+    staffInfo: 'Informació de professional de l’staff',
+    staffInfoDescription:
+      'Camps específics per mostrar serveis, experiència i disponibilitat professional.',
+    staffKind: 'Tipus de professional',
+    priceRange: 'Rang de preu orientatiu',
+    worksRemotely: 'Ofereixo serveis remots',
+    services: 'Serveis oferts',
+    placeholders: {
+      city: 'Ex: Girona',
+      province: 'Ex: Girona',
+      position: 'Ex: Davanter centre',
+      preferredFoot: 'Ex: Dreta',
+      playerCategory: 'Ex: 3a Catalana',
+      playerCurrentClub: 'Ex: CF Banyoles',
+      coachCategory: 'Ex: Juvenil Preferent',
+      coachCurrentClub: 'Ex: UE Figueres',
+      coachingLicense: 'Ex: UEFA C',
+      preferredAgeGroup: 'Ex: Futbol base, amateur sènior...',
+      clubName: 'Ex: CF Banyoles',
+      clubCategory: 'Ex: 2a Catalana',
+      website: 'https://...',
+      contactRole: 'Ex: Coordinador esportiu',
+      priceRange: 'Ex: 20-30 €/sessió',
+      services: 'Ex: recuperació de lesions, readaptació, nutrició esportiva...',
+    },
+    verificationTitle: 'Confiança i verificació',
+    verificationDescription:
+      'La verificació permet reforçar la credibilitat del perfil dins de FUTCON.',
+    currentStatus: 'Estat actual',
+    verificationDescriptions: {
+      unverified: 'Encara no has sol·licitat la verificació del perfil.',
+      pending: 'La sol·licitud de verificació està pendent de revisió.',
+      verified: 'Aquest perfil ha estat verificat.',
+      rejected: 'La verificació ha estat rebutjada. Pots tornar a sol·licitar-la.',
+    },
+    alreadyVerified: 'El teu perfil ja consta com a verificat.',
+    verificationPending: 'La teva sol·licitud de verificació està pendent de revisió.',
+    optionalMessage: 'Missatge opcional',
+    requestPlaceholder:
+      'Ex: Sol·licito la verificació perquè soc responsable d’un club / jugador federat / professional de l’staff...',
+    requestVerification: 'Sol·licitar verificació',
+  },
+  conversations: {
+    title: 'Missatges',
+    description: 'Converses iniciades amb altres perfils de FUTCON.',
+    emptyTitle: 'Encara no tens converses',
+    emptyDescription:
+      'Quan contactis amb un jugador, entrenador, club o professional, la conversa apareixerà aquí.',
+    noConversationMessages: 'Encara no hi ha missatges en aquesta conversa.',
+    openConversation: 'Obrir conversa',
+    backToMessages: 'Tornar als missatges',
+    conversationWith: 'Conversa amb',
+    profileFallback: 'Perfil',
+    messagePlaceholder: 'Escriu un missatge...',
+    realtimeNote: 'Els missatges s’actualitzen en temps real dins de la conversa.',
+    sendMessage: 'Enviar missatge',
+    emptyThread:
+      'Encara no hi ha missatges. Escriu el primer missatge per iniciar la conversa.',
+  },
+  admin: {
+    permissionError: 'No tens permisos per accedir al panell d’administració.',
+    eyebrow: 'Administració',
+    title: 'Panell d’administració',
+    description:
+      'Revisa i gestiona les sol·licituds de verificació dels perfils de FUTCON.',
+    totalRequests: 'Sol·licituds totals',
+    pendingReview: 'Pendents de revisió',
+    resolved: 'Resoltes',
+    pendingTitle: 'Sol·licituds pendents',
+    pendingDescription: 'Revisa els perfils que han demanat verificació.',
+    requestMessage: 'Missatge de la sol·licitud',
+    noRequestMessage: 'L’usuari no ha afegit cap missatge.',
+    requestedOn: 'Sol·licitada el {date}',
+    ownRequest: 'Aquesta sol·licitud ha de ser resolta per un altre administrador.',
+    approve: 'Aprovar',
+    reject: 'Rebutjar',
+    noPendingTitle: 'No hi ha sol·licituds pendents',
+    noPendingDescription:
+      'Quan un usuari sol·liciti la verificació del seu perfil, apareixerà en aquesta secció.',
+    historyTitle: 'Historial recent',
+    historyDescription: 'Sol·licituds verificades o rebutjades.',
+    resolution: 'Resolució:',
+    noResolved: 'Encara no hi ha sol·licituds resoltes.',
+  },
+  notFound: {
+    title: 'Perfil no trobat',
+    description: 'El perfil que estàs intentant consultar no existeix o no és públic.',
+    action: 'Tornar al cercador',
+  },
+} as const
+
+const es = {
+  ...ca,
+  localeTag: 'es-ES',
+  common: {
+    ...ca.common,
+    unknownUser: 'usuario',
+    notSpecified: 'No indicada',
+    roleNotSpecified: 'Rol no indicado',
+    locationNotSpecified: 'Ubicación no indicada',
+    noMessages: 'Sin mensajes',
+    unresolved: 'No resuelto',
+    backToDashboard: 'Volver al panel',
+    backToSearch: 'Volver al buscador',
+    searchProfiles: 'Buscar perfiles',
+    viewProfile: 'Ver perfil',
+    signIn: 'Iniciar sesión',
+    cancel: 'Cancelar',
+    saveChanges: 'Guardar cambios',
+    rating: 'valoración',
+    ratings: 'valoraciones',
+    noRatings: 'Sin valoraciones',
+  },
+  roles: {
+    player: 'Jugador',
+    coach: 'Entrenador / cuerpo técnico',
+    club: 'Club o responsable',
+    staff: 'Profesional del staff',
+  },
+  rolePlural: {
+    all: 'Todos los roles',
+    player: 'Jugadores',
+    coach: 'Entrenadores / cuerpo técnico',
+    club: 'Clubes o responsables',
+    staff: 'Profesionales del staff',
+  },
+  availability: {
+    all: 'Cualquier disponibilidad',
+    available: 'Disponible',
+    open_to_offers: 'Escucho ofertas',
+    unavailable: 'No disponible',
+  },
+  verification: {
+    unverified: 'No verificado',
+    pending: 'Verificación pendiente',
+    verified: 'Perfil verificado',
+    rejected: 'Verificación rechazada',
+    verifiedShort: 'Verificado',
+  },
+  staffKinds: {
+    physiotherapist: 'Fisioterapeuta',
+    nutritionist: 'Nutricionista',
+    physical_trainer: 'Preparador físico',
+    analyst: 'Analista',
+    other: 'Otros',
+  },
+  status: {
+    pending: 'Pendiente',
+    verified: 'Verificado',
+    rejected: 'Rechazado',
+    unverified: 'No verificado',
+  },
+  nav: {
+    dashboard: 'Panel',
+    search: 'Buscar perfiles',
+    conversations: 'Mensajes',
+    editProfile: 'Editar perfil',
+    admin: 'Admin',
+    signOut: 'Cerrar sesión',
+    login: 'Iniciar sesión',
+    register: 'Crear cuenta',
+    subtitle: 'Fútbol amateur conectado',
+  },
+  theme: {
+    light: 'Tema claro',
+    dark: 'Tema oscuro',
+    toggle: 'Cambiar tema',
+  },
+  language: { label: 'Idioma' },
+  home: {
+    ...ca.home,
+    eyebrow: 'Marketplace para el fútbol amateur',
+    title: 'Conecta clubes, jugadores y profesionales del fútbol amateur.',
+    description:
+      'FUTCON es una plataforma orientada a facilitar el descubrimiento de perfiles, el primer contacto y la generación de confianza dentro del ecosistema del fútbol amateur.',
+    dashboardCta: 'Ir al panel',
+    registerCta: 'Crear cuenta',
+    loginCta: 'Iniciar sesión',
+    exploreCta: 'Explorar perfiles',
+    targetTitle: '¿Para quién es FUTCON?',
+    userTypes: [
+      'Jugadores que buscan oportunidades',
+      'Entrenadores y cuerpo técnico',
+      'Clubes y responsables deportivos',
+      'Fisioterapeutas, nutricionistas y preparadores físicos',
+    ],
+    features: [
+      {
+        title: 'Perfiles diferenciados',
+        description:
+          'Jugadores, entrenadores, clubes y profesionales del staff disponen de una ficha adaptada a su rol.',
+      },
+      {
+        title: 'Búsqueda con filtros',
+        description:
+          'Permite localizar perfiles por rol, ubicación y disponibilidad dentro del ecosistema del fútbol amateur.',
+      },
+      {
+        title: 'Comunicación interna',
+        description:
+          'Los usuarios pueden iniciar conversaciones y contactar directamente con otros perfiles de la plataforma.',
+      },
+      {
+        title: 'Confianza y valoraciones',
+        description:
+          'Las valoraciones y la disponibilidad visible ayudan a reforzar la credibilidad de los perfiles.',
+      },
+    ],
+  },
+  auth: {
+    login: {
+      eyebrow: 'Acceso a FUTCON',
+      title: 'Vuelve a conectar con el ecosistema del fútbol amateur.',
+      description:
+        'Accede a tu perfil, consulta mensajes, busca perfiles y mantén actualizada tu disponibilidad.',
+      cardTitle: 'Iniciar sesión',
+      cardDescription: 'Introduce tus credenciales para acceder a la cuenta.',
+      email: 'Correo electrónico',
+      password: 'Contraseña',
+      submit: 'Entrar',
+      noAccount: '¿Aún no tienes cuenta?',
+      createOne: 'Crea una',
+      emailPlaceholder: 'nombre@ejemplo.com',
+    },
+    register: {
+      eyebrow: 'Crea tu perfil',
+      title: 'Únete a FUTCON y haz visible tu perfil.',
+      description:
+        'Regístrate para crear un perfil adaptado a tu rol, aparecer en el buscador y contactar con otros usuarios de la plataforma.',
+      cardTitle: 'Crear cuenta',
+      cardDescription:
+        'Esta cuenta te permitirá configurar el perfil y seleccionar tu rol dentro de FUTCON.',
+      displayName: 'Nombre visible',
+      displayNamePlaceholder: 'Ej: Marc Garcia',
+      email: 'Correo electrónico',
+      emailPlaceholder: 'nombre@ejemplo.com',
+      password: 'Contraseña',
+      submit: 'Crear cuenta',
+      hasAccount: '¿Ya tienes cuenta?',
+      signIn: 'Inicia sesión',
+    },
+  },
+  search: {
+    ...ca.search,
+    title: 'Buscar perfiles',
+    description:
+      'Encuentra jugadores, entrenadores, clubes y profesionales del fútbol amateur.',
+    name: 'Nombre',
+    namePlaceholder: 'Ej: Marc',
+    role: 'Rol',
+    city: 'Ciudad',
+    cityPlaceholder: 'Ej: Girona',
+    province: 'Provincia',
+    provincePlaceholder: 'Ej: Girona',
+    availability: 'Disponibilidad',
+    applyFilters: 'Aplicar filtros',
+    clear: 'Limpiar',
+    clearFilters: 'Limpiar filtros',
+    resultsFound: '{count} resultado{plural} encontrado{plural}.',
+    noResultsTitle: 'No hay resultados',
+    noResultsDescription:
+      'No se han encontrado perfiles que coincidan con los filtros aplicados. Prueba a cambiar el rol, la ubicación o la disponibilidad.',
+  },
+  profileCard: {
+    viewProfile: 'Ver perfil',
+    noRating: 'Sin valoraciones',
+    noBio: 'Este perfil todavía no ha añadido una biografía.',
+    reviewSingular: 'valoración',
+    reviewPlural: 'valoraciones',
+    locationNotSpecified: 'Ubicación no indicada',
+  },
+  conversations: {
+    ...ca.conversations,
+    title: 'Mensajes',
+    description: 'Conversaciones iniciadas con otros perfiles de FUTCON.',
+    emptyTitle: 'Aún no tienes conversaciones',
+    emptyDescription:
+      'Cuando contactes con un jugador, entrenador, club o profesional, la conversación aparecerá aquí.',
+    noConversationMessages: 'Todavía no hay mensajes en esta conversación.',
+    openConversation: 'Abrir conversación',
+    backToMessages: 'Volver a mensajes',
+    conversationWith: 'Conversación con',
+    profileFallback: 'Perfil',
+    messagePlaceholder: 'Escribe un mensaje...',
+    realtimeNote: 'Los mensajes se actualizan en tiempo real dentro de la conversación.',
+    sendMessage: 'Enviar mensaje',
+    emptyThread:
+      'Todavía no hay mensajes. Escribe el primer mensaje para iniciar la conversación.',
+  },
+  notFound: {
+    title: 'Perfil no encontrado',
+    description: 'El perfil que intentas consultar no existe o no es público.',
+    action: 'Volver al buscador',
+  },
+}
+
+const en = {
+  ...ca,
+  localeTag: 'en-GB',
+  common: {
+    ...ca.common,
+    unknownUser: 'user',
+    notSpecified: 'Not specified',
+    roleNotSpecified: 'Role not specified',
+    locationNotSpecified: 'Location not specified',
+    noMessages: 'No messages',
+    unresolved: 'Unresolved',
+    backToDashboard: 'Back to dashboard',
+    backToSearch: 'Back to search',
+    searchProfiles: 'Search profiles',
+    viewProfile: 'View profile',
+    signIn: 'Sign in',
+    cancel: 'Cancel',
+    saveChanges: 'Save changes',
+    rating: 'review',
+    ratings: 'reviews',
+    noRatings: 'No reviews',
+  },
+  roles: {
+    player: 'Player',
+    coach: 'Coach / technical staff',
+    club: 'Club or manager',
+    staff: 'Staff professional',
+  },
+  rolePlural: {
+    all: 'All roles',
+    player: 'Players',
+    coach: 'Coaches / technical staff',
+    club: 'Clubs or managers',
+    staff: 'Staff professionals',
+  },
+  availability: {
+    all: 'Any availability',
+    available: 'Available',
+    open_to_offers: 'Open to offers',
+    unavailable: 'Unavailable',
+  },
+  verification: {
+    unverified: 'Unverified',
+    pending: 'Verification pending',
+    verified: 'Verified profile',
+    rejected: 'Verification rejected',
+    verifiedShort: 'Verified',
+  },
+  staffKinds: {
+    physiotherapist: 'Physiotherapist',
+    nutritionist: 'Nutritionist',
+    physical_trainer: 'Fitness coach',
+    analyst: 'Analyst',
+    other: 'Other',
+  },
+  status: {
+    pending: 'Pending',
+    verified: 'Verified',
+    rejected: 'Rejected',
+    unverified: 'Unverified',
+  },
+  nav: {
+    dashboard: 'Dashboard',
+    search: 'Search profiles',
+    conversations: 'Messages',
+    editProfile: 'Edit profile',
+    admin: 'Admin',
+    signOut: 'Sign out',
+    login: 'Sign in',
+    register: 'Create account',
+    subtitle: 'Amateur football connected',
+  },
+  theme: {
+    light: 'Light theme',
+    dark: 'Dark theme',
+    toggle: 'Toggle theme',
+  },
+  language: { label: 'Language' },
+  home: {
+    ...ca.home,
+    eyebrow: 'Marketplace for amateur football',
+    title: 'Connect clubs, players and professionals in amateur football.',
+    description:
+      'FUTCON is a platform designed to help users discover profiles, make first contact and build trust within the amateur football ecosystem.',
+    dashboardCta: 'Go to dashboard',
+    registerCta: 'Create account',
+    loginCta: 'Sign in',
+    exploreCta: 'Explore profiles',
+    targetTitle: 'Who is FUTCON for?',
+    userTypes: [
+      'Players looking for opportunities',
+      'Coaches and technical staff',
+      'Clubs and sports managers',
+      'Physiotherapists, nutritionists and fitness coaches',
+    ],
+    features: [
+      {
+        title: 'Role-based profiles',
+        description:
+          'Players, coaches, clubs and staff professionals have a profile adapted to their role.',
+      },
+      {
+        title: 'Filtered search',
+        description:
+          'Users can find profiles by role, location and availability within the amateur football ecosystem.',
+      },
+      {
+        title: 'Internal communication',
+        description:
+          'Users can start conversations and contact other profiles directly through the platform.',
+      },
+      {
+        title: 'Trust and reviews',
+        description:
+          'Reviews and visible availability help increase profile credibility.',
+      },
+    ],
+  },
+  auth: {
+    login: {
+      eyebrow: 'Access FUTCON',
+      title: 'Reconnect with the amateur football ecosystem.',
+      description:
+        'Access your profile, check messages, search profiles and keep your availability up to date.',
+      cardTitle: 'Sign in',
+      cardDescription: 'Enter your credentials to access your account.',
+      email: 'Email',
+      password: 'Password',
+      submit: 'Enter',
+      noAccount: 'Do not have an account yet?',
+      createOne: 'Create one',
+      emailPlaceholder: 'name@example.com',
+    },
+    register: {
+      eyebrow: 'Create your profile',
+      title: 'Join FUTCON and make your profile visible.',
+      description:
+        'Register to create a profile adapted to your role, appear in search and contact other platform users.',
+      cardTitle: 'Create account',
+      cardDescription:
+        'This account lets you configure your profile and choose your role within FUTCON.',
+      displayName: 'Display name',
+      displayNamePlaceholder: 'E.g. Marc Garcia',
+      email: 'Email',
+      emailPlaceholder: 'name@example.com',
+      password: 'Password',
+      submit: 'Create account',
+      hasAccount: 'Already have an account?',
+      signIn: 'Sign in',
+    },
+  },
+  search: {
+    ...ca.search,
+    title: 'Search profiles',
+    description: 'Find players, coaches, clubs and professionals in amateur football.',
+    name: 'Name',
+    namePlaceholder: 'E.g. Marc',
+    role: 'Role',
+    city: 'City',
+    cityPlaceholder: 'E.g. Girona',
+    province: 'Province',
+    provincePlaceholder: 'E.g. Girona',
+    availability: 'Availability',
+    applyFilters: 'Apply filters',
+    clear: 'Clear',
+    clearFilters: 'Clear filters',
+    resultsFound: '{count} result{plural} found.',
+    noResultsTitle: 'No results',
+    noResultsDescription:
+      'No profiles match the applied filters. Try changing the role, location or availability.',
+  },
+  profileCard: {
+    viewProfile: 'View profile',
+    noRating: 'No reviews',
+    noBio: 'This profile has not added a biography yet.',
+    reviewSingular: 'review',
+    reviewPlural: 'reviews',
+    locationNotSpecified: 'Location not specified',
+  },
+  conversations: {
+    ...ca.conversations,
+    title: 'Messages',
+    description: 'Conversations started with other FUTCON profiles.',
+    emptyTitle: 'You do not have conversations yet',
+    emptyDescription:
+      'When you contact a player, coach, club or professional, the conversation will appear here.',
+    noConversationMessages: 'There are no messages in this conversation yet.',
+    openConversation: 'Open conversation',
+    backToMessages: 'Back to messages',
+    conversationWith: 'Conversation with',
+    profileFallback: 'Profile',
+    messagePlaceholder: 'Write a message...',
+    realtimeNote: 'Messages update in real time inside the conversation.',
+    sendMessage: 'Send message',
+    emptyThread:
+      'There are no messages yet. Write the first message to start the conversation.',
+  },
+  notFound: {
+    title: 'Profile not found',
+    description: 'The profile you are trying to view does not exist or is not public.',
+    action: 'Back to search',
+  },
+}
+
 export const messages = {
-  ca: {
-    nav: {
-      dashboard: 'Dashboard',
-      search: 'Cercar perfils',
-      conversations: 'Missatges',
-      editProfile: 'Editar perfil',
-      admin: 'Admin',
-      signOut: 'Tancar sessió',
-      login: 'Iniciar sessió',
-      register: 'Crear compte',
-      subtitle: 'Futbol amateur connectat',
-    },
-    theme: {
-      light: 'Tema clar',
-      dark: 'Tema fosc',
-      toggle: 'Canviar tema',
-    },
-    language: {
-      label: 'Idioma',
-    },
-    home: {
-      eyebrow: 'Marketplace per al futbol amateur',
-      title: 'Connecta clubs, jugadors i professionals del futbol amateur.',
-      description:
-        'FUTCON és una plataforma orientada a facilitar la descoberta de perfils, el primer contacte i la generació de confiança dins de l’ecosistema del futbol amateur.',
-      dashboardCta: 'Anar al dashboard',
-      registerCta: 'Crear compte',
-      loginCta: 'Iniciar sessió',
-      exploreCta: 'Explorar perfils',
-      targetTitle: 'Per a qui és FUTCON?',
-      userTypes: [
-        'Jugadors que busquen oportunitats',
-        'Entrenadors i cos tècnic',
-        'Clubs i responsables esportius',
-        'Fisioterapeutes, nutricionistes i preparadors físics',
-      ],
-      features: [
-        {
-          title: 'Perfils diferenciats',
-          description:
-            'Jugadors, entrenadors, clubs i professionals de l’staff disposen d’una fitxa adaptada al seu rol.',
-        },
-        {
-          title: 'Cerca amb filtres',
-          description:
-            'Permet localitzar perfils per rol, ubicació i disponibilitat dins de l’ecosistema del futbol amateur.',
-        },
-        {
-          title: 'Comunicació interna',
-          description:
-            'Els usuaris poden iniciar converses i contactar directament amb altres perfils de la plataforma.',
-        },
-        {
-          title: 'Confiança i valoracions',
-          description:
-            'Les valoracions i la disponibilitat visible ajuden a reforçar la credibilitat dels perfils.',
-        },
-      ],
-    },
-  },
-
-  es: {
-    nav: {
-      dashboard: 'Panel',
-      search: 'Buscar perfiles',
-      conversations: 'Mensajes',
-      editProfile: 'Editar perfil',
-      admin: 'Admin',
-      signOut: 'Cerrar sesión',
-      login: 'Iniciar sesión',
-      register: 'Crear cuenta',
-      subtitle: 'Fútbol amateur conectado',
-    },
-    theme: {
-      light: 'Tema claro',
-      dark: 'Tema oscuro',
-      toggle: 'Cambiar tema',
-    },
-    language: {
-      label: 'Idioma',
-    },
-    home: {
-      eyebrow: 'Marketplace para el fútbol amateur',
-      title: 'Conecta clubes, jugadores y profesionales del fútbol amateur.',
-      description:
-        'FUTCON es una plataforma orientada a facilitar el descubrimiento de perfiles, el primer contacto y la generación de confianza dentro del ecosistema del fútbol amateur.',
-      dashboardCta: 'Ir al panel',
-      registerCta: 'Crear cuenta',
-      loginCta: 'Iniciar sesión',
-      exploreCta: 'Explorar perfiles',
-      targetTitle: '¿Para quién es FUTCON?',
-      userTypes: [
-        'Jugadores que buscan oportunidades',
-        'Entrenadores y cuerpo técnico',
-        'Clubes y responsables deportivos',
-        'Fisioterapeutas, nutricionistas y preparadores físicos',
-      ],
-      features: [
-        {
-          title: 'Perfiles diferenciados',
-          description:
-            'Jugadores, entrenadores, clubes y profesionales del staff disponen de una ficha adaptada a su rol.',
-        },
-        {
-          title: 'Búsqueda con filtros',
-          description:
-            'Permite localizar perfiles por rol, ubicación y disponibilidad dentro del ecosistema del fútbol amateur.',
-        },
-        {
-          title: 'Comunicación interna',
-          description:
-            'Los usuarios pueden iniciar conversaciones y contactar directamente con otros perfiles de la plataforma.',
-        },
-        {
-          title: 'Confianza y valoraciones',
-          description:
-            'Las valoraciones y la disponibilidad visible ayudan a reforzar la credibilidad de los perfiles.',
-        },
-      ],
-    },
-  },
-
-  en: {
-    nav: {
-      dashboard: 'Dashboard',
-      search: 'Search profiles',
-      conversations: 'Messages',
-      editProfile: 'Edit profile',
-      admin: 'Admin',
-      signOut: 'Sign out',
-      login: 'Sign in',
-      register: 'Create account',
-      subtitle: 'Amateur football connected',
-    },
-    theme: {
-      light: 'Light theme',
-      dark: 'Dark theme',
-      toggle: 'Toggle theme',
-    },
-    language: {
-      label: 'Language',
-    },
-    home: {
-      eyebrow: 'Marketplace for amateur football',
-      title: 'Connect clubs, players and professionals in amateur football.',
-      description:
-        'FUTCON is a platform designed to help users discover profiles, make first contact and build trust within the amateur football ecosystem.',
-      dashboardCta: 'Go to dashboard',
-      registerCta: 'Create account',
-      loginCta: 'Sign in',
-      exploreCta: 'Explore profiles',
-      targetTitle: 'Who is FUTCON for?',
-      userTypes: [
-        'Players looking for opportunities',
-        'Coaches and technical staff',
-        'Clubs and sports managers',
-        'Physiotherapists, nutritionists and fitness coaches',
-      ],
-      features: [
-        {
-          title: 'Role-based profiles',
-          description:
-            'Players, coaches, clubs and staff professionals have a profile adapted to their role.',
-        },
-        {
-          title: 'Filtered search',
-          description:
-            'Users can find profiles by role, location and availability within the amateur football ecosystem.',
-        },
-        {
-          title: 'Internal communication',
-          description:
-            'Users can start conversations and contact other profiles directly through the platform.',
-        },
-        {
-          title: 'Trust and reviews',
-          description:
-            'Reviews and visible availability help increase profile credibility.',
-        },
-      ],
-    },
-  },
+  ca,
+  es,
+  en,
 } as const
 
 export function getMessages(locale: Locale) {

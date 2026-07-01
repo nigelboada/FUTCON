@@ -28,7 +28,7 @@ export async function submitReview(formData: FormData) {
   const rating = Number(ratingValue)
 
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
-    redirect(`/profile/${reviewedProfileId}?error=La puntuació ha d’estar entre 1 i 5.`)
+    redirect(`/profile/${reviewedProfileId}?error=invalid_rating`)
   }
 
   const {
@@ -40,7 +40,7 @@ export async function submitReview(formData: FormData) {
   }
 
   if (user.id === reviewedProfileId) {
-    redirect(`/profile/${reviewedProfileId}?error=No pots valorar el teu propi perfil.`)
+    redirect(`/profile/${reviewedProfileId}?error=own_review_blocked`)
   }
 
   const { error } = await supabase.from('reviews').upsert(
@@ -61,5 +61,5 @@ export async function submitReview(formData: FormData) {
   }
 
   revalidatePath(`/profile/${reviewedProfileId}`)
-  redirect(`/profile/${reviewedProfileId}?message=Valoració desada correctament.`)
+  redirect(`/profile/${reviewedProfileId}?message=review_saved`)
 }

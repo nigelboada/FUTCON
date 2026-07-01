@@ -13,8 +13,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
 type ProfileEditPageProps = {
   searchParams: Promise<{
@@ -39,6 +41,8 @@ export default async function ProfileEditPage({
   const supabase = await createClient()
   const locale = await getLocale()
   const m = getMessages(locale)
+  const message = resolveFeedbackMessage(params.message, m.feedback)
+  const errorMessage = resolveFeedbackMessage(params.error, m.feedback)
 
   const availabilityOptions = [
     {
@@ -92,7 +96,7 @@ export default async function ProfileEditPage({
     .single()
 
   if (error || !profile) {
-    redirect(`/dashboard?error=${encodeURIComponent(m.profileEdit.loadError)}`)
+    redirect('/dashboard?error=profile_load_failed')
   }
 
   const { data: playerProfile } =
@@ -158,17 +162,9 @@ export default async function ProfileEditPage({
           </CardHeader>
 
           <CardContent>
-            {params.message ? (
-              <div className="mb-4 rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700">
-                {params.message}
-              </div>
-            ) : null}
-
-            {params.error ? (
-              <div className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {params.error}
-              </div>
-            ) : null}
+            <div className="mb-4">
+              <FeedbackMessage message={message} error={errorMessage} />
+            </div>
 
             <form action={updateFullProfile} className="space-y-10">
               <input type="hidden" name="role" value={primaryRole} />

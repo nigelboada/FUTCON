@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
 type RegisterPageProps = {
   searchParams: Promise<{
@@ -26,6 +27,7 @@ export default async function RegisterPage({
   const params = await searchParams
   const locale = await getLocale()
   const m = getMessages(locale)
+  const error = resolveFeedbackMessage(params.error, m.feedback)
 
   return (
     <main className="futcon-hero-bg min-h-[calc(100vh-4rem)] bg-muted/50 px-4 py-10">
@@ -53,7 +55,7 @@ export default async function RegisterPage({
           </CardHeader>
 
           <CardContent className="space-y-4">
-            <FeedbackMessage error={params.error} />
+            <FeedbackMessage error={error} />
 
             <form action={signUp} className="space-y-4">
               <div className="space-y-2">

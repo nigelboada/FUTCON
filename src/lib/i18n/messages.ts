@@ -19,13 +19,21 @@ const ca = {
     rating: 'valoració',
     ratings: 'valoracions',
     noRatings: 'Sense valoracions',
+    back: 'Tornar',
+    save: 'Desar',
+    continue: 'Continuar',
+    loading: 'Carregant...',
+    noLocation: 'Ubicació no indicada',
+    noRole: 'Rol no indicat',
   },
+
   roles: {
     player: 'Jugador',
     coach: 'Entrenador / cos tècnic',
     club: 'Club o responsable',
     staff: 'Professional de l’staff',
   },
+
   rolePlural: {
     all: 'Tots els rols',
     player: 'Jugadors',
@@ -33,12 +41,14 @@ const ca = {
     club: 'Clubs o responsables',
     staff: 'Professionals de l’staff',
   },
+
   availability: {
     all: 'Qualsevol disponibilitat',
     available: 'Disponible',
     open_to_offers: 'Escolto ofertes',
     unavailable: 'No disponible',
   },
+
   verification: {
     unverified: 'No verificat',
     pending: 'Verificació pendent',
@@ -46,6 +56,7 @@ const ca = {
     rejected: 'Verificació rebutjada',
     verifiedShort: 'Verificat',
   },
+
   staffKinds: {
     physiotherapist: 'Fisioterapeuta',
     nutritionist: 'Nutricionista',
@@ -252,6 +263,9 @@ const ca = {
     reviewPlural: 'valoracions',
     locationNotSpecified: 'Ubicació no indicada',
   },
+
+
+
   publicProfile: {
     generalInfo: 'Informació general',
     generalInfoDescription: 'Dades públiques principals del perfil.',
@@ -300,7 +314,29 @@ const ca = {
       2: '2 - Millorable',
       1: '1 - Dolenta',
     },
+
+    backToSearch: 'Tornar al cercador',
+    sportInfo: 'Informació esportiva',
+    sportInfoDescription: 'Dades específiques del perfil de jugador.',
+    staffType: 'Tipus de professional',
+    reviews: 'Valoracions',
+    noReviews: 'Sense valoracions',
+    reviewSingular: 'valoració',
+    reviewPlural: 'valoracions',
+    loginToReview: 'Inicia sessió per valorar aquest perfil.',
+    ownReviewBlocked: 'No pots valorar el teu propi perfil.',
+    rating: 'Puntuació',
+    loginToContact: 'Inicia sessió per contactar',
+    ownContactBlocked: 'No pots contactar amb el teu propi perfil',
+    contactButton: 'Contactar',
+
+
+
   },
+
+
+
+
   profileEdit: {
     loadError: 'No s’ha pogut carregar el perfil.',
     title: 'Editar perfil',
@@ -386,6 +422,9 @@ const ca = {
       'Ex: Sol·licito la verificació perquè soc responsable d’un club / jugador federat / professional de l’staff...',
     requestVerification: 'Sol·licitar verificació',
   },
+
+
+
   conversations: {
     title: 'Missatges',
     description: 'Converses iniciades amb altres perfils de FUTCON.',
@@ -403,6 +442,9 @@ const ca = {
     emptyThread:
       'Encara no hi ha missatges. Escriu el primer missatge per iniciar la conversa.',
   },
+
+
+
   admin: {
     permissionError: 'No tens permisos per accedir al panell d’administració.',
     eyebrow: 'Administració',
@@ -427,13 +469,53 @@ const ca = {
     historyDescription: 'Sol·licituds verificades o rebutjades.',
     resolution: 'Resolució:',
     noResolved: 'Encara no hi ha sol·licituds resoltes.',
+    backToDashboard: 'Tornar al dashboard',
+    pendingRequests: 'Pendents de revisió',
+    resolvedRequests: 'Resoltes',
+    pendingSection: 'Sol·licituds pendents',
+    requestedAt: 'Sol·licitada el',
+    ownRequestBlocked: 'Aquesta sol·licitud ha de ser resolta per un altre administrador.',
+    notResolved: 'No resolt',
+
+    
   },
+
+  feedback: {
+    signup_missing_fields: 'Cal omplir tots els camps.',
+    password_too_short: 'La contrasenya ha de tenir com a mínim 6 caràcters.',
+    account_created_check_email: 'Compte creat. Revisa el correu abans d’iniciar sessió.',
+    signin_missing_credentials: 'Cal indicar correu electrònic i contrasenya.',
+    invalid_role: 'Cal seleccionar un rol vàlid.',
+    profile_invalid_role: 'El rol del perfil no és vàlid.',
+    display_name_required: 'El nom visible és obligatori.',
+    invalid_availability: 'L’estat de disponibilitat no és vàlid.',
+    club_name_required: 'El nom del club és obligatori.',
+    invalid_staff_type: 'El tipus de professional no és vàlid.',
+    profile_updated: 'Perfil actualitzat correctament.',
+    profile_load_failed: 'No s’ha pogut carregar el perfil.',
+    conversation_create_failed: 'No s’ha pogut crear la conversa.',
+    review_saved: 'Valoració desada correctament.',
+    invalid_rating: 'La puntuació ha d’estar entre 1 i 5.',
+    own_review_blocked: 'No pots valorar el teu propi perfil.',
+    verification_requested: 'Sol·licitud de verificació enviada correctament.',
+    verification_approved: 'Perfil verificat correctament.',
+    verification_rejected: 'Sol·licitud rebutjada correctament.',
+    invalid_request: 'Sol·licitud no vàlida.',
+    no_admin_permission: 'No tens permisos per accedir al panell d’administració.',
+    empty_message: 'El missatge no pot estar buit.',
+  },
+
+
   notFound: {
     title: 'Perfil no trobat',
     description: 'El perfil que estàs intentant consultar no existeix o no és públic.',
     action: 'Tornar al cercador',
   },
 } as const
+
+
+
+
 
 const es = {
   ...ca,
@@ -632,6 +714,30 @@ const es = {
     sendMessage: 'Enviar mensaje',
     emptyThread:
       'Todavía no hay mensajes. Escribe el primer mensaje para iniciar la conversación.',
+  },
+  feedback: {
+    signup_missing_fields: 'Hay que rellenar todos los campos.',
+    password_too_short: 'La contraseña debe tener como mínimo 6 caracteres.',
+    account_created_check_email: 'Cuenta creada. Revisa el correo antes de iniciar sesión.',
+    signin_missing_credentials: 'Hay que indicar correo electrónico y contraseña.',
+    invalid_role: 'Hay que seleccionar un rol válido.',
+    profile_invalid_role: 'El rol del perfil no es válido.',
+    display_name_required: 'El nombre visible es obligatorio.',
+    invalid_availability: 'El estado de disponibilidad no es válido.',
+    club_name_required: 'El nombre del club es obligatorio.',
+    invalid_staff_type: 'El tipo de profesional no es válido.',
+    profile_updated: 'Perfil actualizado correctamente.',
+    profile_load_failed: 'No se ha podido cargar el perfil.',
+    conversation_create_failed: 'No se ha podido crear la conversación.',
+    review_saved: 'Valoración guardada correctamente.',
+    invalid_rating: 'La puntuación debe estar entre 1 y 5.',
+    own_review_blocked: 'No puedes valorar tu propio perfil.',
+    verification_requested: 'Solicitud de verificación enviada correctamente.',
+    verification_approved: 'Perfil verificado correctamente.',
+    verification_rejected: 'Solicitud rechazada correctamente.',
+    invalid_request: 'Solicitud no válida.',
+    no_admin_permission: 'No tienes permisos para acceder al panel de administración.',
+    empty_message: 'El mensaje no puede estar vacío.',
   },
   notFound: {
     title: 'Perfil no encontrado',
@@ -836,6 +942,30 @@ const en = {
     sendMessage: 'Send message',
     emptyThread:
       'There are no messages yet. Write the first message to start the conversation.',
+  },
+  feedback: {
+    signup_missing_fields: 'Please fill in all fields.',
+    password_too_short: 'The password must be at least 6 characters long.',
+    account_created_check_email: 'Account created. Check your email before signing in.',
+    signin_missing_credentials: 'Please provide an email and password.',
+    invalid_role: 'Please select a valid role.',
+    profile_invalid_role: 'The profile role is not valid.',
+    display_name_required: 'Display name is required.',
+    invalid_availability: 'The availability status is not valid.',
+    club_name_required: 'Club name is required.',
+    invalid_staff_type: 'The professional type is not valid.',
+    profile_updated: 'Profile updated successfully.',
+    profile_load_failed: 'The profile could not be loaded.',
+    conversation_create_failed: 'The conversation could not be created.',
+    review_saved: 'Review saved successfully.',
+    invalid_rating: 'The rating must be between 1 and 5.',
+    own_review_blocked: 'You cannot review your own profile.',
+    verification_requested: 'Verification request sent successfully.',
+    verification_approved: 'Profile verified successfully.',
+    verification_rejected: 'Request rejected successfully.',
+    invalid_request: 'Invalid request.',
+    no_admin_permission: 'You do not have permission to access the admin panel.',
+    empty_message: 'The message cannot be empty.',
   },
   notFound: {
     title: 'Profile not found',

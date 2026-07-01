@@ -80,7 +80,7 @@ export async function updateFullProfile(formData: FormData) {
   const role = getStringValue(formData, 'role')
 
   if (!isValidRole(role)) {
-    redirect('/profile/edit?error=El rol del perfil no és vàlid.')
+    redirect('/profile/edit?error=profile_invalid_role')
   }
 
   const displayName = getStringValue(formData, 'displayName')
@@ -90,11 +90,11 @@ export async function updateFullProfile(formData: FormData) {
   const availability = getStringValue(formData, 'availability')
 
   if (!displayName) {
-    redirect('/profile/edit?error=El nom visible és obligatori.')
+    redirect('/profile/edit?error=display_name_required')
   }
 
   if (!isValidAvailability(availability)) {
-    redirect('/profile/edit?error=L’estat de disponibilitat no és vàlid.')
+    redirect('/profile/edit?error=invalid_availability')
   }
 
   const { error: profileError } = await supabase
@@ -159,7 +159,7 @@ export async function updateFullProfile(formData: FormData) {
     const clubName = getStringValue(formData, 'clubName')
 
     if (!clubName) {
-      redirect('/profile/edit?error=El nom del club és obligatori.')
+      redirect('/profile/edit?error=club_name_required')
     }
 
     const { error } = await supabase.from('club_profiles').upsert(
@@ -186,7 +186,7 @@ export async function updateFullProfile(formData: FormData) {
     const staffKind = getStringValue(formData, 'staffKind')
 
     if (!isValidStaffType(staffKind)) {
-      redirect('/profile/edit?error=El tipus de professional no és vàlid.')
+      redirect('/profile/edit?error=invalid_staff_type')
     }
 
     const { error } = await supabase.from('staff_profiles').upsert(
@@ -211,7 +211,7 @@ export async function updateFullProfile(formData: FormData) {
   revalidatePath('/dashboard')
   revalidatePath('/profile/edit')
 
-  redirect('/dashboard?message=Perfil actualitzat correctament.')
+  redirect('/dashboard?message=profile_updated')
 }
 
 export async function requestProfileVerification(formData: FormData) {
@@ -239,5 +239,5 @@ export async function requestProfileVerification(formData: FormData) {
   revalidatePath('/profile/edit')
   revalidatePath(`/profile/${user.id}`)
 
-  redirect('/profile/edit?message=Sol·licitud de verificació enviada correctament.')
+  redirect('/profile/edit?message=verification_requested')
 }

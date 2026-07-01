@@ -22,11 +22,11 @@ export async function signUp(formData: FormData) {
   const password = getStringValue(formData, 'password')
 
   if (!displayName || !email || !password) {
-    redirect('/register?error=Cal omplir tots els camps.')
+    redirect('/register?error=signup_missing_fields')
   }
 
   if (password.length < 6) {
-    redirect('/register?error=La contrasenya ha de tenir com a mínim 6 caràcters.')
+    redirect('/register?error=password_too_short')
   }
 
   const { data, error } = await supabase.auth.signUp({
@@ -46,7 +46,7 @@ export async function signUp(formData: FormData) {
   revalidatePath('/', 'layout')
 
   if (!data.session) {
-    redirect('/login?message=Compte creat. Revisa el correu abans d’iniciar sessió.')
+    redirect('/login?message=account_created_check_email')
   }
 
   redirect('/onboarding')
@@ -59,7 +59,7 @@ export async function signIn(formData: FormData) {
   const password = getStringValue(formData, 'password')
 
   if (!email || !password) {
-    redirect('/login?error=Cal indicar correu electrònic i contrasenya.')
+    redirect('/login?error=signin_missing_credentials')
   }
 
   const { error } = await supabase.auth.signInWithPassword({

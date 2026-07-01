@@ -14,6 +14,7 @@ import {
 import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
 type ConversationPageProps = {
   params: Promise<{
@@ -41,6 +42,7 @@ export default async function ConversationPage({
   const supabase = await createClient()
   const locale = await getLocale()
   const m = getMessages(locale)
+  const error = resolveFeedbackMessage(query.error, m.feedback)
 
   const {
     data: { user },
@@ -132,7 +134,7 @@ export default async function ConversationPage({
 
           <CardContent className="space-y-6 p-0">
             <div className="space-y-3 px-4 pt-4">
-              <FeedbackMessage error={query.error} />
+              <FeedbackMessage error={error} />
 
               {messagesError ? (
                 <FeedbackMessage error={messagesError.message} />

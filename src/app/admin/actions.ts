@@ -28,7 +28,7 @@ async function requireAdmin() {
   const { data: isAdmin, error } = await supabase.rpc('is_app_admin')
 
   if (error || !isAdmin) {
-    redirect('/dashboard?error=No tens permisos per accedir al panell d’administració.')
+    redirect('/dashboard?error=no_admin_permission')
   }
 
   return supabase
@@ -39,7 +39,7 @@ export async function approveVerificationRequest(formData: FormData) {
   const requestId = getStringValue(formData, 'requestId')
 
   if (!requestId) {
-    redirect('/admin?error=Sol·licitud no vàlida.')
+    redirect('/admin?error=invalid_request')
   }
 
   const { error } = await supabase.rpc(
@@ -56,7 +56,7 @@ export async function approveVerificationRequest(formData: FormData) {
   revalidatePath('/admin')
   revalidatePath('/search')
 
-  redirect('/admin?message=Perfil verificat correctament.')
+  redirect('/admin?message=verification_approved')
 }
 
 export async function rejectVerificationRequest(formData: FormData) {
@@ -64,7 +64,7 @@ export async function rejectVerificationRequest(formData: FormData) {
   const requestId = getStringValue(formData, 'requestId')
 
   if (!requestId) {
-    redirect('/admin?error=Sol·licitud no vàlida.')
+    redirect('/admin?error=invalid_request')
   }
 
   const { error } = await supabase.rpc(
@@ -81,5 +81,5 @@ export async function rejectVerificationRequest(formData: FormData) {
   revalidatePath('/admin')
   revalidatePath('/search')
 
-  redirect('/admin?message=Sol·licitud rebutjada correctament.')
+  redirect('/admin?message=verification_rejected')
 }

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
 type OnboardingPageProps = {
   searchParams: Promise<{
@@ -19,6 +20,7 @@ export default async function OnboardingPage({
   const supabase = await createClient()
   const locale = await getLocale()
   const m = getMessages(locale)
+  const error = resolveFeedbackMessage(params.error, m.feedback)
 
   const {
     data: { user },
@@ -55,7 +57,7 @@ export default async function OnboardingPage({
           </p>
         </section>
 
-        <FeedbackMessage error={params.error} />
+        <FeedbackMessage error={error} />
 
         <form action={selectInitialRole} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">

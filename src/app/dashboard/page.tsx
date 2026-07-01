@@ -9,8 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
 type DashboardPageProps = {
   searchParams: Promise<{
@@ -40,6 +42,8 @@ export default async function DashboardPage({
   const supabase = await createClient()
   const locale = await getLocale()
   const m = getMessages(locale)
+  const message = resolveFeedbackMessage(params.message, m.feedback)
+  const error = resolveFeedbackMessage(params.error, m.feedback)
 
   function formatRole(value: string | null | undefined) {
     if (!value) {
@@ -105,17 +109,7 @@ export default async function DashboardPage({
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-8">
       <div className="futcon-fade-up mx-auto max-w-7xl space-y-6">
-        {params.message ? (
-          <div className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700">
-            {params.message}
-          </div>
-        ) : null}
-
-        {params.error ? (
-          <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {params.error}
-          </div>
-        ) : null}
+        <FeedbackMessage message={message} error={error} />
 
         <section className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
           <Card>

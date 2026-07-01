@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -25,6 +26,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams
   const locale = await getLocale()
   const m = getMessages(locale)
+  const message = resolveFeedbackMessage(params.message, m.feedback)
+  const error = resolveFeedbackMessage(params.error, m.feedback)
 
   return (
     <main className="futcon-hero-bg min-h-[calc(100vh-4rem)] bg-muted/50 px-4 py-10">
@@ -50,7 +53,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            <FeedbackMessage message={params.message} error={params.error} />
+            <FeedbackMessage message={message} error={error} />
 
             <form action={signIn} className="space-y-4">
               <div className="space-y-2">

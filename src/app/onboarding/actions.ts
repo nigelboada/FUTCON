@@ -26,7 +26,7 @@ export async function selectInitialRole(formData: FormData) {
   const role = formData.get('role')
 
   if (typeof role !== 'string' || !isValidRole(role)) {
-    redirect('/onboarding?error=Cal seleccionar un rol vàlid.')
+    redirect('/onboarding?error=invalid_role')
   }
 
   const { error } = await supabase.from('profile_roles').insert({

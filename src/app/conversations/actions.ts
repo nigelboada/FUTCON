@@ -28,7 +28,7 @@ export async function startConversation(formData: FormData) {
   })
 
   if (error || !data) {
-    redirect(`/profile/${targetProfileId}?error=${encodeURIComponent(error?.message ?? 'No s’ha pogut crear la conversa.')}`)
+    redirect(`/profile/${targetProfileId}?error=${encodeURIComponent(error?.message ?? 'conversation_create_failed')}`)
   }
 
   revalidatePath('/conversations')
@@ -46,7 +46,7 @@ export async function sendMessage(formData: FormData) {
   }
 
   if (!content) {
-    redirect(`/conversations/${conversationId}?error=El missatge no pot estar buit.`)
+    redirect(`/conversations/${conversationId}?error=empty_message`)
   }
 
   const {

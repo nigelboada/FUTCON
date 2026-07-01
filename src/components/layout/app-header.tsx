@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { signOut } from '@/app/(auth)/actions'
 import { Button } from '@/components/ui/button'
 
 import { getLocale } from '@/lib/i18n/server'
@@ -9,7 +8,7 @@ import { getTheme } from '@/lib/theme/server'
 import { LanguageSwitcher } from '@/components/layout/language-switcher'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 
-
+import { UserMenu } from '@/components/layout/user-menu'
 
 
 export async function AppHeader() {
@@ -35,7 +34,7 @@ export async function AppHeader() {
     ? await supabase.rpc('is_app_admin')
     : { data: false }
 
-
+  const displayName = profile?.display_name ?? user?.email ?? m.common.unknownUser
 
   const navItems = [
     {
@@ -85,23 +84,22 @@ export async function AppHeader() {
                 </Button>
               ))}
 
-              {isAdmin ? (
-                <Button asChild variant="ghost" size="sm">
-                  <Link href="/admin">{m.nav.admin}</Link>
-                </Button>
-              ) : null}
-
               <div className="hidden h-6 w-px bg-border md:block" />
 
-              <form action={signOut}>
-                <Button type="submit" variant="outline" size="sm">
-                  {m.nav.signOut}
-                </Button>
-              </form>
-
-              <span className="max-w-40 truncate text-sm text-muted-foreground">
-                {profile?.display_name ?? user.email}
-              </span>
+              <UserMenu
+                displayName={displayName}
+                isAdmin={Boolean(isAdmin)}
+                currentLocale={locale}
+                currentTheme={theme}
+                labels={{
+                  account: m.nav.account,
+                  language: m.language.label,
+                  admin: m.nav.admin,
+                  editProfile: m.nav.editProfile,
+                  signOut: m.nav.signOut,
+                  theme: m.theme,
+                }}
+              />
 
             </>
           ) : (

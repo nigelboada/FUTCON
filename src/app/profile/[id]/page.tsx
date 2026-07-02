@@ -38,14 +38,20 @@ type PublicProfile = {
   availability: string | null
   verification: string | null
   role: string
+  player_modality: string | null
   player_position: string | null
   player_category: string | null
+  player_division_level: string | null
   player_current_club: string | null
+  coach_modality: string | null
   coach_category: string | null
+  coach_division_level: string | null
   coach_current_club: string | null
   coaching_license: string | null
+  club_modality: string | null
   club_name: string | null
   club_category: string | null
+  club_division_level: string | null
   staff_kind: string | null
   staff_services: string | null
   price_range: string | null
@@ -53,6 +59,7 @@ type PublicProfile = {
 
 type PublicProfileLabels = {
   profile: ReturnType<typeof getMessages>['publicProfile']
+  profileEdit: ReturnType<typeof getMessages>['profileEdit']
   roles: Record<string, string>
   availability: Record<string, string>
   verification: Record<string, string>
@@ -109,8 +116,16 @@ function RoleSpecificInfo({
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
+          <ProfileInfoRow
+            label={labels.profileEdit.modality}
+            value={profile.player_modality}
+          />
           <ProfileInfoRow label={p.position} value={profile.player_position} />
           <ProfileInfoRow label={p.category} value={profile.player_category} />
+          <ProfileInfoRow
+            label={labels.profileEdit.division}
+            value={profile.player_division_level}
+          />
           <ProfileInfoRow
             label={p.currentClub}
             value={profile.player_current_club}
@@ -131,7 +146,15 @@ function RoleSpecificInfo({
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
+          <ProfileInfoRow
+            label={labels.profileEdit.modality}
+            value={profile.coach_modality}
+          />
           <ProfileInfoRow label={p.category} value={profile.coach_category} />
+          <ProfileInfoRow
+            label={labels.profileEdit.division}
+            value={profile.coach_division_level}
+          />
           <ProfileInfoRow
             label={p.currentClub}
             value={profile.coach_current_club}
@@ -154,7 +177,15 @@ function RoleSpecificInfo({
 
         <div className="grid gap-4 md:grid-cols-2">
           <ProfileInfoRow label={p.clubName} value={profile.club_name} />
+          <ProfileInfoRow
+            label={labels.profileEdit.modality}
+            value={profile.club_modality}
+          />
           <ProfileInfoRow label={p.category} value={profile.club_category} />
+          <ProfileInfoRow
+            label={labels.profileEdit.division}
+            value={profile.club_division_level}
+          />
         </div>
       </section>
     )
@@ -212,6 +243,7 @@ export default async function PublicProfilePage({
   const errorMessage = resolveFeedbackMessage(query.error, m.feedback)
   const labels: PublicProfileLabels = {
     profile: m.publicProfile,
+    profileEdit: m.profileEdit,
     roles: { ...m.roles },
     availability: { ...m.availability },
     verification: { ...m.verification },

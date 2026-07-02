@@ -10,13 +10,22 @@ type SearchProfileLike = {
   player_position?: string | null
   player_category?: string | null
   player_current_club?: string | null
+  player_modality?: string | null
+  player_division_level?: string | null
+
 
   coach_category?: string | null
   coach_current_club?: string | null
   coaching_license?: string | null
+  coach_modality?: string | null
+  coach_division_level?: string | null
+
 
   club_name?: string | null
   club_category?: string | null
+  club_modality?: string | null
+  club_division_level?: string | null
+
 
   staff_kind?: string | null
   staff_services?: string | null
@@ -33,9 +42,9 @@ const baseFields: (keyof SearchProfileLike)[] = [
 ]
 
 const roleFields: Record<string, (keyof SearchProfileLike)[]> = {
-  player: ['player_position', 'player_category', 'player_current_club'],
-  coach: ['coach_category', 'coach_current_club', 'coaching_license'],
-  club: ['club_name', 'club_category'],
+  player: ['player_position', 'player_category', 'player_current_club', 'player_modality', 'player_division_level'],
+  coach: ['coach_category', 'coach_current_club', 'coaching_license', 'coach_modality', 'coach_division_level'],
+  club: ['club_name', 'club_category', 'club_modality', 'club_division_level'],
   staff: ['staff_kind', 'staff_services', 'price_range'],
 }
 

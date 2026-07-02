@@ -88,6 +88,12 @@ export async function updateFullProfile(formData: FormData) {
   const city = getStringValue(formData, 'city')
   const province = getStringValue(formData, 'province')
   const availability = getStringValue(formData, 'availability')
+  const playerModality = getStringValue(formData, 'playerModality')
+  const playerDivisionLevel = getStringValue(formData, 'playerDivisionLevel')
+  const coachModality = getStringValue(formData, 'coachModality')
+  const coachDivisionLevel = getStringValue(formData, 'coachDivisionLevel')
+  const clubModality = getStringValue(formData, 'clubModality')
+  const clubDivisionLevel = getStringValue(formData, 'clubDivisionLevel')
 
   if (!displayName) {
     redirect('/profile/edit?error=display_name_required')
@@ -119,9 +125,9 @@ export async function updateFullProfile(formData: FormData) {
         profile_id: user.id,
         position: getStringValue(formData, 'position') || null,
         preferred_foot: getStringValue(formData, 'preferredFoot') || null,
-        modality: getStringValue(formData, 'playerModality') || null,
+        modality: playerModality || null,
         category: getStringValue(formData, 'playerCategory') || null,
-        division_level: getStringValue(formData, 'playerDivisionLevel') || null,
+        division_level: playerDivisionLevel || null,
         current_club: getStringValue(formData, 'playerCurrentClub') || null,
         experience_years: getOptionalNumber(formData, 'playerExperienceYears'),
         birth_year: getOptionalNumber(formData, 'birthYear'),
@@ -141,9 +147,9 @@ export async function updateFullProfile(formData: FormData) {
     const { error } = await supabase.from('coach_profiles').upsert(
       {
         profile_id: user.id,
-        modality: getStringValue(formData, 'coachModality') || null,
+        modality: coachModality || null,
         category: getStringValue(formData, 'coachCategory') || null,
-        division_level: getStringValue(formData, 'coachDivisionLevel') || null,
+        division_level: coachDivisionLevel || null,
         current_club: getStringValue(formData, 'coachCurrentClub') || null,
         experience_years: getOptionalNumber(formData, 'coachExperienceYears'),
         coaching_license: getStringValue(formData, 'coachingLicense') || null,
@@ -169,9 +175,9 @@ export async function updateFullProfile(formData: FormData) {
       {
         profile_id: user.id,
         club_name: clubName,
-        modality: getStringValue(formData, 'clubModality') || null,
+        modality: clubModality || null,
         category: getStringValue(formData, 'clubCategory') || null,
-        division_level: getStringValue(formData, 'clubDivisionLevel') || null,
+        division_level: clubDivisionLevel || null,
         city: city || null,
         province: province || null,
         website: getStringValue(formData, 'website') || null,

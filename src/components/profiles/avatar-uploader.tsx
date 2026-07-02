@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -17,21 +17,42 @@ type AvatarUploaderProps = {
   }
 }
 
+function getFileExtension(file: File) {
+  const extension = file.name.split('.').pop()?.toLowerCase()
+
+  if (extension === 'jpg' || extension === 'jpeg') {
+    return 'jpg'
+  }
+
+  if (extension === 'png') {
+    return 'png'
+  }
+
+  if (extension === 'webp') {
+    return 'webp'
+  }
+
+  return 'png'
+}
+
+function getInitials(value: string) {
+  return value.slice(0, 2).toUpperCase()
+}
+
 export function AvatarUploader({
   userId,
   currentAvatarUrl,
   labels,
 }: AvatarUploaderProps) {
   const router = useRouter()
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const supabase = createClient()
+
+  const [previewUrl, setPreviewUrl] = useState<string | null>(currentAvatarUrl)
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
-
-    if (!file) return
-
+  async function uploadAvatar(file: File) {
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
       setError(labels.error)
       return
@@ -45,14 +66,15 @@ export function AvatarUploader({
     setIsUploading(true)
     setError(null)
 
-    const extension = file.name.split('.').pop() ?? 'png'
-    const path = `${userId}/avatar.${extension}`
+    const extension = getFileExtension(file)
+    const path = `${userId}/avatar-${Date.now()}.${extension}`
 
     const { error: uploadError } = await supabase.storage
       .from('avatars')
       .upload(path, file, {
-        upsert: true,
+        cacheControl: '3600',
         contentType: file.type,
+        upsert: false,
       })
 
     if (uploadError) {
@@ -77,8 +99,19 @@ export function AvatarUploader({
       return
     }
 
+    setPreviewUrl(data.publicUrl)
     setIsUploading(false)
     router.refresh()
+  }
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    uploadAvatar(file)
   }
 
   return (
@@ -89,32 +122,43 @@ export function AvatarUploader({
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border bg-muted">
-          {currentAvatarUrl ? (
+        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted">
+          {previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={currentAvatarUrl}
+              src={previewUrl}
               alt=""
               className="h-full w-full object-cover"
             />
           ) : (
             <span className="text-2xl font-bold text-muted-foreground">
-              FUT
+              {getInitials('FUTCON')}
             </span>
           )}
         </div>
 
         <div className="space-y-3">
           <input
+            ref={inputRef}
             type="file"
             accept="image/png,image/jpeg,image/webp"
-            onChange={handleChange}
+            onChange={handleFileChange}
             disabled={isUploading}
+            className="hidden"
           />
 
-          <Button type="button" variant="outline" disabled>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => inputRef.current?.click()}
+            disabled={isUploading}
+          >
             {isUploading ? labels.uploading : labels.upload}
           </Button>
+
+          <p className="text-xs text-muted-foreground">
+            PNG, JPG o WEBP. Mida màxima: 2 MB.
+          </p>
 
           {error ? (
             <p className="text-sm text-destructive">{error}</p>

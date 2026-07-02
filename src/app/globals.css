@@ -153,6 +153,32 @@
   }
 }
 
+
+@keyframes futcon-ball-bounce {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  35% {
+    transform: translateY(-52px) rotate(120deg);
+  }
+
+  65% {
+    transform: translateY(-52px) rotate(240deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+.futcon-ball-loader {
+  font-size: 92px;
+  line-height: 1;
+  animation: futcon-ball-bounce 0.9s cubic-bezier(0.3, 0.7, 0.4, 1) infinite;
+  filter: drop-shadow(0 14px 10px rgba(0, 0, 0, 0.16));
+}
+
 .futcon-fade-up {
   animation: futcon-fade-up 0.45s ease-out both;
 }

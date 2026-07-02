@@ -15,6 +15,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { AvatarUploader } from '@/components/profiles/avatar-uploader'
+import { LocationSelects } from '@/components/profiles/location-selects'
+import { FootballContextFields } from '@/components/profiles/football-context-fields'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
@@ -105,7 +107,7 @@ export default async function ProfileEditPage({
       ? await supabase
           .from('player_profiles')
           .select(
-            'position, preferred_foot, category, current_club, experience_years, birth_year, height_cm'
+            'position, preferred_foot, modality, category, division_level, current_club, experience_years, birth_year, height_cm'
           )
           .eq('profile_id', user.id)
           .maybeSingle()
@@ -116,7 +118,7 @@ export default async function ProfileEditPage({
       ? await supabase
           .from('coach_profiles')
           .select(
-            'category, current_club, experience_years, coaching_license, preferred_age_group'
+            'modality, category, division_level, current_club, experience_years, coaching_license'
           )
           .eq('profile_id', user.id)
           .maybeSingle()
@@ -126,7 +128,7 @@ export default async function ProfileEditPage({
     primaryRole === 'club'
       ? await supabase
           .from('club_profiles')
-          .select('club_name, category, website, contact_role')
+          .select('club_name, modality, category, division_level, website, contact_role')
           .eq('profile_id', user.id)
           .maybeSingle()
       : { data: null }
@@ -142,6 +144,12 @@ export default async function ProfileEditPage({
           .maybeSingle()
       : { data: null }
 
+  const { data: clubOptionsData } = await supabase
+    .from('club_profiles')
+    .select('club_name, modality, category, division_level')
+    .order('club_name', { ascending: true })
+
+  const clubOptions = clubOptionsData ?? []
   const verification = profile.verification ?? 'unverified'
 
   return (
@@ -234,29 +242,16 @@ export default async function ProfileEditPage({
                   />
                 </div>
 
-                <div className="grid gap-5 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="city">{m.profileEdit.city}</Label>
-                    <Input
-                      id="city"
-                      name="city"
-                      type="text"
-                      defaultValue={profile.city ?? ''}
-                      placeholder={m.profileEdit.placeholders.city}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="province">{m.profileEdit.province}</Label>
-                    <Input
-                      id="province"
-                      name="province"
-                      type="text"
-                      defaultValue={profile.province ?? ''}
-                      placeholder={m.profileEdit.placeholders.province}
-                    />
-                  </div>
-                </div>
+                <LocationSelects
+                  defaultProvince={profile.province}
+                  defaultCity={profile.city}
+                  labels={{
+                    province: m.profileEdit.province,
+                    city: m.profileEdit.city,
+                    selectProvince: m.profileEdit.selectProvince,
+                    selectCity: m.profileEdit.selectCity,
+                  }}
+                />
 
                 <div className="space-y-3">
                   <Label htmlFor="availability">
@@ -304,26 +299,43 @@ export default async function ProfileEditPage({
                       defaultValue={playerProfile?.position ?? ''}
                       placeholder={m.profileEdit.placeholders.position}
                     />
+
+                    <div className="md:col-span-2">
+                      <FootballContextFields
+                        locale={locale}
+                        defaultModality={playerProfile?.modality}
+                        defaultCategory={playerProfile?.category}
+                        defaultDivision={playerProfile?.division_level}
+                        defaultClub={playerProfile?.current_club}
+                        clubOptions={clubOptions}
+                        fieldNames={{
+                          modality: 'playerModality',
+                          category: 'playerCategory',
+                          division: 'playerDivisionLevel',
+                          club: 'playerCurrentClub',
+                        }}
+                        labels={{
+                          modality: m.profileEdit.modality,
+                          category: m.profileEdit.category,
+                          division: m.profileEdit.division,
+                          club: m.profileEdit.currentClub,
+                          license: m.profileEdit.coachingLicense,
+                          selectModality: m.profileEdit.selectModality,
+                          selectCategory: m.profileEdit.selectCategory,
+                          selectDivision: m.profileEdit.selectDivision,
+                          selectLicense: m.profileEdit.selectLicense,
+                          manualClubPlaceholder:
+                            m.profileEdit.manualClubPlaceholder,
+                        }}
+                      />
+                    </div>
+
                     <Field
                       id="preferredFoot"
                       name="preferredFoot"
                       label={m.profileEdit.preferredFoot}
                       defaultValue={playerProfile?.preferred_foot ?? ''}
                       placeholder={m.profileEdit.placeholders.preferredFoot}
-                    />
-                    <Field
-                      id="playerCategory"
-                      name="playerCategory"
-                      label={m.profileEdit.playerCategory}
-                      defaultValue={playerProfile?.category ?? ''}
-                      placeholder={m.profileEdit.placeholders.playerCategory}
-                    />
-                    <Field
-                      id="playerCurrentClub"
-                      name="playerCurrentClub"
-                      label={m.profileEdit.playerCurrentClub}
-                      defaultValue={playerProfile?.current_club ?? ''}
-                      placeholder={m.profileEdit.placeholders.playerCurrentClub}
                     />
                     <Field
                       id="playerExperienceYears"
@@ -363,20 +375,39 @@ export default async function ProfileEditPage({
                   />
 
                   <div className="grid gap-5 md:grid-cols-2">
-                    <Field
-                      id="coachCategory"
-                      name="coachCategory"
-                      label={m.profileEdit.coachCategory}
-                      defaultValue={coachProfile?.category ?? ''}
-                      placeholder={m.profileEdit.placeholders.coachCategory}
-                    />
-                    <Field
-                      id="coachCurrentClub"
-                      name="coachCurrentClub"
-                      label={m.profileEdit.coachCurrentClub}
-                      defaultValue={coachProfile?.current_club ?? ''}
-                      placeholder={m.profileEdit.placeholders.coachCurrentClub}
-                    />
+                    <div className="md:col-span-2">
+                      <FootballContextFields
+                        locale={locale}
+                        defaultModality={coachProfile?.modality}
+                        defaultCategory={coachProfile?.category}
+                        defaultDivision={coachProfile?.division_level}
+                        defaultClub={coachProfile?.current_club}
+                        defaultLicense={coachProfile?.coaching_license}
+                        clubOptions={clubOptions}
+                        showLicense
+                        fieldNames={{
+                          modality: 'coachModality',
+                          category: 'coachCategory',
+                          division: 'coachDivisionLevel',
+                          club: 'coachCurrentClub',
+                          license: 'coachingLicense',
+                        }}
+                        labels={{
+                          modality: m.profileEdit.modality,
+                          category: m.profileEdit.category,
+                          division: m.profileEdit.division,
+                          club: m.profileEdit.currentClub,
+                          license: m.profileEdit.coachingLicense,
+                          selectModality: m.profileEdit.selectModality,
+                          selectCategory: m.profileEdit.selectCategory,
+                          selectDivision: m.profileEdit.selectDivision,
+                          selectLicense: m.profileEdit.selectLicense,
+                          manualClubPlaceholder:
+                            m.profileEdit.manualClubPlaceholder,
+                        }}
+                      />
+                    </div>
+
                     <Field
                       id="coachExperienceYears"
                       name="coachExperienceYears"
@@ -384,21 +415,6 @@ export default async function ProfileEditPage({
                       type="number"
                       min={0}
                       defaultValue={coachProfile?.experience_years ?? ''}
-                    />
-                    <Field
-                      id="coachingLicense"
-                      name="coachingLicense"
-                      label={m.profileEdit.coachingLicense}
-                      defaultValue={coachProfile?.coaching_license ?? ''}
-                      placeholder={m.profileEdit.placeholders.coachingLicense}
-                    />
-                    <Field
-                      id="preferredAgeGroup"
-                      name="preferredAgeGroup"
-                      label={m.profileEdit.preferredAgeGroup}
-                      defaultValue={coachProfile?.preferred_age_group ?? ''}
-                      placeholder={m.profileEdit.placeholders.preferredAgeGroup}
-                      className="md:col-span-2"
                     />
                   </div>
                 </section>
@@ -412,21 +428,36 @@ export default async function ProfileEditPage({
                   />
 
                   <div className="grid gap-5 md:grid-cols-2">
-                    <Field
-                      id="clubName"
-                      name="clubName"
-                      label={m.profileEdit.clubName}
-                      defaultValue={clubProfile?.club_name ?? ''}
-                      placeholder={m.profileEdit.placeholders.clubName}
-                      required
-                    />
-                    <Field
-                      id="clubCategory"
-                      name="clubCategory"
-                      label={m.profileEdit.clubCategory}
-                      defaultValue={clubProfile?.category ?? ''}
-                      placeholder={m.profileEdit.placeholders.clubCategory}
-                    />
+                    <div className="md:col-span-2">
+                      <FootballContextFields
+                        locale={locale}
+                        defaultModality={clubProfile?.modality}
+                        defaultCategory={clubProfile?.category}
+                        defaultDivision={clubProfile?.division_level}
+                        defaultClub={clubProfile?.club_name}
+                        clubOptions={clubOptions}
+                        fieldNames={{
+                          modality: 'clubModality',
+                          category: 'clubCategory',
+                          division: 'clubDivisionLevel',
+                          club: 'clubName',
+                        }}
+                        labels={{
+                          modality: m.profileEdit.modality,
+                          category: m.profileEdit.category,
+                          division: m.profileEdit.division,
+                          club: m.profileEdit.clubName,
+                          license: m.profileEdit.coachingLicense,
+                          selectModality: m.profileEdit.selectModality,
+                          selectCategory: m.profileEdit.selectCategory,
+                          selectDivision: m.profileEdit.selectDivision,
+                          selectLicense: m.profileEdit.selectLicense,
+                          manualClubPlaceholder:
+                            m.profileEdit.manualClubPlaceholder,
+                        }}
+                      />
+                    </div>
+
                     <Field
                       id="website"
                       name="website"

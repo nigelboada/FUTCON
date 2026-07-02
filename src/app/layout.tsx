@@ -9,6 +9,11 @@ import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register'
 
 import "./globals.css";
 
+import { AppFooter } from '@/components/layout/app-footer'
+
+import { GlobalLoadingOverlay } from '@/components/layout/global-loading-overlay'
+
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -52,7 +57,9 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppHeader />
         {children}
+        <AppFooter />
         <ServiceWorkerRegister />
+        <GlobalLoadingOverlay />
         
       </body>
     </html>

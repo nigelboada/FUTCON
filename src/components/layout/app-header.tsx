@@ -36,30 +36,25 @@ export async function AppHeader() {
 
   const displayName = profile?.display_name ?? user?.email ?? m.common.unknownUser
 
-  const navItems = [
-    {
-      href: '/dashboard',
-      label: m.nav.dashboard,
-    },
-    {
-      href: '/search',
-      label: m.nav.search,
-    },
-    {
-      href: '/conversations',
-      label: m.nav.conversations,
-    },
-    {
-      href: '/profile/edit',
-      label: m.nav.editProfile,
-    },
+  const publicNavItems = [
+    { href: '/', label: m.nav.home },
+    { href: '/about', label: m.nav.about },
+    { href: '/services', label: m.nav.services },
+    { href: '/contact', label: m.nav.contact },
+  ]
+
+  const privateNavItems = [
+    { href: '/dashboard', label: m.nav.dashboard },
+    { href: '/search', label: m.nav.search },
+    { href: '/conversations', label: m.nav.conversations },
+    { href: '/profile/edit', label: m.nav.editProfile },
   ]
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
       <div className="mx-auto flex min-h-16 max-w-7xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
               FC
             </span>
@@ -76,15 +71,11 @@ export async function AppHeader() {
         <nav className="flex flex-wrap items-center gap-2">
           {user ? (
             <>
-
-              
-              {navItems.map((item) => (
+              {privateNavItems.map((item) => (
                 <Button key={item.href} asChild variant="ghost" size="sm">
                   <Link href={item.href}>{item.label}</Link>
                 </Button>
               ))}
-
-              <div className="hidden h-6 w-px bg-border md:block" />
 
               <UserMenu
                 displayName={displayName}
@@ -100,16 +91,17 @@ export async function AppHeader() {
                   theme: m.theme,
                 }}
               />
-
             </>
           ) : (
             <>
+              {publicNavItems.map((item) => (
+                <Button key={item.href} asChild variant="ghost" size="sm">
+                  <Link href={item.href}>{item.label}</Link>
+                </Button>
+              ))}
 
               <LanguageSwitcher currentLocale={locale} label={m.language.label} />
-
               <ThemeToggle currentTheme={theme} labels={m.theme} />
-
-
 
               <Button asChild variant="ghost" size="sm">
                 <Link href="/login">{m.nav.login}</Link>

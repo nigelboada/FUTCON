@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ProfileCard } from '@/components/profiles/profile-card'
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,7 @@ type SearchPageProps = {
 type SearchProfile = {
   profile_id: string
   display_name: string
+  avatar_url: string | null
   bio: string | null
   city: string | null
   province: string | null
@@ -52,6 +54,14 @@ function normalizeParam(value: string | undefined) {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams
   const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login?error=auth_required')
+  }
+
   const locale = await getLocale()
   const m = getMessages(locale)
 

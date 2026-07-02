@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { startConversation } from '@/app/conversations/actions'
@@ -17,6 +16,7 @@ import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
+import { notFound, redirect } from 'next/navigation'
 
 type PublicProfilePageProps = {
   params: Promise<{
@@ -31,6 +31,7 @@ type PublicProfilePageProps = {
 type PublicProfile = {
   profile_id: string
   display_name: string
+  avatar_url: string | null
   bio: string | null
   city: string | null
   province: string | null
@@ -195,6 +196,16 @@ export default async function PublicProfilePage({
   const { id } = await params
   const query = await searchParams
   const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login?error=auth_required')
+  }
+
+
   const locale = await getLocale()
   const m = getMessages(locale)
   const message = resolveFeedbackMessage(query.message, m.feedback)
@@ -225,9 +236,7 @@ export default async function PublicProfilePage({
   const profiles = data as PublicProfile[]
   const profile = profiles[0]
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+
 
   const isOwnProfile = user?.id === profile.profile_id
 
@@ -276,15 +285,32 @@ export default async function PublicProfilePage({
         <Card>
           <CardHeader className="space-y-4">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div>
-                <CardTitle className="text-3xl">
-                  {profile.display_name}
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  {profiles
-                    .map((item) => labels.roles[item.role] ?? item.role)
-                    .join(' · ')}
-                </CardDescription>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border bg-muted">
+                  {profile.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={profile.avatar_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-2xl font-bold text-muted-foreground">
+                      {profile.display_name.slice(0, 2).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <CardTitle className="text-3xl">
+                    {profile.display_name}
+                  </CardTitle>
+                  <CardDescription className="mt-2">
+                    {profiles
+                      .map((item) => labels.roles[item.role] ?? item.role)
+                      .join(' · ')}
+                  </CardDescription>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-2">

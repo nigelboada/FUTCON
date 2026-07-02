@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
+import { AvatarUploader } from '@/components/profiles/avatar-uploader'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
@@ -91,7 +92,7 @@ export default async function ProfileEditPage({
 
   const { data: profile, error } = await supabase
     .from('profiles')
-    .select('display_name, bio, city, province, availability, verification')
+    .select('display_name, bio, city, province, avatar_url, availability, verification')
     .eq('id', user.id)
     .single()
 
@@ -165,6 +166,18 @@ export default async function ProfileEditPage({
             <div className="mb-4">
               <FeedbackMessage message={message} error={errorMessage} />
             </div>
+
+            <AvatarUploader
+              userId={user.id}
+              currentAvatarUrl={profile.avatar_url}
+              labels={{
+                title: m.profileEdit.avatarTitle,
+                description: m.profileEdit.avatarDescription,
+                upload: m.profileEdit.avatarUpload,
+                uploading: m.profileEdit.avatarUploading,
+                error: m.profileEdit.avatarError,
+              }}
+            />
 
             <form action={updateFullProfile} className="space-y-10">
               <input type="hidden" name="role" value={primaryRole} />

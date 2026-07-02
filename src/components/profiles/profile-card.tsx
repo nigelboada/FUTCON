@@ -18,6 +18,7 @@ type ProfileCardProps = {
   profile: {
     profile_id: string
     display_name: string
+    avatar_url: string | null
     bio: string | null
     city: string | null
     province: string | null
@@ -111,20 +112,37 @@ export function ProfileCard({ profile, labels }: ProfileCardProps) {
     <Card className="futcon-card-hover flex h-full flex-col">
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <CardTitle className="text-xl">{profile.display_name}</CardTitle>
+          <div className="flex items-start gap-3">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border bg-muted">
+              {profile.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={profile.avatar_url}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-sm font-bold text-muted-foreground">
+                  {profile.display_name.slice(0, 2).toUpperCase()}
+                </span>
+              )}
+            </div>
 
-            <div className="mt-2 flex flex-wrap gap-2">
-              <span className="rounded-full border px-3 py-1 text-xs font-medium">
-                {labels.roles[profile.role] ?? profile.role}
-              </span>
+            <div>
+              <CardTitle className="text-xl">{profile.display_name}</CardTitle>
 
-              <span className="rounded-full border px-3 py-1 text-xs font-medium">
-                {profile.verification
-                  ? labels.verification[profile.verification] ??
-                    profile.verification
-                  : labels.verification.unverified}
-              </span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <span className="rounded-full border px-3 py-1 text-xs font-medium">
+                  {labels.roles[profile.role] ?? profile.role}
+                </span>
+
+                <span className="rounded-full border px-3 py-1 text-xs font-medium">
+                  {profile.verification
+                    ? labels.verification[profile.verification] ??
+                      profile.verification
+                    : labels.verification.unverified}
+                </span>
+              </div>
             </div>
           </div>
 

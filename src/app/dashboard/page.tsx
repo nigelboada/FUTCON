@@ -13,6 +13,7 @@ import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
+import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 
 type DashboardPageProps = {
   searchParams: Promise<{
@@ -73,7 +74,7 @@ export default async function DashboardPage({
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('display_name, bio, city, province, availability, verification')
+    .select('display_name, bio, city, province, avatar_url, availability, verification')
     .eq('id', user.id)
     .single()
 
@@ -94,6 +95,44 @@ export default async function DashboardPage({
     redirect('/onboarding')
   }
 
+  const primaryRole = roles[0].role
+
+  const { data: playerProfile } =
+    primaryRole === 'player'
+      ? await supabase
+          .from('player_profiles')
+          .select('position, category, current_club')
+          .eq('profile_id', user.id)
+          .maybeSingle()
+      : { data: null }
+
+  const { data: coachProfile } =
+    primaryRole === 'coach'
+      ? await supabase
+          .from('coach_profiles')
+          .select('category, current_club, coaching_license')
+          .eq('profile_id', user.id)
+          .maybeSingle()
+      : { data: null }
+
+  const { data: clubProfile } =
+    primaryRole === 'club'
+      ? await supabase
+          .from('club_profiles')
+          .select('club_name, category')
+          .eq('profile_id', user.id)
+          .maybeSingle()
+      : { data: null }
+
+  const { data: staffProfile } =
+    primaryRole === 'staff'
+      ? await supabase
+          .from('staff_profiles')
+          .select('staff_kind, services, price_range')
+          .eq('profile_id', user.id)
+          .maybeSingle()
+      : { data: null }
+
   const { data: conversationsData } = await supabase
     .from('conversation_overview_view')
     .select(
@@ -105,6 +144,23 @@ export default async function DashboardPage({
 
   const conversations = (conversationsData ?? []) as ConversationOverview[]
   const availability = profile?.availability ?? 'available'
+  const profileCompleteness = profile
+    ? calculateProfileCompleteness({
+        ...profile,
+        role: primaryRole,
+        player_position: playerProfile?.position ?? null,
+        player_category: playerProfile?.category ?? null,
+        player_current_club: playerProfile?.current_club ?? null,
+        coach_category: coachProfile?.category ?? null,
+        coach_current_club: coachProfile?.current_club ?? null,
+        coaching_license: coachProfile?.coaching_license ?? null,
+        club_name: clubProfile?.club_name ?? null,
+        club_category: clubProfile?.category ?? null,
+        staff_kind: staffProfile?.staff_kind ?? null,
+        staff_services: staffProfile?.services ?? null,
+        price_range: staffProfile?.price_range ?? null,
+      })
+    : null
 
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-8">
@@ -124,7 +180,7 @@ export default async function DashboardPage({
             </CardHeader>
 
             <CardContent className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div className="rounded-lg border bg-background p-4">
                   <p className="text-sm text-muted-foreground">
                     {m.dashboard.role}
@@ -164,6 +220,25 @@ export default async function DashboardPage({
                       .join(', ') || m.common.notSpecified}
                   </p>
                 </div>
+
+                {profileCompleteness ? (
+                  <div className="rounded-lg border bg-background p-4">
+                    <p className="text-sm text-muted-foreground">
+                      {m.dashboard.profileCompleteness}
+                    </p>
+
+                    <p className="mt-2 text-2xl font-semibold">
+                      {profileCompleteness.percentage}%
+                    </p>
+
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{ width: `${profileCompleteness.percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               {profile?.bio ? (

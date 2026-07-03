@@ -346,6 +346,7 @@ const ca = {
     "province": "Província",
     "selectProvince": "Selecciona una província",
     "selectCity": "Selecciona una ciutat",
+    "provinceRequired": "Primer has de seleccionar una província.",
     "modality": "Modalitat",
     "category": "Categoria",
     "division": "Divisió o nivell",
@@ -354,6 +355,7 @@ const ca = {
     "selectCategory": "Selecciona una categoria",
     "selectDivision": "Selecciona una divisió",
     "selectLicense": "Selecciona una llicència o formació",
+    "categoryRequired": "Primer has de seleccionar una modalitat i una categoria.",
     "manualClubPlaceholder": "Selecciona un club registrat o escriu-ne el nom manualment",
     "availability": "Disponibilitat",
     "availabilityDescriptions": {
@@ -856,6 +858,7 @@ const es: Messages = {
     "province": "Provincia",
     "selectProvince": "Selecciona una provincia",
     "selectCity": "Selecciona una ciudad",
+    "provinceRequired": "Primero debes seleccionar una provincia.",
     "modality": "Modalidad",
     "category": "Categoría",
     "division": "División o nivel",
@@ -864,6 +867,7 @@ const es: Messages = {
     "selectCategory": "Selecciona una categoría",
     "selectDivision": "Selecciona una división",
     "selectLicense": "Selecciona una licencia o formación",
+    "categoryRequired": "Primero debes seleccionar una modalidad y una categoría.",
     "manualClubPlaceholder": "Selecciona un club registrado o escribe el nombre manualmente",
     "availability": "Disponibilidad",
     "availabilityDescriptions": {
@@ -1357,6 +1361,7 @@ const en: Messages = {
     "province": "Province",
     "selectProvince": "Select a province",
     "selectCity": "Select a city",
+    "provinceRequired": "You must select a province first.",
     "modality": "Modality",
     "category": "Category",
     "division": "Division or level",
@@ -1365,6 +1370,7 @@ const en: Messages = {
     "selectCategory": "Select a category",
     "selectDivision": "Select a division",
     "selectLicense": "Select a license or training",
+    "categoryRequired": "You must select a modality and category first.",
     "manualClubPlaceholder": "Select a registered club or type it manually",
     "availability": "Availability",
     "availabilityDescriptions": {

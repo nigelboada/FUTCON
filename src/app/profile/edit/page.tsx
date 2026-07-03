@@ -280,6 +280,7 @@ export default async function ProfileEditPage({
                     city: m.profileEdit.city,
                     selectProvince: m.profileEdit.selectProvince,
                     selectCity: m.profileEdit.selectCity,
+                    provinceRequired: m.profileEdit.provinceRequired,
                   }}
                 />
 
@@ -354,6 +355,7 @@ export default async function ProfileEditPage({
                           selectCategory: m.profileEdit.selectCategory,
                           selectDivision: m.profileEdit.selectDivision,
                           selectLicense: m.profileEdit.selectLicense,
+                          categoryRequired: m.profileEdit.categoryRequired,
                           manualClubPlaceholder:
                             m.profileEdit.manualClubPlaceholder,
                         }}
@@ -373,7 +375,7 @@ export default async function ProfileEditPage({
                       label={m.profileEdit.experienceYears}
                       type="number"
                       min={0}
-                      defaultValue={playerProfile?.experience_years ?? ''}
+                      defaultValue={playerProfile?.experience_years ?? 0}
                     />
                     <Field
                       id="birthYear"
@@ -432,6 +434,7 @@ export default async function ProfileEditPage({
                           selectCategory: m.profileEdit.selectCategory,
                           selectDivision: m.profileEdit.selectDivision,
                           selectLicense: m.profileEdit.selectLicense,
+                          categoryRequired: m.profileEdit.categoryRequired,
                           manualClubPlaceholder:
                             m.profileEdit.manualClubPlaceholder,
                         }}
@@ -444,7 +447,7 @@ export default async function ProfileEditPage({
                       label={m.profileEdit.experienceYears}
                       type="number"
                       min={0}
-                      defaultValue={coachProfile?.experience_years ?? ''}
+                      defaultValue={coachProfile?.experience_years ?? 0}
                     />
                   </div>
                 </section>
@@ -482,6 +485,7 @@ export default async function ProfileEditPage({
                           selectCategory: m.profileEdit.selectCategory,
                           selectDivision: m.profileEdit.selectDivision,
                           selectLicense: m.profileEdit.selectLicense,
+                          categoryRequired: m.profileEdit.categoryRequired,
                           manualClubPlaceholder:
                             m.profileEdit.manualClubPlaceholder,
                         }}
@@ -542,7 +546,7 @@ export default async function ProfileEditPage({
                       label={m.profileEdit.experienceYears}
                       type="number"
                       min={0}
-                      defaultValue={staffProfile?.experience_years ?? ''}
+                      defaultValue={staffProfile?.experience_years ?? 0}
                     />
                     <Field
                       id="priceRange"

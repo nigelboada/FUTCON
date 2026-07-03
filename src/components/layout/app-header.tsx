@@ -54,7 +54,7 @@ export async function AppHeader() {
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
       <div className="mx-auto flex min-h-16 max-w-7xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center justify-between gap-4">
-          <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
               FC
             </span>

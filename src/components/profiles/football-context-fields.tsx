@@ -46,6 +46,7 @@ type FootballContextFieldsProps = {
     selectCategory: string
     selectDivision: string
     selectLicense: string
+    categoryRequired: string
     manualClubPlaceholder: string
   }
 }
@@ -65,6 +66,7 @@ export function FootballContextFields({
 }: FootballContextFieldsProps) {
   const [modality, setModality] = useState(defaultModality ?? '')
   const [category, setCategory] = useState(defaultCategory ?? '')
+  const [warning, setWarning] = useState<string | null>(null)
 
   const divisions = useMemo(() => {
     if (!modality || !category) return []
@@ -94,6 +96,7 @@ export function FootballContextFields({
             onChange={(event) => {
               setModality(event.target.value)
               setCategory('')
+              setWarning(null)
             }}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
@@ -113,6 +116,11 @@ export function FootballContextFields({
             name={fieldNames.category}
             value={category}
             onChange={(event) => setCategory(event.target.value)}
+            onFocus={() => {
+              if (!modality) {
+                setWarning(labels.selectModality)
+              }
+            }}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             disabled={!modality}
           >
@@ -131,16 +139,33 @@ export function FootballContextFields({
             id={fieldNames.division}
             name={fieldNames.division}
             defaultValue={defaultDivision ?? ''}
+            onFocus={() => {
+              if (!modality || !category) {
+                setWarning(labels.categoryRequired)
+              }
+            }}
+            onMouseDown={() => {
+              if (!modality || !category) {
+                setWarning(labels.categoryRequired)
+              }
+            }}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            disabled={!modality || !category}
           >
-            <option value="">{labels.selectDivision}</option>
+            <option value="">
+              {modality && category
+                ? labels.selectDivision
+                : labels.categoryRequired}
+            </option>
             {divisions.map((division) => (
               <option key={division} value={division}>
                 {division}
               </option>
             ))}
           </select>
+
+          {warning ? (
+            <p className="text-xs text-yellow-700">{warning}</p>
+          ) : null}
         </div>
       </div>
 

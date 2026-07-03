@@ -50,6 +50,17 @@ function getOptionalNumber(formData: FormData, key: string): number | null {
   return parsed
 }
 
+function getNumberValue(formData: FormData, key: string, fallback = 0) {
+  const value = getStringValue(formData, key)
+  const parsed = Number(value)
+
+  if (!Number.isFinite(parsed)) {
+    return fallback
+  }
+
+  return parsed
+}
+
 function getBooleanValue(formData: FormData, key: string): boolean {
   return formData.get(key) === 'on'
 }
@@ -94,6 +105,21 @@ export async function updateFullProfile(formData: FormData) {
   const coachDivisionLevel = getStringValue(formData, 'coachDivisionLevel')
   const clubModality = getStringValue(formData, 'clubModality')
   const clubDivisionLevel = getStringValue(formData, 'clubDivisionLevel')
+  const playerExperienceYears = getNumberValue(
+    formData,
+    'playerExperienceYears',
+    0
+  )
+  const coachExperienceYears = getNumberValue(
+    formData,
+    'coachExperienceYears',
+    0
+  )
+  const staffExperienceYears = getNumberValue(
+    formData,
+    'staffExperienceYears',
+    0
+  )
 
   if (!displayName) {
     redirect('/profile/edit?error=display_name_required')
@@ -149,7 +175,7 @@ export async function updateFullProfile(formData: FormData) {
         category: getStringValue(formData, 'playerCategory') || null,
         division_level: playerDivisionLevel || null,
         current_club: getStringValue(formData, 'playerCurrentClub') || null,
-        experience_years: getOptionalNumber(formData, 'playerExperienceYears'),
+        experience_years: playerExperienceYears,
         birth_year: getOptionalNumber(formData, 'birthYear'),
         height_cm: getOptionalNumber(formData, 'heightCm'),
       },
@@ -171,7 +197,7 @@ export async function updateFullProfile(formData: FormData) {
         category: getStringValue(formData, 'coachCategory') || null,
         division_level: coachDivisionLevel || null,
         current_club: getStringValue(formData, 'coachCurrentClub') || null,
-        experience_years: getOptionalNumber(formData, 'coachExperienceYears'),
+        experience_years: coachExperienceYears,
         coaching_license: getStringValue(formData, 'coachingLicense') || null,
       },
       {
@@ -225,7 +251,7 @@ export async function updateFullProfile(formData: FormData) {
         profile_id: user.id,
         staff_kind: staffKind,
         services: getStringValue(formData, 'services') || null,
-        experience_years: getOptionalNumber(formData, 'staffExperienceYears'),
+        experience_years: staffExperienceYears,
         price_range: getStringValue(formData, 'priceRange') || null,
         works_remotely: getBooleanValue(formData, 'worksRemotely'),
       },

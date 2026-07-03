@@ -9,6 +9,7 @@ import { ProfileAvatar } from '@/components/profiles/profile-avatar'
 
 type AvatarUploaderProps = {
   userId: string
+  displayName: string | null
   currentAvatarUrl: string | null
   completeness: number | null
   labels: {
@@ -44,6 +45,7 @@ function getFileExtension(file: File) {
 
 export function AvatarUploader({
   userId,
+  displayName,
   completeness,
   currentAvatarUrl,
   labels,
@@ -129,7 +131,7 @@ export function AvatarUploader({
         <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted">
           <ProfileAvatar
             src={previewUrl}
-            name="FUTCON"
+            name={displayName ?? 'FUTCON'}
             completeness={completeness}
             size="xl"
           />

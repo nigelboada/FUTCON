@@ -16,6 +16,8 @@ import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
+import { ProfileAvatar } from '@/components/profiles/profile-avatar'
+import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 import { notFound, redirect } from 'next/navigation'
 
 type PublicProfilePageProps = {
@@ -267,8 +269,7 @@ export default async function PublicProfilePage({
 
   const profiles = data as PublicProfile[]
   const profile = profiles[0]
-
-
+  const publicCompleteness = calculateProfileCompleteness(profile).percentage
 
   const isOwnProfile = user?.id === profile.profile_id
 
@@ -317,21 +318,13 @@ export default async function PublicProfilePage({
         <Card>
           <CardHeader className="space-y-4">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border bg-muted">
-                  {profile.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={profile.avatar_url}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-2xl font-bold text-muted-foreground">
-                      {profile.display_name.slice(0, 2).toUpperCase()}
-                    </span>
-                  )}
-                </div>
+              <div className="flex items-start gap-4">
+                <ProfileAvatar
+                  src={profile.avatar_url ?? null}
+                  name={profile.display_name}
+                  completeness={publicCompleteness}
+                  size="lg"
+                />
 
                 <div>
                   <CardTitle className="text-3xl">

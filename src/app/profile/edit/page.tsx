@@ -146,8 +146,6 @@ export default async function ProfileEditPage({
           .maybeSingle()
       : { data: null }
 
-
-
   const { data: ownSearchProfiles } = user
     ? await supabase
         .from('profile_search_view')
@@ -193,6 +191,7 @@ export default async function ProfileEditPage({
 
             <AvatarUploader
               userId={user.id}
+              displayName={profile.display_name}
               currentAvatarUrl={profile.avatar_url}
               completeness={profileCompleteness}
               labels={{

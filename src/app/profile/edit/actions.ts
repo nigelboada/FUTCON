@@ -119,6 +119,26 @@ export async function updateFullProfile(formData: FormData) {
     redirect(`/profile/edit?error=${encodeURIComponent(profileError.message)}`)
   }
 
+  const { error: deleteRoleError } = await supabase
+    .from('profile_roles')
+    .delete()
+    .eq('profile_id', user.id)
+
+  if (deleteRoleError) {
+    redirect(`/profile/edit?error=${encodeURIComponent(deleteRoleError.message)}`)
+  }
+
+  const { error: insertRoleError } = await supabase
+    .from('profile_roles')
+    .insert({
+      profile_id: user.id,
+      role,
+    })
+
+  if (insertRoleError) {
+    redirect(`/profile/edit?error=${encodeURIComponent(insertRoleError.message)}`)
+  }
+
   if (role === 'player') {
     const { error } = await supabase.from('player_profiles').upsert(
       {

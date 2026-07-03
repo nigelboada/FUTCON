@@ -17,7 +17,7 @@ export async function submitContactMessage(formData: FormData) {
   const message = getStringValue(formData, 'message')
 
   if (!name || !email || !message) {
-    redirect('/contact?error=contact_required_fields')
+    redirect('/contact-us?error=contact_required_fields')
   }
 
   const { error } = await supabase.from('contact_messages').insert({
@@ -28,8 +28,8 @@ export async function submitContactMessage(formData: FormData) {
   })
 
   if (error) {
-    redirect(`/contact?error=${encodeURIComponent(error.message)}`)
+    redirect(`/contact-us?error=${encodeURIComponent(error.message)}`)
   }
 
-  redirect('/contact?message=contact_sent')
+  redirect('/contact-us?message=contact_sent')
 }

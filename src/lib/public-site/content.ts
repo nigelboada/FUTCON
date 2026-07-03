@@ -80,8 +80,18 @@ export const publicSiteContent = {
         'Preparació per incorporar plans premium en una fase posterior.',
       ],
     },
-    contact: {
+    contactInfo: {
       title: 'Contacte',
+      description: 'Dades de contacte generals de FUTCON.',
+      subtitle: 'Informació i orientació sobre la plataforma.',
+      hoursLabel: 'Horari d’atenció',
+      phoneLabel: 'Telèfon',
+      emailLabel: 'Correu electrònic',
+      addressLabel: 'Adreça',
+      formCta: 'Contacta amb nosaltres',
+    },
+    contactForm: {
+      title: 'Contacta amb nosaltres',
       description:
         'Envia una consulta, proposta de col·laboració o comentari sobre FUTCON.',
       name: 'Nom',
@@ -172,8 +182,18 @@ export const publicSiteContent = {
         'Preparación para incorporar planes premium en una fase posterior.',
       ],
     },
-    contact: {
+    contactInfo: {
       title: 'Contacto',
+      description: 'Datos de contacto generales de FUTCON.',
+      subtitle: 'Información y orientación sobre la plataforma.',
+      hoursLabel: 'Horario de atención',
+      phoneLabel: 'Teléfono',
+      emailLabel: 'Correo electrónico',
+      addressLabel: 'Dirección',
+      formCta: 'Contacta con nosotros',
+    },
+    contactForm: {
+      title: 'Contacta con nosotros',
       description:
         'Envía una consulta, propuesta de colaboración o comentario sobre FUTCON.',
       name: 'Nombre',
@@ -264,8 +284,18 @@ export const publicSiteContent = {
         'Preparation for future premium plans.',
       ],
     },
-    contact: {
+    contactInfo: {
       title: 'Contact',
+      description: 'General FUTCON contact details.',
+      subtitle: 'Information and guidance about the platform.',
+      hoursLabel: 'Opening hours',
+      phoneLabel: 'Phone',
+      emailLabel: 'Email',
+      addressLabel: 'Address',
+      formCta: 'Contact us',
+    },
+    contactForm: {
+      title: 'Contact us',
       description:
         'Send a question, collaboration proposal or comment about FUTCON.',
       name: 'Name',

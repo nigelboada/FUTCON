@@ -188,7 +188,37 @@ export default async function ProfileEditPage({
             />
 
             <form action={updateFullProfile} className="space-y-10">
-              <input type="hidden" name="role" value={primaryRole} />
+              <section className="space-y-4 rounded-xl border bg-background p-5">
+                <div>
+                  <h2 className="text-lg font-semibold">
+                    {m.profileEdit.roleTitle}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {m.profileEdit.roleDescription}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="role">{m.dashboard.role}</Label>
+
+                  <select
+                    id="role"
+                    name="role"
+                    defaultValue={roles[0]?.role ?? 'player'}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    required
+                  >
+                    <option value="player">{m.roles.player}</option>
+                    <option value="coach">{m.roles.coach}</option>
+                    <option value="club">{m.roles.club}</option>
+                    <option value="staff">{m.roles.staff}</option>
+                  </select>
+                </div>
+
+                <div className="rounded-md border border-yellow-500/40 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-700">
+                  {m.profileEdit.roleWarning}
+                </div>
+              </section>
 
               <section className="space-y-5 rounded-xl border bg-background p-5">
                 <div className="rounded-md border bg-background p-4">

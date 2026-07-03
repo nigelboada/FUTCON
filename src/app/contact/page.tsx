@@ -1,8 +1,6 @@
+import Link from 'next/link'
 import { getLocale } from '@/lib/i18n/server'
-import { getMessages } from '@/lib/i18n/messages'
-import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 import { getPublicSiteContent } from '@/lib/public-site/content'
-import { submitContactMessage } from './actions'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -11,61 +9,73 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { FeedbackMessage } from '@/components/layout/feedback-message'
 
-type ContactPageProps = {
-  searchParams: Promise<{
-    message?: string
-    error?: string
-  }>
-}
-
-export default async function ContactPage({ searchParams }: ContactPageProps) {
-  const params = await searchParams
+export default async function ContactPage() {
   const locale = await getLocale()
-  const m = getMessages(locale)
   const content = getPublicSiteContent(locale)
-  const message = resolveFeedbackMessage(params.message, m.feedback)
-  const error = resolveFeedbackMessage(params.error, m.feedback)
 
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-12">
-      <div className="futcon-fade-up mx-auto max-w-3xl">
+      <div className="futcon-fade-up mx-auto max-w-4xl space-y-8">
+        <section className="space-y-3">
+          <h1 className="text-4xl font-bold tracking-tight">
+            {content.contactInfo.title}
+          </h1>
+
+          <p className="max-w-2xl text-muted-foreground">
+            {content.contactInfo.description}
+          </p>
+        </section>
+
         <Card className="border-2">
           <CardHeader>
-            <CardTitle className="text-3xl">{content.contact.title}</CardTitle>
-            <CardDescription>{content.contact.description}</CardDescription>
+            <CardTitle>FUTCON</CardTitle>
+            <CardDescription>{content.contactInfo.subtitle}</CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4">
-            <FeedbackMessage message={message} error={error} />
-
-            <form action={submitContactMessage} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">{content.contact.name}</Label>
-                <Input id="name" name="name" required />
+          <CardContent className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl border bg-background p-4">
+                <p className="text-sm text-muted-foreground">
+                  {content.contactInfo.hoursLabel}
+                </p>
+                <p className="mt-2 font-medium">9h - 21h</p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">{content.contact.email}</Label>
-                <Input id="email" name="email" type="email" required />
+              <div className="rounded-xl border bg-background p-4">
+                <p className="text-sm text-muted-foreground">
+                  {content.contactInfo.phoneLabel}
+                </p>
+                <p className="mt-2 font-medium">+34 621 05 93 96</p>
+                <p className="font-medium">934 675 267</p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="subject">{content.contact.subject}</Label>
-                <Input id="subject" name="subject" />
+              <div className="rounded-xl border bg-background p-4">
+                <p className="text-sm text-muted-foreground">
+                  {content.contactInfo.emailLabel}
+                </p>
+                <a
+                  href="mailto:nigelboada@gmail.com"
+                  className="mt-2 block font-medium underline"
+                >
+                  nigelboada@gmail.com
+                </a>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="message">{content.contact.message}</Label>
-                <Textarea id="message" name="message" rows={6} required />
+              <div className="rounded-xl border bg-background p-4">
+                <p className="text-sm text-muted-foreground">
+                  {content.contactInfo.addressLabel}
+                </p>
+                <p className="mt-2 font-medium">
+                  Carrer de l&apos;Església, 39, 1r 1a
+                </p>
+                <p className="font-medium">Hospitalet de Llobregat, 08901</p>
               </div>
+            </div>
 
-              <Button type="submit">{content.contact.submit}</Button>
-            </form>
+            <Button asChild>
+              <Link href="/contact-us">{content.contactInfo.formCta}</Link>
+            </Button>
           </CardContent>
         </Card>
       </div>

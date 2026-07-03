@@ -18,7 +18,7 @@ export const footerContent = {
         links: [
           { href: '/help', label: 'Centre d’ajuda' },
           { href: '/faq', label: 'Preguntes freqüents' },
-          { href: '/contact', label: 'Contacta amb nosaltres' },
+          { href: '/contact-us', label: 'Contacta amb nosaltres' },
         ],
       },
       {
@@ -111,7 +111,7 @@ export const footerContent = {
         links: [
           { href: '/help', label: 'Centro de ayuda' },
           { href: '/faq', label: 'Preguntas frecuentes' },
-          { href: '/contact', label: 'Contacta con nosotros' },
+          { href: '/contact-us', label: 'Contacta con nosotros' },
         ],
       },
       {
@@ -200,7 +200,7 @@ export const footerContent = {
         links: [
           { href: '/help', label: 'Help center' },
           { href: '/faq', label: 'FAQ' },
-          { href: '/contact', label: 'Contact us' },
+          { href: '/contact-us', label: 'Contact us' },
         ],
       },
       {

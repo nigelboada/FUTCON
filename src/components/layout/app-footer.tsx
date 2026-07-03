@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { getLocale } from '@/lib/i18n/server'
 import { getFooterContent } from '@/lib/footer/content'
 
+import Image from 'next/image'
+
 export async function AppFooter() {
   const locale = await getLocale()
   const content = getFooterContent(locale)
@@ -11,8 +13,15 @@ export async function AppFooter() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[1.2fr_2fr]">
         <div className="space-y-3">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-background text-sm font-bold text-foreground">
-              FC
+            <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border bg-background">
+              <Image
+                src="/icons/icon-192.png"
+                alt="FUTCON"
+                width={40}
+                height={40}
+                className="h-full w-full object-cover"
+                priority
+              />
             </span>
             <span className="text-lg font-bold">FUTCON</span>
           </Link>

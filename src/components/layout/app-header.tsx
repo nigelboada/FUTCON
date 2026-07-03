@@ -10,6 +10,7 @@ import { ThemeToggle } from '@/components/layout/theme-toggle'
 
 import { UserMenu } from '@/components/layout/user-menu'
 
+import Image from 'next/image'
 
 export async function AppHeader() {
   const supabase = await createClient()
@@ -55,8 +56,15 @@ export async function AppHeader() {
       <div className="mx-auto flex min-h-16 max-w-7xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
-              FC
+            <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border bg-background">
+              <Image
+                src="/icons/icon-192.png"
+                alt="FUTCON"
+                width={40}
+                height={40}
+                className="h-full w-full object-cover"
+                priority
+              />
             </span>
 
             <div>

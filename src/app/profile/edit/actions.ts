@@ -3,6 +3,9 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { awardAchievementByCode } from '@/lib/achievements/award'
+import { syncCompletenessAchievements } from '@/lib/achievements/sync'
+import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 
 const allowedAvailability = [
   'available',
@@ -260,6 +263,19 @@ export async function updateFullProfile(formData: FormData) {
     }
   }
 
+  const { data: updatedProfiles } = await supabase
+    .from('profile_search_view')
+    .select('*')
+    .eq('profile_id', user.id)
+    .limit(1)
+
+  const updatedProfile = updatedProfiles?.[0]
+
+  if (updatedProfile) {
+    const profileCompleteness = calculateProfileCompleteness(updatedProfile)
+    await syncCompletenessAchievements(user.id, profileCompleteness.percentage)
+  }
+
   revalidatePath('/dashboard')
   revalidatePath('/profile/edit')
 
@@ -287,9 +303,25 @@ export async function requestProfileVerification(formData: FormData) {
     redirect(`/profile/edit?error=${encodeURIComponent(error.message)}`)
   }
 
+  await awardAchievementByCode(user.id, 'verified_request')
+
   revalidatePath('/dashboard')
   revalidatePath('/profile/edit')
   revalidatePath(`/profile/${user.id}`)
 
   redirect('/profile/edit?message=verification_requested')
+}
+
+export async function awardAvatarUploaded() {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return
+  }
+
+  await awardAchievementByCode(user.id, 'avatar_uploaded')
 }

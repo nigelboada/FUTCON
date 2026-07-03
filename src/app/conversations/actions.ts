@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { awardAchievementByCode } from '@/lib/achievements/award'
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key)
@@ -23,6 +24,14 @@ export async function startConversation(formData: FormData) {
     redirect('/search')
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
   const { data, error } = await supabase.rpc('create_or_get_conversation', {
     target_profile_id: targetProfileId,
   })
@@ -30,6 +39,8 @@ export async function startConversation(formData: FormData) {
   if (error || !data) {
     redirect(`/profile/${targetProfileId}?error=${encodeURIComponent(error?.message ?? 'conversation_create_failed')}`)
   }
+
+  await awardAchievementByCode(user.id, 'first_message')
 
   revalidatePath('/conversations')
   redirect(`/conversations/${data}`)

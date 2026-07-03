@@ -73,6 +73,7 @@ const ca = {
     "conversations": "Missatges",
     "editProfile": "Editar perfil",
     "admin": "Admin",
+    "achievements": "Assoliments",
     "signOut": "Tancar sessió",
     "login": "Iniciar sessió",
     "register": "Crear compte",
@@ -81,6 +82,10 @@ const ca = {
     "about": "Nosaltres",
     "services": "Serveis",
     "contact": "Contacte"
+  },
+  "achievements": {
+    "title": "Assoliments",
+    "menu": "Assoliments"
   },
   "theme": {
     "light": "Tema clar",
@@ -265,6 +270,7 @@ const ca = {
     "noBio": "Aquest perfil encara no ha afegit una biografia.",
     "reviewSingular": "valoració",
     "reviewPlural": "valoracions",
+    "profileComplete": "Perfil complet",
     "locationNotSpecified": "Ubicació no indicada"
   },
   "publicProfile": {
@@ -587,6 +593,7 @@ const es: Messages = {
     "conversations": "Mensajes",
     "editProfile": "Editar perfil",
     "admin": "Admin",
+    "achievements": "Logros",
     "signOut": "Cerrar sesión",
     "login": "Iniciar sesión",
     "register": "Crear cuenta",
@@ -595,6 +602,10 @@ const es: Messages = {
     "about": "Nosotros",
     "services": "Servicios",
     "contact": "Contacto"
+  },
+  "achievements": {
+    "title": "Logros",
+    "menu": "Logros"
   },
   "theme": {
     "light": "Tema claro",
@@ -779,6 +790,7 @@ const es: Messages = {
     "noBio": "Este perfil todavía no ha añadido una biografía.",
     "reviewSingular": "valoración",
     "reviewPlural": "valoraciones",
+    "profileComplete": "Perfil completo",
     "locationNotSpecified": "Ubicación no indicada"
   },
   "publicProfile": {
@@ -1091,6 +1103,7 @@ const en: Messages = {
     "conversations": "Messages",
     "editProfile": "Edit profile",
     "admin": "Admin",
+    "achievements": "Achievements",
     "signOut": "Sign out",
     "login": "Sign in",
     "register": "Create account",
@@ -1099,7 +1112,10 @@ const en: Messages = {
     "about": "About",
     "services": "Services",
     "contact": "Contact"
-
+  },
+  "achievements": {
+    "title": "Achievements",
+    "menu": "Achievements"
   },
   "theme": {
     "light": "Light theme",
@@ -1284,6 +1300,7 @@ const en: Messages = {
     "noBio": "This profile has not added a biography yet.",
     "reviewSingular": "review",
     "reviewPlural": "reviews",
+    "profileComplete": "Complete profile",
     "locationNotSpecified": "Location not specified"
   },
   "publicProfile": {

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 
 import { ProfileAvatar } from '@/components/profiles/profile-avatar'
+import { awardAvatarUploaded } from '@/app/profile/edit/actions'
 
 type AvatarUploaderProps = {
   userId: string
@@ -106,6 +107,7 @@ export function AvatarUploader({
     }
 
     setPreviewUrl(data.publicUrl)
+    await awardAvatarUploaded()
     setIsUploading(false)
     router.refresh()
   }

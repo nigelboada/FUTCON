@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { awardAchievementByCode } from '@/lib/achievements/award'
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key)
@@ -42,6 +43,12 @@ export async function approveVerificationRequest(formData: FormData) {
     redirect('/admin?error=invalid_request')
   }
 
+  const { data: request } = await supabase
+    .from('admin_verification_requests_view')
+    .select('profile_id')
+    .eq('id', requestId)
+    .maybeSingle()
+
   const { error } = await supabase.rpc(
     'approve_profile_verification_request',
     {
@@ -51,6 +58,10 @@ export async function approveVerificationRequest(formData: FormData) {
 
   if (error) {
     redirect(`/admin?error=${encodeURIComponent(error.message)}`)
+  }
+
+  if (request?.profile_id) {
+    await awardAchievementByCode(request.profile_id, 'verified_profile')
   }
 
   revalidatePath('/admin')

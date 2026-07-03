@@ -15,6 +15,8 @@ import { GlobalLoadingOverlay } from '@/components/layout/global-loading-overlay
 
 import { AppCompletenessBanner } from '@/components/profiles/app-completeness-banner'
 
+import { AchievementPopupGate } from '@/components/achievements/achievement-popup-gate'
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -58,6 +60,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppHeader />
         <AppCompletenessBanner />
+        <AchievementPopupGate />
         {children}
         <AppFooter />
         <ServiceWorkerRegister />

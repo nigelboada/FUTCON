@@ -111,6 +111,7 @@ export async function AppHeader() {
                   account: m.nav.account,
                   language: m.language.label,
                   admin: m.nav.admin,
+                  achievements: m.achievements.menu,
                   editProfile: m.nav.editProfile,
                   signOut: m.nav.signOut,
                   theme: m.theme,

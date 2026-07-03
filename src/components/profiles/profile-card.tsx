@@ -14,6 +14,7 @@ type ProfileCardLabels = {
   reviewSingular: string
   reviewPlural: string
   locationNotSpecified: string
+  profileComplete: string
 }
 
 type ProfileCardProps = {
@@ -165,6 +166,20 @@ export function ProfileCard({ profile, labels }: ProfileCardProps) {
         ) : null}
 
         <p className="text-sm text-muted-foreground">{location}</p>
+
+        <div className="flex flex-wrap gap-2">
+          {completeness >= 100 ? (
+            <span className="rounded-full border bg-sky-50 px-2 py-1 text-xs text-sky-700">
+              {labels.profileComplete}
+            </span>
+          ) : null}
+
+          {profile.verification === 'verified' ? (
+            <span className="rounded-full border bg-emerald-50 px-2 py-1 text-xs text-emerald-700">
+              {labels.verification.verified}
+            </span>
+          ) : null}
+        </div>
 
         <div className="rounded-lg border bg-muted/40 p-3">
           <p className="text-sm font-medium">

@@ -21,6 +21,7 @@ type UserMenuProps = {
     account: string
     language: string
     admin: string
+    achievements: string
     editProfile: string
     signOut: string
     theme: {
@@ -108,6 +109,12 @@ export function UserMenu({
               <Button asChild variant="outline" size="sm">
                 <Link href="/profile/edit" onClick={() => setIsOpen(false)}>
                   {labels.editProfile}
+                </Link>
+              </Button>
+
+              <Button asChild variant="outline" size="sm">
+                <Link href="/achievements" onClick={() => setIsOpen(false)}>
+                  {labels.achievements}
                 </Link>
               </Button>
 

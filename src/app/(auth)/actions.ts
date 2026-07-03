@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
+import { awardAchievementByCode } from '@/lib/achievements/award'
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key)
@@ -42,6 +43,10 @@ export async function signUp(formData: FormData) {
 
   if (error) {
     redirect(`/register?error=${encodeURIComponent(error.message)}`)
+  }
+
+  if (data.user) {
+    await awardAchievementByCode(data.user.id, 'welcome')
   }
 
   revalidatePath('/', 'layout')

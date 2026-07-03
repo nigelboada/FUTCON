@@ -17,6 +17,7 @@ import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 import { ProfileAvatar } from '@/components/profiles/profile-avatar'
+import { AchievementBadges } from '@/components/achievements/achievement-badges'
 import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 import { notFound, redirect } from 'next/navigation'
 
@@ -69,10 +70,55 @@ type PublicProfileLabels = {
   common: ReturnType<typeof getMessages>['common']
 }
 
+type AchievementRecord = {
+  id: number
+  title_ca: string
+  icon_key: string
+}
+
+type AchievementJoinRow = {
+  achievement: AchievementRecord | AchievementRecord[] | null
+}
+
 const availabilityClassNames: Record<string, string> = {
   available: 'border-green-500 bg-green-500/10 text-green-700',
   open_to_offers: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
   unavailable: 'border-red-500 bg-red-500/10 text-red-700',
+}
+
+function iconFromKey(iconKey: string) {
+  switch (iconKey) {
+    case 'ball':
+      return '⚽'
+    case 'whistle':
+      return '🪈'
+    case 'boot':
+      return '👟'
+    case 'trophy':
+      return '🏆'
+    case 'player':
+      return '🧍'
+    case 'chat':
+      return '💬'
+    case 'medal':
+      return '🏅'
+    case 'badge':
+      return '✅'
+    case 'cup':
+      return '🏆'
+    default:
+      return '⭐'
+  }
+}
+
+function getJoinedAchievement(
+  achievement: AchievementJoinRow['achievement']
+): AchievementRecord | null {
+  if (Array.isArray(achievement)) {
+    return achievement[0] ?? null
+  }
+
+  return achievement
 }
 
 function getLocation(profile: PublicProfile) {
@@ -270,6 +316,36 @@ export default async function PublicProfilePage({
   const profiles = data as PublicProfile[]
   const profile = profiles[0]
   const publicCompleteness = calculateProfileCompleteness(profile).percentage
+
+  const { data: achievementsRaw } = await supabase
+    .from('user_achievements')
+    .select(
+      `
+        id,
+        achievement:achievements (
+          id,
+          title_ca,
+          icon_key
+        )
+      `
+    )
+    .eq('profile_id', profile.profile_id)
+    .order('unlocked_at', { ascending: true })
+
+  const unlockedAchievements = ((achievementsRaw ?? []) as AchievementJoinRow[])
+    .flatMap((item) => {
+      const achievement = getJoinedAchievement(item.achievement)
+
+      return achievement
+        ? [
+            {
+              id: achievement.id,
+              title: achievement.title_ca,
+              icon: iconFromKey(achievement.icon_key),
+            },
+          ]
+        : []
+    })
 
   const isOwnProfile = user?.id === profile.profile_id
 
@@ -505,6 +581,11 @@ export default async function PublicProfilePage({
                 </p>
               )}
             </section>
+
+            <AchievementBadges
+              achievements={unlockedAchievements}
+              title={m.achievements.title}
+            />
 
             <section className="rounded-md border bg-background p-4">
               <h2 className="text-lg font-semibold">

@@ -10,8 +10,6 @@ const allowedAvailability = [
   'unavailable',
 ] as const
 
-const allowedRoles = ['player', 'coach', 'club', 'staff'] as const
-
 const allowedStaffTypes = [
   'physiotherapist',
   'nutritionist',
@@ -21,7 +19,6 @@ const allowedStaffTypes = [
 ] as const
 
 type AvailabilityStatus = (typeof allowedAvailability)[number]
-type UserRole = (typeof allowedRoles)[number]
 type StaffType = (typeof allowedStaffTypes)[number]
 
 function getStringValue(formData: FormData, key: string): string {
@@ -69,10 +66,6 @@ function isValidAvailability(value: string): value is AvailabilityStatus {
   return allowedAvailability.includes(value as AvailabilityStatus)
 }
 
-function isValidRole(value: string): value is UserRole {
-  return allowedRoles.includes(value as UserRole)
-}
-
 function isValidStaffType(value: string): value is StaffType {
   return allowedStaffTypes.includes(value as StaffType)
 }
@@ -90,7 +83,9 @@ export async function updateFullProfile(formData: FormData) {
 
   const role = getStringValue(formData, 'role')
 
-  if (!isValidRole(role)) {
+  const validRoles = ['player', 'coach', 'club', 'staff']
+
+  if (!validRoles.includes(role)) {
     redirect('/profile/edit?error=profile_invalid_role')
   }
 

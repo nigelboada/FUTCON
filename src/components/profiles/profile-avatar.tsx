@@ -55,7 +55,7 @@ export function ProfileAvatar({
 
   return (
     <div
-      className={`rounded-full p-0.5 ${className}`}
+      className={`rounded-full p-[2px] ${className}`}
       style={
         percentage !== null
           ? {

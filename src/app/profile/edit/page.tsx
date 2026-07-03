@@ -21,8 +21,6 @@ import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
-import Image from 'next/image'
-import { signOut } from '@/app/(auth)/actions'
 import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 
 type ProfileEditPageProps = {

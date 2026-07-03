@@ -13,14 +13,13 @@ export async function AppFooter() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[1.2fr_2fr]">
         <div className="space-y-3">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border bg-background">
+            <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-background/20 bg-background">
               <Image
                 src="/icons/icon-192.png"
                 alt="FUTCON"
                 width={40}
                 height={40}
                 className="h-full w-full object-cover"
-                priority
               />
             </span>
             <span className="text-lg font-bold">FUTCON</span>

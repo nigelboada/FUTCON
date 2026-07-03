@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Cog, Moon, Sun } from 'lucide-react'
+import { Cog, MoonStar, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { themeCookieName, type Theme } from '@/lib/theme/config'
 
@@ -52,7 +52,7 @@ export function ThemeToggle({ currentTheme, labels }: ThemeToggleProps) {
       ) : isDark ? (
         <Sun className="h-4 w-4" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <MoonStar className="h-4 w-4" />
       )}
     </Button>
   )

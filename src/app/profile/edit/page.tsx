@@ -21,6 +21,10 @@ import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
+import Image from 'next/image'
+import { signOut } from '@/app/(auth)/actions'
+import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
+
 type ProfileEditPageProps = {
   searchParams: Promise<{
     error?: string
@@ -144,6 +148,20 @@ export default async function ProfileEditPage({
           .maybeSingle()
       : { data: null }
 
+
+
+  const { data: ownSearchProfiles } = user
+    ? await supabase
+        .from('profile_search_view')
+        .select('*')
+        .eq('profile_id', user.id)
+        .limit(1)
+    : { data: null }
+
+  const profileCompleteness = ownSearchProfiles?.[0]
+    ? calculateProfileCompleteness(ownSearchProfiles[0]).percentage
+    : null
+
   const { data: clubOptionsData } = await supabase
     .from('club_profiles')
     .select('club_name, modality, category, division_level')
@@ -178,6 +196,7 @@ export default async function ProfileEditPage({
             <AvatarUploader
               userId={user.id}
               currentAvatarUrl={profile.avatar_url}
+              completeness={profileCompleteness}
               labels={{
                 title: m.profileEdit.avatarTitle,
                 description: m.profileEdit.avatarDescription,

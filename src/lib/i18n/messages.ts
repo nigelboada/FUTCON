@@ -24,7 +24,8 @@ const ca = {
     "continue": "Continuar",
     "loading": "Carregant...",
     "noLocation": "Ubicació no indicada",
-    "noRole": "Rol no indicat"
+    "noRole": "Rol no indicat",
+    "close": "Tancar"
   },
   "roles": {
     "player": "Jugador",
@@ -232,6 +233,7 @@ const ca = {
     "conversationCreated": "Conversa creada, encara sense missatges.",
     "sprintTitle": "Estat del Sprint actual",
     "sprintDescription": "Resum funcional del prototip implementat.",
+    "profileCompletenessHint": "Completa el perfil per millorar la teva visibilitat dins de FUTCON.",
     "sprintItems": [
       "Registre, login i rols implementats.",
       "Cercador, filtres i perfils públics disponibles.",
@@ -536,7 +538,8 @@ const es: Messages = {
     "continue": "Continuar",
     "loading": "Cargando...",
     "noLocation": "Ubicaci?n no indicada",
-    "noRole": "Rol no indicado"
+    "noRole": "Rol no indicado",
+    "close": "Cerrar"
   },
   "roles": {
     "player": "Jugador",
@@ -744,6 +747,7 @@ const es: Messages = {
     "conversationCreated": "Conversaci?n creada, todav?a sin mensajes.",
     "sprintTitle": "Estado del Sprint actual",
     "sprintDescription": "Resumen funcional del prototipo implementado.",
+    "profileCompletenessHint": "Completa el perfil para mejorar tu visibilidad dentro de FUTCON.",
     "sprintItems": [
       "Registro, login y roles implementados.",
       "Buscador, filtros y perfiles p?blicos disponibles.",
@@ -1038,7 +1042,8 @@ const en: Messages = {
     "continue": "Continue",
     "loading": "Loading...",
     "noLocation": "Location not provided",
-    "noRole": "Role not provided"
+    "noRole": "Role not provided",
+    "close": "Close"
   },
   "roles": {
     "player": "Player",
@@ -1247,6 +1252,7 @@ const en: Messages = {
     "conversationCreated": "Conversation created, no messages yet.",
     "sprintTitle": "Current Sprint status",
     "sprintDescription": "Functional summary of the implemented prototype.",
+    "profileCompletenessHint": "Complete your profile to improve your visibility inside FUTCON.",
     "sprintItems": [
       "Registration, login and roles implemented.",
       "Search, filters and public profiles available.",

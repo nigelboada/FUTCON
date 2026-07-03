@@ -11,6 +11,8 @@ import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { UserMenu } from '@/components/layout/user-menu'
 
 import Image from 'next/image'
+import { signOut } from '@/app/(auth)/actions'
+import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 
 export async function AppHeader() {
   const supabase = await createClient()
@@ -26,10 +28,22 @@ export async function AppHeader() {
   const { data: profile } = user
     ? await supabase
         .from('profiles')
-        .select('display_name')
+        .select('display_name, avatar_url')
         .eq('id', user.id)
         .maybeSingle()
     : { data: null }
+
+  const { data: ownSearchProfiles } = user
+    ? await supabase
+        .from('profile_search_view')
+        .select('*')
+        .eq('profile_id', user.id)
+        .limit(1)
+    : { data: null }
+
+  const profileCompleteness = ownSearchProfiles?.[0]
+    ? calculateProfileCompleteness(ownSearchProfiles[0]).percentage
+    : null
 
   const { data: isAdmin } = user
     ? await supabase.rpc('is_app_admin')
@@ -87,9 +101,12 @@ export async function AppHeader() {
 
               <UserMenu
                 displayName={displayName}
+                avatarUrl={profile?.avatar_url ?? null}
+                completeness={profileCompleteness}
                 isAdmin={Boolean(isAdmin)}
                 currentLocale={locale}
                 currentTheme={theme}
+                signOutAction={signOut}
                 labels={{
                   account: m.nav.account,
                   language: m.language.label,

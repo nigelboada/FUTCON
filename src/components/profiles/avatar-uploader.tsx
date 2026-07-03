@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 
+import { ProfileAvatar } from '@/components/profiles/profile-avatar'
+
 type AvatarUploaderProps = {
   userId: string
   currentAvatarUrl: string | null
+  completeness: number | null
   labels: {
     title: string
     description: string
@@ -35,12 +38,13 @@ function getFileExtension(file: File) {
   return 'png'
 }
 
-function getInitials(value: string) {
-  return value.slice(0, 2).toUpperCase()
-}
+// function getInitials(value: string) {
+//   return value.slice(0, 2).toUpperCase()
+// }
 
 export function AvatarUploader({
   userId,
+  completeness,
   currentAvatarUrl,
   labels,
 }: AvatarUploaderProps) {
@@ -123,18 +127,12 @@ export function AvatarUploader({
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted">
-          {previewUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewUrl}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <span className="text-2xl font-bold text-muted-foreground">
-              {getInitials('FUTCON')}
-            </span>
-          )}
+          <ProfileAvatar
+            src={previewUrl}
+            name="FUTCON"
+            completeness={completeness}
+            size="xl"
+          />
         </div>
 
         <div className="space-y-3">

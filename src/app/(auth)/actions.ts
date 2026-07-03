@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key)
@@ -81,5 +82,9 @@ export async function signOut() {
   await supabase.auth.signOut()
 
   revalidatePath('/', 'layout')
+  
+  const cookieStore = await cookies()
+  cookieStore.delete('futcon-completeness-dismissed')
+  
   redirect('/login')
 }

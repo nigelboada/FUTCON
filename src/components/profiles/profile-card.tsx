@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
+import { ProfileAvatar } from './profile-avatar'
 
 type ProfileCardLabels = {
   roles: Record<string, string>
@@ -28,14 +30,20 @@ type ProfileCardProps = {
 
     player_position: string | null
     player_category: string | null
+    player_modality?: string | null
+    player_division_level?: string | null
     player_current_club: string | null
 
     coach_category: string | null
+    coach_modality?: string | null
+    coach_division_level?: string | null
     coach_current_club: string | null
     coaching_license: string | null
 
     club_name: string | null
     club_category: string | null
+    club_modality?: string | null
+    club_division_level?: string | null
 
     staff_kind: string | null
     staff_services: string | null
@@ -104,6 +112,7 @@ export function ProfileCard({ profile, labels }: ProfileCardProps) {
   const roleDetail = getRoleDetail(profile)
   const averageRating = formatAverageRating(profile.average_rating)
   const reviewCount = profile.review_count ?? 0
+  const completeness = calculateProfileCompleteness(profile).percentage
   const location =
     [profile.city, profile.province].filter(Boolean).join(', ') ||
     labels.locationNotSpecified
@@ -113,20 +122,12 @@ export function ProfileCard({ profile, labels }: ProfileCardProps) {
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border bg-muted">
-              {profile.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={profile.avatar_url}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-sm font-bold text-muted-foreground">
-                  {profile.display_name.slice(0, 2).toUpperCase()}
-                </span>
-              )}
-            </div>
+            <ProfileAvatar
+              src={profile.avatar_url}
+              name={profile.display_name}
+              completeness={completeness}
+              size="md"
+            />
 
             <div>
               <CardTitle className="text-xl">{profile.display_name}</CardTitle>

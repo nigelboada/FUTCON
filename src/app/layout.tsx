@@ -13,6 +13,7 @@ import { AppFooter } from '@/components/layout/app-footer'
 
 import { GlobalLoadingOverlay } from '@/components/layout/global-loading-overlay'
 
+import { AppCompletenessBanner } from '@/components/profiles/app-completeness-banner'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,6 +57,7 @@ export default async function RootLayout({
     <html lang={locale} className={theme === 'dark' ? 'dark' : undefined}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppHeader />
+        <AppCompletenessBanner />
         {children}
         <AppFooter />
         <ServiceWorkerRegister />

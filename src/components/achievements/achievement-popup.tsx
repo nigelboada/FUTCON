@@ -34,7 +34,7 @@ export function AchievementPopup({
   }
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md overflow-hidden rounded-3xl border bg-background p-8 text-center shadow-2xl">
         <div className="pointer-events-none absolute left-0 top-0 h-32 w-32 bg-yellow-300/25 blur-3xl" />
         <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 bg-cyan-300/25 blur-3xl" />

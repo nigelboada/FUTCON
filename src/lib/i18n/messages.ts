@@ -85,7 +85,9 @@ const ca = {
   },
   "achievements": {
     "title": "Assoliments",
-    "menu": "Assoliments"
+    "menu": "Assoliments",
+    "description": "Avança pel camp i desbloqueja noves insígnies dins de FUTCON.",
+    "unlockedCount": "Assoliments aconseguits: {unlocked}/{total}"
   },
   "theme": {
     "light": "Tema clar",
@@ -605,7 +607,9 @@ const es: Messages = {
   },
   "achievements": {
     "title": "Logros",
-    "menu": "Logros"
+    "menu": "Logros",
+    "description": "Avanza por el campo y desbloquea nuevas insignias dentro de FUTCON.",
+    "unlockedCount": "Logros conseguidos: {unlocked}/{total}"
   },
   "theme": {
     "light": "Tema claro",
@@ -1115,7 +1119,9 @@ const en: Messages = {
   },
   "achievements": {
     "title": "Achievements",
-    "menu": "Achievements"
+    "menu": "Achievements",
+    "description": "Move across the pitch and unlock new badges inside FUTCON.",
+    "unlockedCount": "Achievements unlocked: {unlocked}/{total}"
   },
   "theme": {
     "light": "Light theme",

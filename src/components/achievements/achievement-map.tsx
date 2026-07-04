@@ -1,11 +1,15 @@
 type Achievement = {
   id: number
   code: string
-  title_ca: string
-  description_ca: string
+  title: string
+  description: string
   icon_key: string
   sort_order: number
   unlocked: boolean
+}
+
+type AchievementMapLabels = {
+  unlockedCount: string
 }
 
 const positions = [
@@ -51,16 +55,21 @@ function iconFromKey(iconKey: string) {
 
 export function AchievementMap({
   achievements,
+  labels,
 }: {
   achievements: Achievement[]
+  labels: AchievementMapLabels
 }) {
   const unlockedCount = achievements.filter((item) => item.unlocked).length
+  const counterText = labels.unlockedCount
+    .replace('{unlocked}', String(unlockedCount))
+    .replace('{total}', String(achievements.length))
 
   return (
     <div className="relative overflow-hidden rounded-3xl border bg-[linear-gradient(180deg,#2f855a_0%,#276749_100%)] p-6 text-white shadow-xl">
       <div className="mb-6 text-center">
         <div className="mx-auto w-fit rounded-full bg-white/10 px-5 py-2 text-sm font-medium">
-          Assoliments aconseguits: {unlockedCount}/{achievements.length}
+          {counterText}
         </div>
       </div>
 
@@ -135,13 +144,13 @@ export function AchievementMap({
                     ? 'border-yellow-200 bg-white text-foreground'
                     : 'border-white/30 bg-white/10 grayscale opacity-50'
                 }`}
-                title={achievement.title_ca}
+                title={achievement.description}
               >
                 {iconFromKey(achievement.icon_key)}
               </div>
 
               <p className="mt-2 max-w-[110px] text-center text-xs font-medium text-white">
-                {achievement.title_ca}
+                {achievement.title}
               </p>
             </div>
           )

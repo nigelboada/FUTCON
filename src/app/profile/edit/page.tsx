@@ -27,6 +27,10 @@ import {
 } from '@/lib/profiles/completeness'
 import { CompletenessFieldBadge } from '@/components/profiles/completeness-field-badge'
 
+
+import { EditableAchievementCollection } from '@/components/achievements/editable-achievement-collection'
+
+
 type ProfileEditPageProps = {
   searchParams: Promise<{
     error?: string
@@ -41,6 +45,62 @@ const verificationClassNames: Record<string, string> = {
   pending: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
   verified: 'border-green-500 bg-green-500/10 text-green-700',
   rejected: 'border-red-500 bg-red-500/10 text-red-700',
+}
+
+type EditableAchievementRecord = {
+  id: number
+  title_ca: string
+  title_es: string
+  title_en: string
+  description_ca: string
+  description_es: string
+  description_en: string
+  icon_key: string
+}
+
+type EditableAchievementRow = {
+  id: number
+  is_visible: boolean | null
+  achievement: EditableAchievementRecord | EditableAchievementRecord[] | null
+}
+
+function achievementIconFromKey(iconKey: string) {
+  switch (iconKey) {
+    case 'ball':
+      return '⚽'
+    case 'runner':
+      return '🏃‍♀️'
+    case 'whistle':
+      return '🪈'
+    case 'boot':
+      return '👟'
+    case 'chart':
+      return '📈'
+    case 'trophy':
+      return '🏆'
+    case 'player':
+      return '🧍'
+    case 'chat':
+      return '💬'
+    case 'medal':
+      return '🏅'
+    case 'badge':
+      return '✅'
+    case 'cup':
+      return '🏆'
+    default:
+      return '⭐'
+  }
+}
+
+function getJoinedAchievement(
+  achievement: EditableAchievementRow['achievement']
+) {
+  if (Array.isArray(achievement)) {
+    return achievement[0] ?? null
+  }
+
+  return achievement
 }
 
 export default async function ProfileEditPage({
@@ -173,6 +233,54 @@ export default async function ProfileEditPage({
     .select('club_name, modality, category, division_level')
     .order('club_name', { ascending: true })
 
+  const { data: achievementRows } = await supabase
+    .from('user_achievements')
+    .select(
+      `
+        id,
+        is_visible,
+        achievement:achievements (
+          id,
+          title_ca,
+          title_es,
+          title_en,
+          description_ca,
+          description_es,
+          description_en,
+          icon_key
+        )
+      `
+    )
+    .eq('profile_id', user.id)
+    .order('unlocked_at', { ascending: true })
+
+  const editableAchievements = ((achievementRows ?? []) as EditableAchievementRow[])
+    .flatMap((row) => {
+      const achievement = getJoinedAchievement(row.achievement)
+
+      return achievement
+        ? [
+            {
+              userAchievementId: row.id,
+              isVisible: row.is_visible ?? true,
+              title:
+                locale === 'es'
+                  ? achievement.title_es
+                  : locale === 'en'
+                    ? achievement.title_en
+                    : achievement.title_ca,
+              description:
+                locale === 'es'
+                  ? achievement.description_es
+                  : locale === 'en'
+                    ? achievement.description_en
+                    : achievement.description_ca,
+              icon: achievementIconFromKey(achievement.icon_key),
+            },
+          ]
+        : []
+    })
+
   const clubOptions = clubOptionsData ?? []
   const verification = profile.verification ?? 'unverified'
 
@@ -211,6 +319,20 @@ export default async function ProfileEditPage({
                 upload: m.profileEdit.avatarUpload,
                 uploading: m.profileEdit.avatarUploading,
                 error: m.profileEdit.avatarError,
+              }}
+            />
+
+            <EditableAchievementCollection
+              achievements={editableAchievements}
+              labels={{
+                title: m.achievements.profileEditTitle,
+                description: m.achievements.profileEditDescription,
+                visible: m.achievements.visible,
+                hidden: m.achievements.hidden,
+                hide: m.achievements.hide,
+                show: m.achievements.show,
+                emptyVisible: m.achievements.emptyVisible,
+                emptyHidden: m.achievements.emptyHidden,
               }}
             />
 

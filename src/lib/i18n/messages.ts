@@ -87,7 +87,15 @@ const ca = {
     "title": "Assoliments",
     "menu": "Assoliments",
     "description": "Avança pel camp i desbloqueja noves insígnies dins de FUTCON.",
-    "unlockedCount": "Assoliments aconseguits: {unlocked}/{total}"
+    "unlockedCount": "Assoliments aconseguits: {unlocked}/{total}",
+    "profileEditTitle": "Insígnies del perfil",
+    "profileEditDescription": "Gestiona quines insígnies vols mostrar públicament al teu perfil.",
+    "visible": "Visibles",
+    "hidden": "Ocultes",
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "emptyVisible": "No tens cap insígnia visible.",
+    "emptyHidden": "No tens cap insígnia oculta."
   },
   "theme": {
     "light": "Tema clar",
@@ -609,7 +617,15 @@ const es: Messages = {
     "title": "Logros",
     "menu": "Logros",
     "description": "Avanza por el campo y desbloquea nuevas insignias dentro de FUTCON.",
-    "unlockedCount": "Logros conseguidos: {unlocked}/{total}"
+    "unlockedCount": "Logros conseguidos: {unlocked}/{total}",
+    "profileEditTitle": "Insignias del perfil",
+    "profileEditDescription": "Gestiona qué insignias quieres mostrar públicamente en tu perfil.",
+    "visible": "Visibles",
+    "hidden": "Ocultas",
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "emptyVisible": "No tienes ninguna insignia visible.",
+    "emptyHidden": "No tienes ninguna insignia oculta."
   },
   "theme": {
     "light": "Tema claro",
@@ -1121,7 +1137,15 @@ const en: Messages = {
     "title": "Achievements",
     "menu": "Achievements",
     "description": "Move across the pitch and unlock new badges inside FUTCON.",
-    "unlockedCount": "Achievements unlocked: {unlocked}/{total}"
+    "unlockedCount": "Achievements unlocked: {unlocked}/{total}",
+    "profileEditTitle": "Profile badges",
+    "profileEditDescription": "Manage which badges you want to display publicly on your profile.",
+    "visible": "Visible",
+    "hidden": "Hidden",
+    "hide": "Hide",
+    "show": "Show",
+    "emptyVisible": "You do not have any visible badges.",
+    "emptyHidden": "You do not have any hidden badges."
   },
   "theme": {
     "light": "Light theme",

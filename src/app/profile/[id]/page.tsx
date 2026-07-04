@@ -344,6 +344,7 @@ export default async function PublicProfilePage({
       `
     )
     .eq('profile_id', profile.profile_id)
+    .eq('is_visible', true)
     .order('unlocked_at', { ascending: true })
 
   const unlockedAchievements = ((achievementsRaw ?? []) as AchievementJoinRow[])

@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
-import { awardAchievementByCode } from '@/lib/achievements/award'
+import { awardAchievement } from '@/lib/achievements/award'
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key)
@@ -46,7 +46,7 @@ export async function signUp(formData: FormData) {
   }
 
   if (data.user) {
-    await awardAchievementByCode(data.user.id, 'welcome')
+    await awardAchievement(supabase, 'welcome', data.user.id)
   }
 
   revalidatePath('/', 'layout')

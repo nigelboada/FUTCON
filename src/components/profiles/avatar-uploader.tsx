@@ -106,6 +106,11 @@ export function AvatarUploader({
       return
     }
 
+    await supabase.rpc('award_achievement', {
+      achievement_code: 'avatar_uploaded',
+      target_profile_id: userId,
+    })
+
     setPreviewUrl(data.publicUrl)
     await awardAvatarUploaded()
     setIsUploading(false)

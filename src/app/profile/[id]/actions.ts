@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { awardAchievementByCode } from '@/lib/achievements/award'
+import { awardAchievement } from '@/lib/achievements/award'
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key)
@@ -61,7 +61,7 @@ export async function submitReview(formData: FormData) {
     redirect(`/profile/${reviewedProfileId}?error=${encodeURIComponent(error.message)}`)
   }
 
-  await awardAchievementByCode(user.id, 'first_review')
+  await awardAchievement(supabase, 'first_review', user.id)
 
   revalidatePath(`/profile/${reviewedProfileId}`)
   redirect(`/profile/${reviewedProfileId}?message=review_saved`)

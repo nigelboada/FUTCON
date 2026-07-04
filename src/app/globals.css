@@ -218,3 +218,25 @@
   position: relative;
   z-index: 1;
 }
+
+@keyframes futcon-achievement-pop {
+  0% {
+    transform: scale(0.35) rotate(-4deg);
+    filter: grayscale(1);
+  }
+
+  35% {
+    transform: scale(0.32) rotate(4deg);
+    filter: grayscale(1);
+  }
+
+  70% {
+    transform: scale(1.15) rotate(-2deg);
+    filter: grayscale(0);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: grayscale(0);
+  }
+}

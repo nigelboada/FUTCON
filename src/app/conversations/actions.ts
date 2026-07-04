@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { awardAchievementByCode } from '@/lib/achievements/award'
+import { awardAchievement } from '@/lib/achievements/award'
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key)
@@ -40,8 +40,6 @@ export async function startConversation(formData: FormData) {
     redirect(`/profile/${targetProfileId}?error=${encodeURIComponent(error?.message ?? 'conversation_create_failed')}`)
   }
 
-  await awardAchievementByCode(user.id, 'first_message')
-
   revalidatePath('/conversations')
   redirect(`/conversations/${data}`)
 }
@@ -77,6 +75,8 @@ export async function sendMessage(formData: FormData) {
   if (error) {
     redirect(`/conversations/${conversationId}?error=${encodeURIComponent(error.message)}`)
   }
+
+  await awardAchievement(supabase, 'first_message', user.id)
 
   revalidatePath('/conversations')
   revalidatePath(`/conversations/${conversationId}`)

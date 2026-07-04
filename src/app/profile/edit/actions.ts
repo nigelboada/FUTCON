@@ -3,9 +3,11 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { awardAchievementByCode } from '@/lib/achievements/award'
-import { syncCompletenessAchievements } from '@/lib/achievements/sync'
 import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
+import {
+  awardAchievement,
+  awardCompletenessAchievements,
+} from '@/lib/achievements/award'
 
 const allowedAvailability = [
   'available',
@@ -273,7 +275,11 @@ export async function updateFullProfile(formData: FormData) {
 
   if (updatedProfile) {
     const profileCompleteness = calculateProfileCompleteness(updatedProfile)
-    await syncCompletenessAchievements(user.id, profileCompleteness.percentage)
+    await awardCompletenessAchievements(
+      supabase,
+      user.id,
+      profileCompleteness.percentage
+    )
   }
 
   revalidatePath('/dashboard')
@@ -303,7 +309,7 @@ export async function requestProfileVerification(formData: FormData) {
     redirect(`/profile/edit?error=${encodeURIComponent(error.message)}`)
   }
 
-  await awardAchievementByCode(user.id, 'verified_request')
+  await awardAchievement(supabase, 'verified_request', user.id)
 
   revalidatePath('/dashboard')
   revalidatePath('/profile/edit')
@@ -323,5 +329,5 @@ export async function awardAvatarUploaded() {
     return
   }
 
-  await awardAchievementByCode(user.id, 'avatar_uploaded')
+  await awardAchievement(supabase, 'avatar_uploaded', user.id)
 }

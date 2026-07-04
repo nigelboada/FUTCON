@@ -73,6 +73,11 @@ type PublicProfileLabels = {
 type AchievementRecord = {
   id: number
   title_ca: string
+  title_es: string
+  title_en: string
+  description_ca: string
+  description_es: string
+  description_en: string
   icon_key: string
 }
 
@@ -90,10 +95,14 @@ function iconFromKey(iconKey: string) {
   switch (iconKey) {
     case 'ball':
       return '⚽'
+    case 'runner':
+      return '🏃‍♀️'
     case 'whistle':
       return '🪈'
     case 'boot':
       return '👟'
+    case 'chart':
+      return '📈'
     case 'trophy':
       return '🏆'
     case 'player':
@@ -325,6 +334,11 @@ export default async function PublicProfilePage({
         achievement:achievements (
           id,
           title_ca,
+          title_es,
+          title_en,
+          description_ca,
+          description_es,
+          description_en,
           icon_key
         )
       `
@@ -340,7 +354,18 @@ export default async function PublicProfilePage({
         ? [
             {
               id: achievement.id,
-              title: achievement.title_ca,
+              title:
+                locale === 'es'
+                  ? achievement.title_es
+                  : locale === 'en'
+                    ? achievement.title_en
+                    : achievement.title_ca,
+              description:
+                locale === 'es'
+                  ? achievement.description_es
+                  : locale === 'en'
+                    ? achievement.description_en
+                    : achievement.description_ca,
               icon: iconFromKey(achievement.icon_key),
             },
           ]
@@ -584,7 +609,7 @@ export default async function PublicProfilePage({
 
             <AchievementBadges
               achievements={unlockedAchievements}
-              title={m.achievements.title}
+              emptyText="Aquest perfil encara no ha desbloquejat assoliments."
             />
 
             <section className="rounded-md border bg-background p-4">

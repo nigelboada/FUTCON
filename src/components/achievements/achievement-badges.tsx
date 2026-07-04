@@ -1,42 +1,51 @@
 type UnlockedAchievement = {
   id: number
   title: string
+  description?: string
   icon: string
 }
 
 export function AchievementBadges({
   achievements,
-  title,
-  compact = false,
+  emptyText,
 }: {
   achievements: UnlockedAchievement[]
-  title?: string
-  compact?: boolean
+  emptyText: string
 }) {
-  if (achievements.length === 0) {
-    return null
-  }
-
   return (
-    <div className="space-y-2">
-      {!compact && title ? (
-        <h3 className="text-lg font-semibold">{title}</h3>
-      ) : null}
-
-      <div className="flex flex-wrap gap-2">
-        {achievements.map((achievement) => (
-          <div
-            key={achievement.id}
-            className={`flex items-center gap-2 rounded-full border bg-background px-3 py-1 shadow-sm ${
-              compact ? 'text-xs' : 'text-sm'
-            }`}
-            title={achievement.title}
-          >
-            <span>{achievement.icon}</span>
-            {!compact ? <span>{achievement.title}</span> : null}
-          </div>
-        ))}
+    <section className="space-y-4 rounded-md border bg-background p-4">
+      <div>
+        <h2 className="text-lg font-semibold">Assoliments</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Col·lecció d’insígnies desbloquejades dins de FUTCON.
+        </p>
       </div>
-    </div>
+
+      {achievements.length > 0 ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {achievements.map((achievement) => (
+            <div
+              key={achievement.id}
+              className="flex items-center gap-3 rounded-xl border bg-muted/40 p-3"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-background text-2xl shadow-sm">
+                {achievement.icon}
+              </div>
+
+              <div>
+                <p className="font-medium">{achievement.title}</p>
+                {achievement.description ? (
+                  <p className="text-xs text-muted-foreground">
+                    {achievement.description}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">{emptyText}</p>
+      )}
+    </section>
   )
 }

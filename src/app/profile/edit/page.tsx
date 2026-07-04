@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { requestProfileVerification, updateFullProfile } from './actions'
-import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -29,6 +28,7 @@ import { CompletenessFieldBadge } from '@/components/profiles/completeness-field
 
 
 import { EditableAchievementCollection } from '@/components/achievements/editable-achievement-collection'
+import { requireActiveUser } from '@/lib/auth/guards'
 
 
 type ProfileEditPageProps = {
@@ -107,7 +107,7 @@ export default async function ProfileEditPage({
   searchParams,
 }: ProfileEditPageProps) {
   const params = await searchParams
-  const supabase = await createClient()
+  const { supabase, user } = await requireActiveUser()
   const locale = await getLocale()
   const m = getMessages(locale)
   const message = resolveFeedbackMessage(params.message, m.feedback)
@@ -138,14 +138,6 @@ export default async function ProfileEditPage({
     { value: 'analyst', label: m.staffKinds.analyst },
     { value: 'other', label: m.staffKinds.other },
   ]
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
 
   const { data: roles } = await supabase
     .from('profile_roles')

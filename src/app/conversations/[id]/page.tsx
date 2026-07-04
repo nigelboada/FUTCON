@@ -1,8 +1,7 @@
 import Link from 'next/link'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { sendMessage } from '../actions'
 import { ConversationMessages } from '@/components/conversations/conversation-messages'
-import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -15,6 +14,7 @@ import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
+import { requireActiveUser } from '@/lib/auth/guards'
 
 type ConversationPageProps = {
   params: Promise<{
@@ -39,18 +39,10 @@ export default async function ConversationPage({
 }: ConversationPageProps) {
   const { id } = await params
   const query = await searchParams
-  const supabase = await createClient()
+  const { supabase, user } = await requireActiveUser()
   const locale = await getLocale()
   const m = getMessages(locale)
   const error = resolveFeedbackMessage(query.error, m.feedback)
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
 
   const { data: participants } = await supabase
     .from('conversation_participants')

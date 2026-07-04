@@ -1,22 +1,20 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import {
-  approveVerificationRequest,
-  rejectVerificationRequest,
-} from './actions'
+import { banUser, sendAdminWarning, unbanUser } from './actions'
+import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
+import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { FeedbackMessage } from '@/components/layout/feedback-message'
-import { getLocale } from '@/lib/i18n/server'
-import { getMessages } from '@/lib/i18n/messages'
-import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { requireActiveUser } from '@/lib/auth/guards'
 
 type AdminPageProps = {
   searchParams: Promise<{
@@ -25,277 +23,251 @@ type AdminPageProps = {
   }>
 }
 
-type VerificationRequest = {
+type AdminWarning = {
   id: string
   profile_id: string
-  status: string
-  request_message: string | null
+  reason: string
+  message: string
+  read_at: string | null
   created_at: string
-  resolved_at: string | null
-  profile_display_name: string
-  profile_city: string | null
-  profile_province: string | null
-  profile_verification: string
-  profile_roles: string
+  profile:
+    | {
+        display_name: string | null
+      }
+    | {
+        display_name: string | null
+      }[]
+    | null
 }
 
-const statusClassNames: Record<string, string> = {
-  pending: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
-  verified: 'border-green-500 bg-green-500/10 text-green-700',
-  rejected: 'border-red-500 bg-red-500/10 text-red-700',
-  unverified: 'border-muted bg-muted text-muted-foreground',
-}
-
-function formatDate(value: string | null, localeTag: string, fallback: string) {
-  if (!value) {
-    return fallback
-  }
-
-  return new Intl.DateTimeFormat(localeTag, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value))
-}
+const moderationReasons = [
+  'Nom inapropiat',
+  'Activitat sospitosa',
+  'Ús abusiu de missatges',
+  'Contingut ofensiu',
+  'Possible perfil fals',
+  'Falta d’activitat',
+  'Incompliment de condicions d’ús',
+  'Altres',
+]
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const params = await searchParams
-  const supabase = await createClient()
+  const { supabase } = await requireActiveUser()
   const locale = await getLocale()
   const m = getMessages(locale)
-  const message = resolveFeedbackMessage(params.message, m.feedback)
-  const errorMessage = resolveFeedbackMessage(params.error, m.feedback)
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: isAdmin } = await supabase.rpc('is_app_admin')
 
-  if (!user) {
-    redirect('/login')
-  }
-
-  const { data: isAdmin, error: adminError } = await supabase.rpc('is_app_admin')
-
-  if (adminError || !isAdmin) {
+  if (!isAdmin) {
     redirect('/dashboard?error=no_admin_permission')
   }
 
-  const { data, error } = await supabase
-    .from('admin_verification_requests_view')
-    .select('*')
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, display_name, city, province, is_banned, banned_reason, banned_at')
     .order('created_at', { ascending: false })
+    .limit(100)
 
-  const requests = (data ?? []) as VerificationRequest[]
-  const pendingRequests = requests.filter((request) => request.status === 'pending')
-  const resolvedRequests = requests.filter((request) => request.status !== 'pending')
+  const { data: warnings } = await supabase
+    .from('admin_warnings')
+    .select(`
+      id,
+      profile_id,
+      reason,
+      message,
+      read_at,
+      created_at,
+      profile:profiles (
+        display_name
+      )
+    `)
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  const adminWarnings = (warnings ?? []) as AdminWarning[]
+
+  const message = resolveFeedbackMessage(params.message, m.feedback)
+  const error = resolveFeedbackMessage(params.error, m.feedback)
 
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-8">
-      <div className="futcon-fade-up mx-auto max-w-7xl space-y-6">
-        <section className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">{m.admin.eyebrow}</p>
-            <h1 className="text-3xl font-bold">{m.admin.title}</h1>
-            <p className="mt-2 max-w-2xl text-muted-foreground">
-              {m.admin.description}
-            </p>
-          </div>
-
-          <Button asChild variant="outline">
-            <Link href="/dashboard">{m.common.backToDashboard}</Link>
-          </Button>
+      <div className="mx-auto max-w-6xl space-y-6">
+        <section className="space-y-2">
+          <p className="text-sm text-muted-foreground">Administració</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Panell de moderació
+          </h1>
+          <p className="max-w-2xl text-muted-foreground">
+            Gestiona usuaris, bloquejos i advertències de la plataforma.
+          </p>
         </section>
 
-        <FeedbackMessage message={message} error={errorMessage} />
-
-        {error ? (
-          <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {error.message}
-          </div>
-        ) : null}
+        <FeedbackMessage message={message} error={error} />
 
         <section className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>
-              <CardTitle>{requests.length}</CardTitle>
-              <CardDescription>{m.admin.totalRequests}</CardDescription>
+              <CardTitle>{profiles?.length ?? 0}</CardTitle>
             </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Perfils revisats</p>
+            </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>{pendingRequests.length}</CardTitle>
-              <CardDescription>{m.admin.pendingReview}</CardDescription>
+              <CardTitle>
+                {profiles?.filter((profile) => profile.is_banned).length ?? 0}
+              </CardTitle>
             </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Usuaris bloquejats</p>
+            </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>{resolvedRequests.length}</CardTitle>
-              <CardDescription>{m.admin.resolved}</CardDescription>
+              <CardTitle>{adminWarnings.length}</CardTitle>
             </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Advertències recents</p>
+            </CardContent>
           </Card>
         </section>
 
         <section className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold">{m.admin.pendingTitle}</h2>
-            <p className="text-sm text-muted-foreground">
-              {m.admin.pendingDescription}
-            </p>
-          </div>
+          <h2 className="text-xl font-semibold">Gestió d’usuaris</h2>
 
-          {pendingRequests.length > 0 ? (
-            <div className="grid gap-4 lg:grid-cols-2">
-              {pendingRequests.map((request) => {
-                const isOwnVerificationRequest = request.profile_id === user.id
-
-                return (
-                  <Card key={request.id} className="futcon-card-hover">
-                    <CardHeader>
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <CardTitle>{request.profile_display_name}</CardTitle>
-                          <CardDescription>
-                            {request.profile_roles}
-                            {' · '}
-                            {[request.profile_city, request.profile_province]
-                              .filter(Boolean)
-                              .join(', ') || m.common.locationNotSpecified}
-                          </CardDescription>
-                        </div>
-
-                        <span
-                          className={`w-fit rounded-full border px-3 py-1 text-xs font-medium ${
-                            statusClassNames[request.status]
-                          }`}
-                        >
-                          {m.status[request.status as keyof typeof m.status] ??
-                            request.status}
-                        </span>
-                      </div>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                      <div className="rounded-md border bg-background p-4">
-                        <p className="text-sm text-muted-foreground">
-                          {m.admin.requestMessage}
-                        </p>
-                        <p className="mt-2 text-sm">
-                          {request.request_message || m.admin.noRequestMessage}
-                        </p>
-                      </div>
-
-                      <p className="text-sm text-muted-foreground">
-                        {m.admin.requestedOn.replace(
-                          '{date}',
-                          formatDate(
-                            request.created_at,
-                            m.localeTag,
-                            m.common.unresolved
-                          )
-                        )}
-                      </p>
-
-                      <div className="flex flex-col gap-3 sm:flex-row">
-                        <Button asChild variant="outline">
-                          <Link href={`/profile/${request.profile_id}`}>
-                            {m.common.viewProfile}
-                          </Link>
-                        </Button>
-
-                        {isOwnVerificationRequest ? (
-                          <div className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">
-                            {m.admin.ownRequest}
-                          </div>
-                        ) : (
-                          <>
-                            <form action={approveVerificationRequest}>
-                              <input
-                                type="hidden"
-                                name="requestId"
-                                value={request.id}
-                              />
-                              <Button type="submit">{m.admin.approve}</Button>
-                            </form>
-
-                            <form action={rejectVerificationRequest}>
-                              <input
-                                type="hidden"
-                                name="requestId"
-                                value={request.id}
-                              />
-                              <Button type="submit" variant="destructive">
-                                {m.admin.reject}
-                              </Button>
-                            </form>
-                          </>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="p-10 text-center">
-                <p className="text-lg font-semibold">
-                  {m.admin.noPendingTitle}
-                </p>
-                <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                  {m.admin.noPendingDescription}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </section>
-
-        <section className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold">{m.admin.historyTitle}</h2>
-            <p className="text-sm text-muted-foreground">
-              {m.admin.historyDescription}
-            </p>
-          </div>
-
-          {resolvedRequests.length > 0 ? (
-            <div className="space-y-3">
-              {resolvedRequests.slice(0, 8).map((request) => (
-                <Card key={request.id}>
-                  <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-4">
+            {(profiles ?? []).map((profile) => (
+              <Card key={profile.id}>
+                <CardHeader>
+                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <p className="font-medium">
-                        {request.profile_display_name}
+                      <CardTitle>{profile.display_name}</CardTitle>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {[profile.city, profile.province].filter(Boolean).join(', ') ||
+                          'Ubicació no indicada'}
                       </p>
-                      <p className="text-sm text-muted-foreground">
-                        {request.profile_roles} · {m.admin.resolution}{' '}
-                        {formatDate(
-                          request.resolved_at,
-                          m.localeTag,
-                          m.common.unresolved
-                        )}
-                      </p>
+
+                      {profile.is_banned ? (
+                        <p className="mt-2 text-sm font-medium text-destructive">
+                          Bloquejat: {profile.banned_reason}
+                        </p>
+                      ) : null}
                     </div>
 
-                    <span
-                      className={`w-fit rounded-full border px-3 py-1 text-xs font-medium ${
-                        statusClassNames[request.status]
-                      }`}
-                    >
-                      {m.status[request.status as keyof typeof m.status] ??
-                        request.status}
-                    </span>
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/profile/${profile.id}`}>
+                        Veure perfil
+                      </Link>
+                    </Button>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="grid gap-4 lg:grid-cols-2">
+                  <form action={sendAdminWarning} className="space-y-3 rounded-xl border p-4">
+                    <input type="hidden" name="profileId" value={profile.id} />
+
+                    <div className="space-y-2">
+                      <Label>Motiu de l’advertència</Label>
+                      <select
+                        name="reason"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        required
+                      >
+                        <option value="">Selecciona un motiu</option>
+                        {moderationReasons.map((reason) => (
+                          <option key={reason} value={reason}>
+                            {reason}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Missatge</Label>
+                      <Textarea
+                        name="message"
+                        rows={3}
+                        placeholder="Explica el motiu de l’advertència..."
+                        required
+                      />
+                    </div>
+
+                    <Button type="submit" variant="outline">
+                      Enviar advertència
+                    </Button>
+                  </form>
+
+                  <form
+                    action={profile.is_banned ? unbanUser : banUser}
+                    className="space-y-3 rounded-xl border p-4"
+                  >
+                    <input type="hidden" name="profileId" value={profile.id} />
+
+                    {!profile.is_banned ? (
+                      <>
+                        <div className="space-y-2">
+                          <Label>Motiu del bloqueig</Label>
+                          <select
+                            name="reason"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            required
+                          >
+                            <option value="">Selecciona un motiu</option>
+                            {moderationReasons.map((reason) => (
+                              <option key={reason} value={reason}>
+                                {reason}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <Button type="submit" variant="destructive">
+                          Banejar usuari
+                        </Button>
+                      </>
+                    ) : (
+                      <Button type="submit" variant="outline">
+                        Desbloquejar usuari
+                      </Button>
+                    )}
+                  </form>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold">Advertències recents</h2>
+
+          {adminWarnings.length > 0 ? (
+            <div className="space-y-3">
+              {adminWarnings.map((warning) => (
+                <Card key={warning.id} className="border-destructive/30">
+                  <CardContent className="p-4">
+                    <p className="font-medium">
+                      {Array.isArray(warning.profile)
+                        ? warning.profile[0]?.display_name
+                        : warning.profile?.display_name}
+                    </p>
+                    <p className="mt-1 text-sm text-destructive">
+                      {warning.reason}
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {warning.message}
+                    </p>
                   </CardContent>
                 </Card>
               ))}
             </div>
           ) : (
             <Card>
-              <CardContent className="p-6 text-center text-sm text-muted-foreground">
-                {m.admin.noResolved}
+              <CardContent className="p-6 text-sm text-muted-foreground">
+                Encara no hi ha advertències registrades.
               </CardContent>
             </Card>
           )}

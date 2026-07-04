@@ -1,8 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { AchievementMap } from '@/components/achievements/achievement-map'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { requireActiveUser } from '@/lib/auth/guards'
 
 type AchievementRow = {
   id: number
@@ -18,17 +17,9 @@ type AchievementRow = {
 }
 
 export default async function AchievementsPage() {
-  const supabase = await createClient()
+  const { supabase, user } = await requireActiveUser()
   const locale = await getLocale()
   const m = getMessages(locale)
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
 
   const { data: achievements } = await supabase
     .from('achievements')
@@ -82,6 +73,7 @@ export default async function AchievementsPage() {
           achievements={localizedAchievements}
           labels={{
             unlockedCount: m.achievements.unlockedCount,
+            actionHint: m.achievements.actionHint,
           }}
         />
       </div>

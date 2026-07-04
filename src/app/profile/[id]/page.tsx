@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { startConversation } from '@/app/conversations/actions'
 import { submitReview } from './actions'
@@ -19,7 +18,8 @@ import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 import { ProfileAvatar } from '@/components/profiles/profile-avatar'
 import { AchievementBadges } from '@/components/achievements/achievement-badges'
 import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
+import { requireActiveUser } from '@/lib/auth/guards'
 
 type PublicProfilePageProps = {
   params: Promise<{
@@ -283,16 +283,7 @@ export default async function PublicProfilePage({
 }: PublicProfilePageProps) {
   const { id } = await params
   const query = await searchParams
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login?error=auth_required')
-  }
-
+  const { supabase, user } = await requireActiveUser()
 
   const locale = await getLocale()
   const m = getMessages(locale)

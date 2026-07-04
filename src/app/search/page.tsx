@@ -1,11 +1,10 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { ProfileCard } from '@/components/profiles/profile-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { requireActiveUser } from '@/lib/auth/guards'
 
 type SearchPageProps = {
   searchParams: Promise<{
@@ -53,14 +52,7 @@ function normalizeParam(value: string | undefined) {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login?error=auth_required')
-  }
+  const { supabase } = await requireActiveUser()
 
   const locale = await getLocale()
   const m = getMessages(locale)

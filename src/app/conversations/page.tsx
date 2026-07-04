@@ -1,10 +1,9 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
+import { requireActiveUser } from '@/lib/auth/guards'
 
 type ConversationOverview = {
   conversation_id: string
@@ -32,17 +31,9 @@ function formatDate(value: string | null, localeTag: string, fallback: string) {
 }
 
 export default async function ConversationsPage() {
-  const supabase = await createClient()
+  const { supabase, user } = await requireActiveUser()
   const locale = await getLocale()
   const m = getMessages(locale)
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
 
   const { data, error } = await supabase
     .from('conversation_overview_view')

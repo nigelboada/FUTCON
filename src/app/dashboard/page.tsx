@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -14,6 +13,7 @@ import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
+import { requireActiveUser } from '@/lib/auth/guards'
 
 type DashboardPageProps = {
   searchParams: Promise<{
@@ -40,7 +40,7 @@ export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
   const params = await searchParams
-  const supabase = await createClient()
+  const { supabase, user } = await requireActiveUser()
   const locale = await getLocale()
   const m = getMessages(locale)
   const message = resolveFeedbackMessage(params.message, m.feedback)
@@ -62,14 +62,6 @@ export default async function DashboardPage({
     return value in m.availability
       ? m.availability[value as keyof typeof m.availability]
       : value
-  }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
   }
 
   const { data: profile, error: profileError } = await supabase

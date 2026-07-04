@@ -88,6 +88,7 @@ const ca = {
     "menu": "Assoliments",
     "description": "Avança pel camp i desbloqueja noves insígnies dins de FUTCON.",
     "unlockedCount": "Assoliments aconseguits: {unlocked}/{total}",
+    "actionHint": "Clica per anar a l’acció relacionada.",
     "profileEditTitle": "Insígnies del perfil",
     "profileEditDescription": "Gestiona quines insígnies vols mostrar públicament al teu perfil.",
     "visible": "Visibles",
@@ -511,6 +512,9 @@ const ca = {
     "verification_rejected": "Sol·licitud rebutjada correctament.",
     "invalid_request": "Sol·licitud no vàlida.",
     "no_admin_permission": "No tens permisos per accedir al panell d’administració.",
+    "user_banned": "Usuari bloquejat correctament.",
+    "user_unbanned": "Usuari desbloquejat correctament.",
+    "warning_sent": "Advertència enviada correctament.",
     "empty_message": "El missatge no pot estar buit."
   },
   "notFound": {
@@ -618,6 +622,7 @@ const es: Messages = {
     "menu": "Logros",
     "description": "Avanza por el campo y desbloquea nuevas insignias dentro de FUTCON.",
     "unlockedCount": "Logros conseguidos: {unlocked}/{total}",
+    "actionHint": "Haz clic para ir a la acción relacionada.",
     "profileEditTitle": "Insignias del perfil",
     "profileEditDescription": "Gestiona qué insignias quieres mostrar públicamente en tu perfil.",
     "visible": "Visibles",
@@ -1041,6 +1046,9 @@ const es: Messages = {
     "verification_rejected": "Solicitud rechazada correctamente.",
     "invalid_request": "Solicitud no válida.",
     "no_admin_permission": "No tienes permisos para acceder al panel de administración.",
+    "user_banned": "Usuario bloqueado correctamente.",
+    "user_unbanned": "Usuario desbloqueado correctamente.",
+    "warning_sent": "Advertencia enviada correctamente.",
     "empty_message": "El mensaje no puede estar vacío."
   },
   "notFound": {
@@ -1138,6 +1146,7 @@ const en: Messages = {
     "menu": "Achievements",
     "description": "Move across the pitch and unlock new badges inside FUTCON.",
     "unlockedCount": "Achievements unlocked: {unlocked}/{total}",
+    "actionHint": "Click to go to the related action.",
     "profileEditTitle": "Profile badges",
     "profileEditDescription": "Manage which badges you want to display publicly on your profile.",
     "visible": "Visible",
@@ -1561,6 +1570,9 @@ const en: Messages = {
     "verification_rejected": "Request rejected successfully.",
     "invalid_request": "Invalid request.",
     "no_admin_permission": "You do not have permission to access the admin panel.",
+    "user_banned": "User banned successfully.",
+    "user_unbanned": "User unbanned successfully.",
+    "warning_sent": "Warning sent successfully.",
     "empty_message": "The message cannot be empty."
   },
   "notFound": {

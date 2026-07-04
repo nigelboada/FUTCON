@@ -21,7 +21,11 @@ import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 
-import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
+import {
+  calculateProfileCompleteness,
+  getCompletenessFieldContribution,
+} from '@/lib/profiles/completeness'
+import { CompletenessFieldBadge } from '@/components/profiles/completeness-field-badge'
 
 type ProfileEditPageProps = {
   searchParams: Promise<{
@@ -154,9 +158,15 @@ export default async function ProfileEditPage({
         .limit(1)
     : { data: null }
 
-  const profileCompleteness = ownSearchProfiles?.[0]
-    ? calculateProfileCompleteness(ownSearchProfiles[0]).percentage
+  const ownSearchProfile = ownSearchProfiles?.[0] ?? null
+
+  const profileCompleteness = ownSearchProfile
+    ? calculateProfileCompleteness(ownSearchProfile)
     : null
+
+  const fieldContribution = ownSearchProfile
+    ? getCompletenessFieldContribution(ownSearchProfile)
+    : 0
 
   const { data: clubOptionsData } = await supabase
     .from('club_profiles')
@@ -193,7 +203,8 @@ export default async function ProfileEditPage({
               userId={user.id}
               displayName={profile.display_name}
               currentAvatarUrl={profile.avatar_url}
-              completeness={profileCompleteness}
+              completeness={profileCompleteness?.percentage ?? null}
+              completenessValue={fieldContribution}
               labels={{
                 title: m.profileEdit.avatarTitle,
                 description: m.profileEdit.avatarDescription,
@@ -268,9 +279,12 @@ export default async function ProfileEditPage({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="displayName">
+                  <CompletenessLabel
+                    htmlFor="displayName"
+                    value={fieldContribution}
+                  >
                     {m.profileEdit.displayName}
-                  </Label>
+                  </CompletenessLabel>
                   <Input
                     id="displayName"
                     name="displayName"
@@ -281,7 +295,9 @@ export default async function ProfileEditPage({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio">{m.profileEdit.bio}</Label>
+                  <CompletenessLabel htmlFor="bio" value={fieldContribution}>
+                    {m.profileEdit.bio}
+                  </CompletenessLabel>
                   <Textarea
                     id="bio"
                     name="bio"
@@ -292,6 +308,12 @@ export default async function ProfileEditPage({
                 </div>
 
                 <div id="profile-location">
+                  <div className="mb-3 flex items-center gap-2">
+                    <h2 className="text-lg font-semibold">
+                      {m.profileEdit.province} / {m.profileEdit.city}
+                    </h2>
+                    <CompletenessFieldBadge value={fieldContribution} />
+                  </div>
                   <LocationSelects
                     defaultProvince={profile.province}
                     defaultCity={profile.city}
@@ -306,9 +328,12 @@ export default async function ProfileEditPage({
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="availability">
+                  <CompletenessLabel
+                    htmlFor="availability"
+                    value={fieldContribution}
+                  >
                     {m.profileEdit.availability}
-                  </Label>
+                  </CompletenessLabel>
 
                   <select
                     id="availability"
@@ -344,6 +369,7 @@ export default async function ProfileEditPage({
                   <SectionIntro
                     title={m.profileEdit.playerInfo}
                     description={m.profileEdit.playerInfoDescription}
+                    badgeValue={fieldContribution}
                   />
 
                   <div className="grid gap-5 md:grid-cols-2">
@@ -353,6 +379,7 @@ export default async function ProfileEditPage({
                       label={m.profileEdit.position}
                       defaultValue={playerProfile?.position ?? ''}
                       placeholder={m.profileEdit.placeholders.position}
+                      completenessValue={fieldContribution}
                     />
 
                     <div className="md:col-span-2">
@@ -431,6 +458,7 @@ export default async function ProfileEditPage({
                   <SectionIntro
                     title={m.profileEdit.coachInfo}
                     description={m.profileEdit.coachInfoDescription}
+                    badgeValue={fieldContribution}
                   />
 
                   <div className="grid gap-5 md:grid-cols-2">
@@ -488,6 +516,7 @@ export default async function ProfileEditPage({
                   <SectionIntro
                     title={m.profileEdit.clubInfo}
                     description={m.profileEdit.clubInfoDescription}
+                    badgeValue={fieldContribution}
                   />
 
                   <div className="grid gap-5 md:grid-cols-2">
@@ -549,13 +578,17 @@ export default async function ProfileEditPage({
                   <SectionIntro
                     title={m.profileEdit.staffInfo}
                     description={m.profileEdit.staffInfoDescription}
+                    badgeValue={fieldContribution}
                   />
 
                   <div className="grid gap-5 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="staffKind">
+                      <CompletenessLabel
+                        htmlFor="staffKind"
+                        value={fieldContribution}
+                      >
                         {m.profileEdit.staffKind}
-                      </Label>
+                      </CompletenessLabel>
                       <select
                         id="staffKind"
                         name="staffKind"
@@ -587,6 +620,7 @@ export default async function ProfileEditPage({
                       label={m.profileEdit.priceRange}
                       defaultValue={staffProfile?.price_range ?? ''}
                       placeholder={m.profileEdit.placeholders.priceRange}
+                      completenessValue={fieldContribution}
                     />
 
                     <div className="flex items-center gap-2 pt-7">
@@ -603,9 +637,12 @@ export default async function ProfileEditPage({
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="services">
+                      <CompletenessLabel
+                        htmlFor="services"
+                        value={fieldContribution}
+                      >
                         {m.profileEdit.services}
-                      </Label>
+                      </CompletenessLabel>
                       <Textarea
                         id="services"
                         name="services"
@@ -700,14 +737,38 @@ export default async function ProfileEditPage({
 function SectionIntro({
   title,
   description,
+  badgeValue,
 }: {
   title: string
   description: string
+  badgeValue?: number
 }) {
   return (
     <div>
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        {typeof badgeValue === 'number' && badgeValue > 0 ? (
+          <CompletenessFieldBadge value={badgeValue} />
+        ) : null}
+      </div>
       <p className="text-sm text-muted-foreground">{description}</p>
+    </div>
+  )
+}
+
+function CompletenessLabel({
+  htmlFor,
+  children,
+  value,
+}: {
+  htmlFor: string
+  children: React.ReactNode
+  value: number
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Label htmlFor={htmlFor}>{children}</Label>
+      {value > 0 ? <CompletenessFieldBadge value={value} /> : null}
     </div>
   )
 }
@@ -723,6 +784,7 @@ function Field({
   max,
   required,
   className,
+  completenessValue,
 }: {
   id: string
   name: string
@@ -734,10 +796,17 @@ function Field({
   max?: number
   required?: boolean
   className?: string
+  completenessValue?: number
 }) {
   return (
     <div className={`space-y-2 ${className ?? ''}`}>
-      <Label htmlFor={id}>{label}</Label>
+      {typeof completenessValue === 'number' ? (
+        <CompletenessLabel htmlFor={id} value={completenessValue}>
+          {label}
+        </CompletenessLabel>
+      ) : (
+        <Label htmlFor={id}>{label}</Label>
+      )}
       <Input
         id={id}
         name={name}

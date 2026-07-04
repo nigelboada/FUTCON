@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button'
 
 import { ProfileAvatar } from '@/components/profiles/profile-avatar'
 import { awardAvatarUploaded } from '@/app/profile/edit/actions'
+import { CompletenessFieldBadge } from '@/components/profiles/completeness-field-badge'
 
 type AvatarUploaderProps = {
   userId: string
   displayName: string | null
   currentAvatarUrl: string | null
   completeness: number | null
+  completenessValue?: number
   labels: {
     title: string
     description: string
@@ -48,6 +50,7 @@ export function AvatarUploader({
   userId,
   displayName,
   completeness,
+  completenessValue,
   currentAvatarUrl,
   labels,
 }: AvatarUploaderProps) {
@@ -133,7 +136,12 @@ export function AvatarUploader({
       className="space-y-4 rounded-xl border bg-background p-5"
     >
       <div>
-        <h2 className="text-lg font-semibold">{labels.title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-semibold">{labels.title}</h2>
+          {typeof completenessValue === 'number' && completenessValue > 0 ? (
+            <CompletenessFieldBadge value={completenessValue} />
+          ) : null}
+        </div>
         <p className="text-sm text-muted-foreground">{labels.description}</p>
       </div>
 

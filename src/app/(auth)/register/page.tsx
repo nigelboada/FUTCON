@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { signUp } from '../actions'
+import { signInWithGoogle, signUp } from '../actions'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -56,6 +56,23 @@ export default async function RegisterPage({
 
           <CardContent className="space-y-4">
             <FeedbackMessage error={error} />
+
+            <form action={signInWithGoogle}>
+              <Button type="submit" variant="outline" className="w-full">
+                {m.auth.register.continueWithGoogle}
+              </Button>
+            </form>
+
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  {m.auth.register.orContinueWithEmail}
+                </span>
+              </div>
+            </div>
 
             <form action={signUp} className="space-y-4">
               <div className="space-y-2">

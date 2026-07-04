@@ -81,6 +81,29 @@ export async function signIn(formData: FormData) {
   redirect('/dashboard')
 }
 
+export async function signInWithGoogle() {
+  const supabase = await createClient()
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.NEXT_PUBLIC_VERCEL_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : 'http://localhost:3000')
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${siteUrl}/auth/callback?next=/dashboard`,
+    },
+  })
+
+  if (error || !data.url) {
+    redirect('/login?error=google_oauth_error')
+  }
+
+  redirect(data.url)
+}
+
 export async function signOut() {
   const supabase = await createClient()
 

@@ -152,7 +152,9 @@ const ca = {
       "submit": "Entrar",
       "noAccount": "Encara no tens compte?",
       "createOne": "Crea’n un",
-      "emailPlaceholder": "nom@exemple.com"
+      "emailPlaceholder": "nom@exemple.com",
+      "continueWithGoogle": "Continuar amb Google",
+      "orContinueWithEmail": "o continua amb email"
     },
     "register": {
       "eyebrow": "Crea el teu perfil",
@@ -166,6 +168,8 @@ const ca = {
       "emailPlaceholder": "nom@exemple.com",
       "password": "Contrasenya",
       "submit": "Crear compte",
+      "continueWithGoogle": "Continuar amb Google",
+      "orContinueWithEmail": "o continua amb email",
       "hasAccount": "Ja tens compte?",
       "signIn": "Inicia sessió"
     }
@@ -377,6 +381,7 @@ const ca = {
     "categoryRequired": "Primer has de seleccionar una modalitat i una categoria.",
     "manualClubPlaceholder": "Selecciona un club registrat o escriu-ne el nom manualment",
     "availability": "Disponibilitat",
+    "availabilityDescription": "Indica si actualment estàs disponible per rebre oportunitats o contactes.",
     "availabilityDescriptions": {
       "available": "Busco equip, club o oportunitats professionals.",
       "open_to_offers": "Actualment tinc vinculació, però estic obert a propostes.",
@@ -504,6 +509,8 @@ const ca = {
     "contact_sent": "Missatge enviat correctament.",
     "contact_required_fields": "Cal omplir el nom, el correu i el missatge.",
     "auth_required": "Has d’iniciar sessió per accedir a aquesta pàgina.",
+    "google_oauth_error": "No s’ha pogut iniciar sessió amb Google.",
+    "auth_callback_error": "No s’ha pogut completar l’autenticació.",
     "review_saved": "Valoració desada correctament.",
     "invalid_rating": "La puntuació ha d’estar entre 1 i 5.",
     "own_review_blocked": "No pots valorar el teu propi perfil.",
@@ -686,7 +693,9 @@ const es: Messages = {
       "submit": "Entrar",
       "noAccount": "¿Aún no tienes cuenta?",
       "createOne": "Crea una",
-      "emailPlaceholder": "nombre@ejemplo.com"
+      "emailPlaceholder": "nombre@ejemplo.com",
+      "continueWithGoogle": "Continuar con Google",
+      "orContinueWithEmail": "o continúa con email"
     },
     "register": {
       "eyebrow": "Crea tu perfil",
@@ -700,6 +709,8 @@ const es: Messages = {
       "emailPlaceholder": "nombre@ejemplo.com",
       "password": "Contraseña",
       "submit": "Crear cuenta",
+      "continueWithGoogle": "Continuar con Google",
+      "orContinueWithEmail": "o continúa con email",
       "hasAccount": "¿Ya tienes cuenta?",
       "signIn": "Inicia sesión"
     }
@@ -911,6 +922,7 @@ const es: Messages = {
     "categoryRequired": "Primero debes seleccionar una modalidad y una categoría.",
     "manualClubPlaceholder": "Selecciona un club registrado o escribe el nombre manualmente",
     "availability": "Disponibilidad",
+    "availabilityDescription": "Indica si actualmente estás disponible para recibir oportunidades o contactos.",
     "availabilityDescriptions": {
       "available": "Busco equipo, club u oportunidades profesionales.",
       "open_to_offers": "Actualmente tengo vinculación, pero estoy abierto a propuestas.",
@@ -1038,6 +1050,8 @@ const es: Messages = {
     "contact_sent": "Mensaje enviado correctamente.",
     "contact_required_fields": "Hay que rellenar el nombre, el correo y el mensaje.",
     "auth_required": "Debes iniciar sesión para acceder a esta página.",
+    "google_oauth_error": "No se ha podido iniciar sesión con Google.",
+    "auth_callback_error": "No se ha podido completar la autenticación.",
     "review_saved": "Valoración guardada correctamente.",
     "invalid_rating": "La puntuación debe estar entre 1 y 5.",
     "own_review_blocked": "No puedes valorar tu propio perfil.",
@@ -1210,7 +1224,9 @@ const en: Messages = {
       "submit": "Enter",
       "noAccount": "Do not have an account yet?",
       "createOne": "Create one",
-      "emailPlaceholder": "name@example.com"
+      "emailPlaceholder": "name@example.com",
+      "continueWithGoogle": "Continue with Google",
+      "orContinueWithEmail": "or continue with email"
     },
     "register": {
       "eyebrow": "Create your profile",
@@ -1224,6 +1240,8 @@ const en: Messages = {
       "emailPlaceholder": "name@example.com",
       "password": "Password",
       "submit": "Create account",
+      "continueWithGoogle": "Continue with Google",
+      "orContinueWithEmail": "or continue with email",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in"
     }
@@ -1435,6 +1453,7 @@ const en: Messages = {
     "categoryRequired": "You must select a modality and category first.",
     "manualClubPlaceholder": "Select a registered club or type it manually",
     "availability": "Availability",
+    "availabilityDescription": "Indicate whether you are currently available to receive opportunities or contacts.",
     "availabilityDescriptions": {
       "available": "I am looking for a team, club or professional opportunities.",
       "open_to_offers": "I am currently attached, but open to proposals.",
@@ -1562,6 +1581,8 @@ const en: Messages = {
     "contact_sent": "Message sent successfully.",
     "contact_required_fields": "Please fill in your name, email and message.",
     "auth_required": "You must sign in to access this page.",
+    "google_oauth_error": "Could not sign in with Google.",
+    "auth_callback_error": "Could not complete authentication.",
     "review_saved": "Review saved successfully.",
     "invalid_rating": "The rating must be between 1 and 5.",
     "own_review_blocked": "You cannot review your own profile.",

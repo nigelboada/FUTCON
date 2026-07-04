@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { requireActiveUser } from '@/lib/auth/guards'
+import { markWarningAsRead } from './warning-actions'
 
 type ConversationOverview = {
   conversation_id: string
@@ -41,6 +42,12 @@ export default async function ConversationsPage() {
     .eq('viewer_profile_id', user.id)
     .order('updated_at', { ascending: false })
 
+  const { data: adminWarnings } = await supabase
+    .from('admin_warnings')
+    .select('id, reason, message, created_at, read_at')
+    .eq('profile_id', user.id)
+    .order('created_at', { ascending: false })
+
   const conversations = (data ?? []) as ConversationOverview[]
 
   return (
@@ -63,6 +70,41 @@ export default async function ConversationsPage() {
           <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error.message}
           </div>
+        ) : null}
+
+        {(adminWarnings ?? []).length > 0 ? (
+          <section className="space-y-3">
+            {(adminWarnings ?? []).map((warning) => (
+              <div
+                key={warning.id}
+                className="rounded-xl border border-destructive/40 bg-destructive/10 p-4"
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="font-semibold text-destructive">
+                      Advertència administrativa: {warning.reason}
+                    </p>
+                    <p className="mt-2 text-sm text-destructive/90">
+                      {warning.message}
+                    </p>
+                  </div>
+
+                  {!warning.read_at ? (
+                    <form action={markWarningAsRead}>
+                      <input
+                        type="hidden"
+                        name="warningId"
+                        value={warning.id}
+                      />
+                      <Button type="submit" variant="outline" size="sm">
+                        Marcar com llegida
+                      </Button>
+                    </form>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </section>
         ) : null}
 
         {conversations.length > 0 ? (

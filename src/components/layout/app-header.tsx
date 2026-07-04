@@ -49,6 +49,14 @@ export async function AppHeader() {
     ? await supabase.rpc('is_app_admin')
     : { data: false }
 
+  const { count: unreadWarningsCount } = user
+    ? await supabase
+        .from('admin_warnings')
+        .select('id', { count: 'exact', head: true })
+        .eq('profile_id', user.id)
+        .is('read_at', null)
+    : { count: 0 }
+
   const displayName = profile?.display_name ?? user?.email ?? m.common.unknownUser
 
   const publicNavItems = [
@@ -94,8 +102,20 @@ export async function AppHeader() {
           {user ? (
             <>
               {privateNavItems.map((item) => (
-                <Button key={item.href} asChild variant="ghost" size="sm">
-                  <Link href={item.href}>{item.label}</Link>
+                <Button
+                  key={item.href}
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="relative transition hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm"
+                >
+                  <Link href={item.href}>
+                    {item.label}
+
+                    {item.href === '/conversations' && unreadWarningsCount ? (
+                      <span className="ml-2 text-destructive">⚠️</span>
+                    ) : null}
+                  </Link>
                 </Button>
               ))}
 
@@ -121,7 +141,13 @@ export async function AppHeader() {
           ) : (
             <>
               {publicNavItems.map((item) => (
-                <Button key={item.href} asChild variant="ghost" size="sm">
+                <Button
+                  key={item.href}
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="transition hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm"
+                >
                   <Link href={item.href}>{item.label}</Link>
                 </Button>
               ))}
@@ -129,7 +155,12 @@ export async function AppHeader() {
               <LanguageSwitcher currentLocale={locale} label={m.language.label} />
               <ThemeToggle currentTheme={theme} labels={m.theme} />
 
-              <Button asChild variant="ghost" size="sm">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="transition hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm"
+              >
                 <Link href="/login">{m.nav.login}</Link>
               </Button>
 

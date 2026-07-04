@@ -441,6 +441,18 @@ export default async function ProfileEditPage({
                   />
                 </div>
 
+              </section>
+
+              <section className="space-y-4 rounded-xl border bg-background p-5">
+                <div>
+                  <h2 className="text-xl font-bold tracking-tight">
+                    {m.profileEdit.availability}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {m.profileEdit.availabilityDescription}
+                  </p>
+                </div>
+
                 <div className="space-y-3">
                   <CompletenessLabel
                     htmlFor="availability"

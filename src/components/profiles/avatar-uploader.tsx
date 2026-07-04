@@ -128,7 +128,10 @@ export function AvatarUploader({
   }
 
   return (
-    <section className="space-y-4 rounded-xl border bg-background p-5">
+    <section
+      id="profile-avatar"
+      className="space-y-4 rounded-xl border bg-background p-5"
+    >
       <div>
         <h2 className="text-lg font-semibold">{labels.title}</h2>
         <p className="text-sm text-muted-foreground">{labels.description}</p>

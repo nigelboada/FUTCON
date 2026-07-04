@@ -28,11 +28,11 @@ function getInitials(name: string) {
 }
 
 function getRingColor(percentage: number) {
-  if (percentage >= 100) return '#22d3ee' // cian/blau clar final
-  if (percentage >= 75) return '#60a5fa'
-  if (percentage >= 50) return '#93c5fd'
-  if (percentage >= 25) return '#dbeafe'
-  return '#ffffff'
+  if (percentage >= 100) {
+    return '#0ea5e9'
+  }
+
+  return '#7dd3fc'
 }
 
 export function ProfileAvatar({

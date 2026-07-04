@@ -2,7 +2,10 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
-import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
+import {
+  calculateProfileCompleteness,
+  getFirstIncompleteProfileAnchor,
+} from '@/lib/profiles/completeness'
 import { ProfileCompletenessBanner } from './profile-completeness-banner'
 
 export async function AppCompletenessBanner() {
@@ -36,6 +39,7 @@ export async function AppCompletenessBanner() {
   }
 
   const completeness = calculateProfileCompleteness(profile)
+  const firstIncompleteAnchor = getFirstIncompleteProfileAnchor(profile)
 
   if (completeness.percentage >= 100) {
     return null
@@ -48,6 +52,7 @@ export async function AppCompletenessBanner() {
       label={m.dashboard.profileCompleteness}
       description={m.dashboard.profileCompletenessHint}
       closeLabel={m.common.close}
+      editHref={`/profile/edit#${firstIncompleteAnchor}`}
     />
   )
 }

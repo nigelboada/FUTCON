@@ -73,3 +73,62 @@ export function calculateProfileCompleteness(profile: SearchProfileLike) {
     total: requiredFields.length,
   }
 }
+
+const fieldAnchors: Record<string, string> = {
+  display_name: 'profile-general',
+  bio: 'profile-general',
+  city: 'profile-location',
+  province: 'profile-location',
+  avatar_url: 'profile-avatar',
+  availability: 'profile-general',
+
+  player_position: 'profile-player',
+  player_category: 'profile-player',
+  player_division_level: 'profile-player',
+  player_modality: 'profile-player',
+  player_current_club: 'profile-player',
+
+  coach_category: 'profile-coach',
+  coach_division_level: 'profile-coach',
+  coach_modality: 'profile-coach',
+  coach_current_club: 'profile-coach',
+  coaching_license: 'profile-coach',
+
+  club_name: 'profile-club',
+  club_category: 'profile-club',
+  club_division_level: 'profile-club',
+  club_modality: 'profile-club',
+
+  staff_kind: 'profile-staff',
+  staff_services: 'profile-staff',
+  price_range: 'profile-staff',
+}
+
+export function getProfileCompletenessFields(profile: SearchProfileLike) {
+  return [
+    ...baseFields,
+    ...(profile.role ? roleFields[profile.role] ?? [] : []),
+  ]
+}
+
+export function getCompletenessFieldContribution(profile: SearchProfileLike) {
+  const fields = getProfileCompletenessFields(profile)
+
+  if (fields.length === 0) {
+    return 0
+  }
+
+  return Math.round(100 / fields.length)
+}
+
+export function getFirstIncompleteProfileAnchor(profile: SearchProfileLike) {
+  const fields = getProfileCompletenessFields(profile)
+
+  const firstIncompleteField = fields.find((field) => !hasValue(profile[field]))
+
+  if (!firstIncompleteField) {
+    return 'profile-general'
+  }
+
+  return fieldAnchors[firstIncompleteField] ?? 'profile-general'
+}

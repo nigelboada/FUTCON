@@ -236,7 +236,10 @@ export default async function ProfileEditPage({
                 </div>
               </section>
 
-              <section className="space-y-5 rounded-xl border bg-background p-5">
+              <section
+                id="profile-general"
+                className="space-y-5 rounded-xl border bg-background p-5"
+              >
                 <div className="rounded-md border bg-background p-4">
                   <p className="text-sm text-muted-foreground">
                     {m.profileEdit.assignedRole}
@@ -288,17 +291,19 @@ export default async function ProfileEditPage({
                   />
                 </div>
 
-                <LocationSelects
-                  defaultProvince={profile.province}
-                  defaultCity={profile.city}
-                  labels={{
-                    province: m.profileEdit.province,
-                    city: m.profileEdit.city,
-                    selectProvince: m.profileEdit.selectProvince,
-                    selectCity: m.profileEdit.selectCity,
-                    provinceRequired: m.profileEdit.provinceRequired,
-                  }}
-                />
+                <div id="profile-location">
+                  <LocationSelects
+                    defaultProvince={profile.province}
+                    defaultCity={profile.city}
+                    labels={{
+                      province: m.profileEdit.province,
+                      city: m.profileEdit.city,
+                      selectProvince: m.profileEdit.selectProvince,
+                      selectCity: m.profileEdit.selectCity,
+                      provinceRequired: m.profileEdit.provinceRequired,
+                    }}
+                  />
+                </div>
 
                 <div className="space-y-3">
                   <Label htmlFor="availability">
@@ -332,7 +337,10 @@ export default async function ProfileEditPage({
               </section>
 
               {primaryRole === 'player' ? (
-                <section className="space-y-5 rounded-xl border bg-background p-5">
+                <section
+                  id="profile-player"
+                  className="space-y-5 rounded-xl border bg-background p-5"
+                >
                   <SectionIntro
                     title={m.profileEdit.playerInfo}
                     description={m.profileEdit.playerInfoDescription}
@@ -416,7 +424,10 @@ export default async function ProfileEditPage({
               ) : null}
 
               {primaryRole === 'coach' ? (
-                <section className="space-y-5 rounded-xl border bg-background p-5">
+                <section
+                  id="profile-coach"
+                  className="space-y-5 rounded-xl border bg-background p-5"
+                >
                   <SectionIntro
                     title={m.profileEdit.coachInfo}
                     description={m.profileEdit.coachInfoDescription}
@@ -470,7 +481,10 @@ export default async function ProfileEditPage({
               ) : null}
 
               {primaryRole === 'club' ? (
-                <section className="space-y-5 rounded-xl border bg-background p-5">
+                <section
+                  id="profile-club"
+                  className="space-y-5 rounded-xl border bg-background p-5"
+                >
                   <SectionIntro
                     title={m.profileEdit.clubInfo}
                     description={m.profileEdit.clubInfoDescription}
@@ -528,7 +542,10 @@ export default async function ProfileEditPage({
               ) : null}
 
               {primaryRole === 'staff' ? (
-                <section className="space-y-5 rounded-xl border bg-background p-5">
+                <section
+                  id="profile-staff"
+                  className="space-y-5 rounded-xl border bg-background p-5"
+                >
                   <SectionIntro
                     title={m.profileEdit.staffInfo}
                     description={m.profileEdit.staffInfoDescription}

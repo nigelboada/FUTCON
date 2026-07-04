@@ -8,7 +8,7 @@ export const localeCookieName = 'futcon-locale'
 
 export const localeLabels: Record<Locale, string> = {
   ca: 'Català',
-  es: 'Castellano',
+  es: 'Español',
   en: 'English',
 }
 

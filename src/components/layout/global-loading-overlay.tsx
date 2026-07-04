@@ -62,12 +62,21 @@ export function GlobalLoadingOverlay() {
       startLoading()
     }
 
+    function handleGlobalLoadingEvent() {
+      startLoading()
+    }
+
     document.addEventListener('click', handleClick, true)
     document.addEventListener('submit', handleSubmit, true)
+    window.addEventListener('futcon:start-loading', handleGlobalLoadingEvent)
 
     return () => {
       document.removeEventListener('click', handleClick, true)
       document.removeEventListener('submit', handleSubmit, true)
+      window.removeEventListener(
+        'futcon:start-loading',
+        handleGlobalLoadingEvent
+      )
 
       if (timeoutRef.current) {
         window.clearTimeout(timeoutRef.current)
@@ -80,7 +89,7 @@ export function GlobalLoadingOverlay() {
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/65 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/65 backdrop-blur-[2px]">
       <div className="flex flex-col items-center gap-3">
         <div className="futcon-ball-loader">⚽</div>
         <div className="h-px w-36 bg-black" />

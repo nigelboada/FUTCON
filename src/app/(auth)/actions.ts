@@ -16,6 +16,33 @@ function getStringValue(formData: FormData, key: string): string {
   return value.trim()
 }
 
+function getSiteUrl() {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.NEXT_PUBLIC_VERCEL_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : 'http://localhost:3000')
+
+  return siteUrl.replace(/\/$/, '')
+}
+
+function getAuthErrorParam(error: unknown, fallbackKey: string) {
+  const message = error instanceof Error ? error.message : String(error)
+  const normalizedMessage = message.toLowerCase()
+
+  if (
+    normalizedMessage.includes('<!doctype') ||
+    normalizedMessage.includes('not valid json') ||
+    normalizedMessage.includes('unexpected token') ||
+    normalizedMessage.includes('failed to fetch') ||
+    normalizedMessage.includes('fetch failed')
+  ) {
+    return fallbackKey
+  }
+
+  return encodeURIComponent(message)
+}
+
 export async function signUp(formData: FormData) {
   const supabase = await createClient()
 
@@ -31,18 +58,26 @@ export async function signUp(formData: FormData) {
     redirect('/register?error=password_too_short')
   }
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        display_name: displayName,
+  let signUpResult
+
+  try {
+    signUpResult = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: displayName,
+        },
       },
-    },
-  })
+    })
+  } catch (error) {
+    redirect(`/register?error=${getAuthErrorParam(error, 'auth_service_unavailable')}`)
+  }
+
+  const { data, error } = signUpResult
 
   if (error) {
-    redirect(`/register?error=${encodeURIComponent(error.message)}`)
+    redirect(`/register?error=${getAuthErrorParam(error, 'auth_service_unavailable')}`)
   }
 
   if (data.user) {
@@ -68,13 +103,21 @@ export async function signIn(formData: FormData) {
     redirect('/login?error=signin_missing_credentials')
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+  let signInResult
+
+  try {
+    signInResult = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+  } catch (error) {
+    redirect(`/login?error=${getAuthErrorParam(error, 'auth_service_unavailable')}`)
+  }
+
+  const { error } = signInResult
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`)
+    redirect(`/login?error=${getAuthErrorParam(error, 'auth_service_unavailable')}`)
   }
 
   revalidatePath('/', 'layout')
@@ -83,19 +126,22 @@ export async function signIn(formData: FormData) {
 
 export async function signInWithGoogle() {
   const supabase = await createClient()
+  const siteUrl = getSiteUrl()
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.NEXT_PUBLIC_VERCEL_URL
-      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-      : 'http://localhost:3000')
+  let oauthResult
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${siteUrl}/auth/callback?next=/dashboard`,
-    },
-  })
+  try {
+    oauthResult = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${siteUrl}/auth/callback?next=/dashboard`,
+      },
+    })
+  } catch (error) {
+    redirect(`/login?error=${getAuthErrorParam(error, 'google_oauth_error')}`)
+  }
+
+  const { data, error } = oauthResult
 
   if (error || !data.url) {
     redirect('/login?error=google_oauth_error')

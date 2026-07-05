@@ -159,6 +159,10 @@ export async function signInWithGoogle() {
     redirect('/login?error=google_oauth_error')
   }
 
+  if (data.url.startsWith('/')) {
+    redirect('/login?error=supabase_url_misconfigured')
+  }
+
   redirect(data.url)
 }
 

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ensureUserProfile } from './profiles'
 
 export async function requireActiveUser() {
   const supabase = await createClient()
@@ -12,11 +13,11 @@ export async function requireActiveUser() {
     redirect('/login?error=auth_required')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_banned')
-    .eq('id', user.id)
-    .single()
+  const { profile, error } = await ensureUserProfile(supabase, user)
+
+  if (error) {
+    redirect('/login?error=profile_load_failed')
+  }
 
   if (profile?.is_banned) {
     redirect('/banned')

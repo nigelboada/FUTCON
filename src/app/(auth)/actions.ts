@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { awardAchievement } from '@/lib/achievements/award'
+import { ensureUserProfile } from '@/lib/auth/profiles'
 
 function getStringValue(formData: FormData, key: string): string {
   const value = formData.get(key)
@@ -21,6 +22,8 @@ function getSiteUrl() {
     process.env.NEXT_PUBLIC_SITE_URL ??
     (process.env.NEXT_PUBLIC_VERCEL_URL
       ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000')
 
   return siteUrl.replace(/\/$/, '')
@@ -81,6 +84,7 @@ export async function signUp(formData: FormData) {
   }
 
   if (data.user) {
+    await ensureUserProfile(supabase, data.user)
     await awardAchievement(supabase, 'welcome', data.user.id)
   }
 
@@ -114,10 +118,18 @@ export async function signIn(formData: FormData) {
     redirect(`/login?error=${getAuthErrorParam(error, 'auth_service_unavailable')}`)
   }
 
-  const { error } = signInResult
+  const { data, error } = signInResult
 
   if (error) {
     redirect(`/login?error=${getAuthErrorParam(error, 'auth_service_unavailable')}`)
+  }
+
+  if (data.user) {
+    const { error: profileError } = await ensureUserProfile(supabase, data.user)
+
+    if (profileError) {
+      redirect('/login?error=profile_load_failed')
+    }
   }
 
   revalidatePath('/', 'layout')

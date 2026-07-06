@@ -781,19 +781,20 @@ export default async function ProfileEditPage({
               </div>
             </form>
 
+            <div className="border-t pt-6">
+              <DeleteProfileButton
+                action={deleteOwnProfile}
+                labels={{
+                  trigger: m.profileEdit.deleteProfile,
+                  title: m.profileEdit.deleteProfileTitle,
+                  description: m.profileEdit.deleteProfileDescription,
+                  cancel: m.common.cancel,
+                  confirm: m.profileEdit.deleteProfileConfirm,
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
-
-        <DeleteProfileButton
-          action={deleteOwnProfile}
-          labels={{
-            trigger: m.profileEdit.deleteProfile,
-            title: m.profileEdit.deleteProfileTitle,
-            description: m.profileEdit.deleteProfileDescription,
-            cancel: m.common.cancel,
-            confirm: m.profileEdit.deleteProfileConfirm,
-          }}
-        />
       </div>
     </main>
   )

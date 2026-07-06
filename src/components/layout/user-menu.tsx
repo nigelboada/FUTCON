@@ -79,7 +79,7 @@ export function UserMenu({
       </button>
 
       {isOpen ? (
-        <div className="fixed left-3 right-3 top-24 z-50 rounded-3xl border bg-background p-4 shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-[22rem]">
+        <div className="fixed left-3 right-3 top-24 z-50 rounded-3xl border bg-background p-4 shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-88">
           <div className="flex items-center justify-between gap-4 rounded-2xl bg-muted/50 p-3">
             <div className="flex min-w-0 items-center gap-3">
               <ProfileAvatar

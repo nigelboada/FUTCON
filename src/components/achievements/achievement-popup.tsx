@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { markAchievementSeen } from '@/app/achievements/actions'
@@ -36,6 +35,14 @@ export function AchievementPopup({
     router.refresh()
   }
 
+  async function handleGoToAchievements() {
+    setIsClosing(true)
+    await markAchievementSeen(userAchievementId)
+    setIsOpen(false)
+    router.push('/achievements')
+    router.refresh()
+  }
+
   if (!isOpen) {
     return null
   }
@@ -66,15 +73,22 @@ export function AchievementPopup({
 
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button
-            asChild
+            type="button"
             variant="outline"
             size="lg"
-            className="bg-white text-black hover:bg-white/90"
+            disabled={isClosing}
+            onClick={handleGoToAchievements}
+            className="bg-white text-black transition hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-md"
           >
-            <Link href="/achievements">{labels.viewAchievements}</Link>
+            {labels.viewAchievements}
           </Button>
 
-          <Button onClick={handleContinue} disabled={isClosing} size="lg">
+          <Button
+            onClick={handleContinue}
+            disabled={isClosing}
+            size="lg"
+            className="transition hover:-translate-y-0.5 hover:shadow-md"
+          >
             {labels.continue}
           </Button>
         </div>

@@ -62,7 +62,7 @@ export function GlobalBackButton() {
   }
 
   return (
-    <div className="px-4 pt-3">
+    <div className="px-4 pt-4">
       <div className="mx-auto flex max-w-7xl justify-start">
         <Button
           type="button"

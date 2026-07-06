@@ -20,6 +20,7 @@ type AdminPageProps = {
   searchParams: Promise<{
     message?: string
     error?: string
+    q?: string
   }>
 }
 
@@ -64,11 +65,25 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     redirect('/dashboard?error=no_admin_permission')
   }
 
-  const { data: profiles } = await supabase
+  const searchQuery = params.q?.trim() ?? ''
+
+  const { count: warningsCount } = await supabase
+    .from('admin_warnings')
+    .select('id', { count: 'exact', head: true })
+
+  let profilesQuery = supabase
     .from('profiles')
     .select('id, display_name, city, province, is_banned, banned_reason, banned_at')
     .order('created_at', { ascending: false })
     .limit(100)
+
+  if (searchQuery) {
+    profilesQuery = profilesQuery.or(
+      `display_name.ilike.%${searchQuery}%,city.ilike.%${searchQuery}%,province.ilike.%${searchQuery}%`
+    )
+  }
+
+  const { data: profiles } = await profilesQuery
 
   const { data: warnings } = await supabase
     .from('admin_warnings')
@@ -131,7 +146,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
           <Card>
             <CardHeader>
-              <CardTitle>{adminWarnings.length}</CardTitle>
+              <CardTitle>{warningsCount ?? 0}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
@@ -143,6 +158,25 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Gestió d’usuaris</h2>
+
+          <form className="flex flex-col gap-2 rounded-xl border bg-background p-4 sm:flex-row">
+            <input
+              name="q"
+              defaultValue={searchQuery}
+              placeholder="Cerca per nom, ciutat o província..."
+              className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+
+            <Button type="submit" variant="outline">
+              Cercar
+            </Button>
+
+            {searchQuery ? (
+              <Button asChild variant="outline">
+                <a href="/admin">Netejar</a>
+              </Button>
+            ) : null}
+          </form>
 
           <div className="space-y-4">
             {(profiles ?? []).map((profile) => (

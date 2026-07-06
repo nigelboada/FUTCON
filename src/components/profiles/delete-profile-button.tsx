@@ -26,14 +26,20 @@ export function DeleteProfileButton({
         <Button
           type="button"
           variant="destructive"
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setIsOpen(true)
+            window.scrollTo({
+              top: window.scrollY,
+              behavior: 'smooth',
+            })
+          }}
         >
           {labels.trigger}
         </Button>
       </div>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl border bg-background p-6 shadow-2xl">
             <h2 className="text-2xl font-bold text-destructive">
               {labels.title}

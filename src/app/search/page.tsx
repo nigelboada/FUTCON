@@ -118,7 +118,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-muted px-4 py-8">
+    <main className="min-h-screen bg-transparent px-4 py-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <section>
           <h1 className="text-3xl font-bold">{m.search.title}</h1>

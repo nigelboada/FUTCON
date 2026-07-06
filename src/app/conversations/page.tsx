@@ -6,11 +6,20 @@ import {
   markConversationAsUnread,
 } from './conversation-actions'
 import { markWarningAsRead } from './warning-actions'
+import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { requireActiveUser } from '@/lib/auth/guards'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 import { getMessages } from '@/lib/i18n/messages'
 import { getLocale } from '@/lib/i18n/server'
+
+type ConversationsPageProps = {
+  searchParams: Promise<{
+    message?: string
+    error?: string
+  }>
+}
 
 type ConversationOverview = {
   conversation_id: string
@@ -41,10 +50,15 @@ function formatDate(value: string | null, localeTag: string, fallback: string) {
   }).format(new Date(value))
 }
 
-export default async function ConversationsPage() {
+export default async function ConversationsPage({
+  searchParams,
+}: ConversationsPageProps) {
+  const params = await searchParams
   const { supabase, user } = await requireActiveUser()
   const locale = await getLocale()
   const m = getMessages(locale)
+  const message = resolveFeedbackMessage(params.message, m.feedback)
+  const feedbackError = resolveFeedbackMessage(params.error, m.feedback)
 
   const { data, error } = await supabase
     .from('conversation_overview_view')
@@ -63,7 +77,7 @@ export default async function ConversationsPage() {
   const conversations = (data ?? []) as ConversationOverview[]
 
   return (
-    <main className="min-h-screen bg-muted px-4 py-8">
+    <main className="min-h-screen bg-transparent px-4 py-8">
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -83,6 +97,8 @@ export default async function ConversationsPage() {
             {error.message}
           </div>
         ) : null}
+
+        <FeedbackMessage message={message} error={feedbackError} />
 
         {(adminWarnings ?? []).length > 0 ? (
           <section className="space-y-3">

@@ -3,11 +3,16 @@ import Link from 'next/link'
 type Achievement = {
   id: number
   code: string
-  title_ca: string
-  description_ca: string
+  title: string
+  description: string
   icon_key: string
   sort_order: number
   unlocked: boolean
+}
+
+type AchievementMapLabels = {
+  unlockedCount: string
+  actionHint: string
 }
 
 const positions = [
@@ -39,7 +44,7 @@ function iconFromKey(iconKey: string) {
     case 'ball':
       return '⚽'
     case 'runner':
-      return '🏃‍♀️'
+      return '🏃'
     case 'whistle':
       return '🪈'
     case 'boot':
@@ -47,6 +52,7 @@ function iconFromKey(iconKey: string) {
     case 'chart':
       return '📈'
     case 'trophy':
+    case 'cup':
       return '🏆'
     case 'player':
       return '🧍'
@@ -56,8 +62,6 @@ function iconFromKey(iconKey: string) {
       return '🏅'
     case 'badge':
       return '✅'
-    case 'cup':
-      return '🏆'
     default:
       return '⭐'
   }
@@ -65,20 +69,25 @@ function iconFromKey(iconKey: string) {
 
 export function AchievementMap({
   achievements,
+  labels,
 }: {
   achievements: Achievement[]
+  labels: AchievementMapLabels
 }) {
   const unlockedCount = achievements.filter((item) => item.unlocked).length
+  const unlockedCountLabel = labels.unlockedCount
+    .replace('{unlocked}', String(unlockedCount))
+    .replace('{total}', String(achievements.length))
 
   return (
     <div className="relative overflow-hidden rounded-3xl border bg-[linear-gradient(180deg,#2f855a_0%,#276749_100%)] p-6 text-white shadow-xl">
       <div className="mb-6 text-center">
         <div className="mx-auto w-fit rounded-full bg-white/10 px-5 py-2 text-sm font-medium">
-          Assoliments aconseguits: {unlockedCount}/{achievements.length}
+          {unlockedCountLabel}
         </div>
       </div>
 
-      <div className="relative h-[820px] rounded-3xl border border-white/20 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_60%)]">
+      <div className="relative h-205 rounded-3xl border border-white/20 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_60%)]">
         <svg
           className="absolute inset-0 h-full w-full"
           viewBox="0 0 100 100"
@@ -156,17 +165,17 @@ export function AchievementMap({
               </div>
 
               <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 hidden w-64 -translate-x-1/2 rounded-xl border-2 border-yellow-400 bg-white px-4 py-3 text-left text-sm text-foreground shadow-xl group-hover:block group-focus:block">
-                <p className="font-bold">{achievement.title_ca}</p>
+                <p className="font-bold">{achievement.title}</p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  {achievement.description_ca}
+                  {achievement.description}
                 </p>
                 <p className="mt-2 text-xs font-medium text-yellow-700">
-                  Clica per anar a l’acció relacionada.
+                  {labels.actionHint}
                 </p>
               </div>
 
-              <p className="mt-2 max-w-[110px] text-center text-xs font-medium text-white">
-                {achievement.title_ca}
+              <p className="mt-2 max-w-27.5 text-center text-xs font-medium text-white">
+                {achievement.title}
               </p>
             </Link>
           )

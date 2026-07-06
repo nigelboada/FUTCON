@@ -229,7 +229,7 @@ const ca = {
     "continue": "Continuar"
   },
   "dashboard": {
-    "welcome": "Benvingut, {name}",
+    "welcome": "Et donem la benvinguda, {name}",
     "description": "Gestiona el teu perfil, consulta oportunitats i accedeix als teus missatges.",
     "role": "Rol",
     "availability": "Disponibilitat",
@@ -773,7 +773,7 @@ const es: Messages = {
     "continue": "Continuar"
   },
   "dashboard": {
-    "welcome": "Bienvenido, {name}",
+    "welcome": "Te damos la bienvenida, {name}",
     "description": "Gestiona tu perfil, consulta oportunidades y accede a tus mensajes.",
     "role": "Rol",
     "availability": "Disponibilidad",

@@ -459,6 +459,7 @@ const ca = {
     "profileFallback": "Perfil",
     "messagePlaceholder": "Escriu un missatge...",
     "realtimeNote": "Els missatges s’actualitzen en temps real dins de la conversa.",
+    "composerShortcut": "Enter envia el missatge. Shift + Enter fa un salt de línia.",
     "sendMessage": "Enviar missatge",
     "emptyThread": "Encara no hi ha missatges. Escriu el primer missatge per iniciar la conversa."
   },
@@ -1003,6 +1004,7 @@ const es: Messages = {
     "profileFallback": "Perfil",
     "messagePlaceholder": "Escribe un mensaje...",
     "realtimeNote": "Los mensajes se actualizan en tiempo real dentro de la conversación.",
+    "composerShortcut": "Enter envía el mensaje. Shift + Enter inserta un salto de línea.",
     "sendMessage": "Enviar mensaje",
     "emptyThread": "Todavía no hay mensajes. Escribe el primer mensaje para iniciar la conversación."
   },
@@ -1537,6 +1539,7 @@ const en: Messages = {
     "profileFallback": "Profile",
     "messagePlaceholder": "Write a message...",
     "realtimeNote": "Messages update in real time inside the conversation.",
+    "composerShortcut": "Enter sends the message. Shift + Enter adds a line break.",
     "sendMessage": "Send message",
     "emptyThread": "There are no messages yet. Write the first message to start the conversation."
   },

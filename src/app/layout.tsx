@@ -17,6 +17,8 @@ import { AppCompletenessBanner } from '@/components/profiles/app-completeness-ba
 
 import { AchievementPopupGate } from '@/components/achievements/achievement-popup-gate'
 
+import { GlobalBackButton } from '@/components/layout/global-back-button'
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -59,6 +61,7 @@ export default async function RootLayout({
     <html lang={locale} className={theme === 'dark' ? 'dark' : undefined}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppHeader />
+        <GlobalBackButton />
         <AppCompletenessBanner />
         <AchievementPopupGate />
         {children}

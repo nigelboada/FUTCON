@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { sendMessage } from '../actions'
 import { ConversationMessages } from '@/components/conversations/conversation-messages'
+import { MessageComposer } from '@/components/conversations/message-composer'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Card,
   CardContent,
@@ -143,27 +143,15 @@ export default async function ConversationPage({
               />
             </div>
 
-            <form action={sendMessage} className="border-t bg-background p-4">
-              <input type="hidden" name="conversationId" value={id} />
-
-              <div className="space-y-3">
-                <Textarea
-                  name="content"
-                  placeholder={m.conversations.messagePlaceholder}
-                  rows={3}
-                  required
-                  className="resize-none"
-                />
-
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {m.conversations.realtimeNote}
-                  </p>
-
-                  <Button type="submit">{m.conversations.sendMessage}</Button>
-                </div>
-              </div>
-            </form>
+            <div className="bg-background p-4">
+              <MessageComposer
+                conversationId={id}
+                action={sendMessage}
+                placeholder={m.conversations.messagePlaceholder}
+                submitLabel={m.conversations.sendMessage}
+                shortcutLabel={m.conversations.composerShortcut}
+              />
+            </div>
           </CardContent>
         </Card>
       </div>

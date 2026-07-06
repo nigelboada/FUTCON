@@ -11,6 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
+import { PasswordInput } from '@/components/forms/password-input'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
@@ -101,12 +102,11 @@ export default async function RegisterPage({
 
               <div className="space-y-2">
                 <Label htmlFor="password">{m.auth.register.password}</Label>
-                <Input
+                <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
-                  minLength={6}
                   required
+                  autoComplete="new-password"
                 />
               </div>
 

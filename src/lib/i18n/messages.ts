@@ -140,6 +140,53 @@ const ca = {
       }
     ]
   },
+  "aboutPage": {
+    "eyebrow": "Sobre FUTCON",
+    "title": "Una plataforma creada per apropar oportunitats dins del futbol amateur.",
+    "description": "FUTCON neix com un projecte acadèmic amb una ambició molt concreta: facilitar que clubs, jugadors, entrenadors i professionals vinculats al futbol amateur puguin trobar-se, contactar i generar confiança en un entorn digital més estructurat que els canals informals habituals.",
+    "originTitle": "L’origen de la idea",
+    "originParagraphs": [
+      "El futbol amateur depèn sovint de recomanacions, contactes personals, grups de missatgeria o cercles molt reduïts. Aquest funcionament pot ser útil en alguns casos, però també fa que moltes oportunitats quedin amagades o siguin difícils de trobar per a persones que no formen part d’una xarxa concreta.",
+      "FUTCON sorgeix d’aquesta necessitat: convertir un procés dispers i poc transparent en una experiència més clara, accessible i orientada a perfils reals."
+    ],
+    "motivationTitle": "La motivació personal",
+    "motivationParagraphs": [
+      "El projecte ha estat impulsat per Nígel Boada en el marc del seu Treball Final de Grau, amb la voluntat d’aplicar coneixements de desenvolupament web, disseny d’experiència d’usuari, bases de dades, autenticació, seguretat i desplegament en un producte amb sentit pràctic.",
+      "L’objectiu no és només construir una aplicació funcional, sinó demostrar com una idea vinculada a un context proper pot evolucionar fins a convertir-se en un prototip complet, validable i amb possibilitats de creixement."
+    ],
+    "solveTitle": "Què vol resoldre FUTCON?",
+    "solveItems": [
+      {
+        "title": "Visibilitat",
+        "description": "Permetre que perfils del futbol amateur puguin mostrar la seva disponibilitat, experiència, ubicació, rol i informació esportiva en una fitxa clara."
+      },
+      {
+        "title": "Connexió",
+        "description": "Facilitar el primer contacte entre persones i entitats mitjançant un cercador privat, filtres i missatgeria interna."
+      },
+      {
+        "title": "Confiança",
+        "description": "Incorporar elements com valoracions, verificació, assoliments i avisos administratius per reforçar la credibilitat de la plataforma."
+      }
+    ],
+    "productTitle": "Un projecte amb mirada de producte",
+    "productParagraphs": [
+      "FUTCON no s’ha plantejat únicament com una demostració tècnica. La plataforma incorpora una landing pública, pàgines informatives, perfil editable, cercador, missatgeria, valoracions, verificació, administració, PWA, multidioma, tema clar/fosc, assoliments i elements de moderació.",
+      "Aquest conjunt de funcionalitats busca transmetre la sensació d’un producte real, coherent i preparat per ser provat per persones usuàries abans d’una possible evolució futura."
+    ],
+    "goalsTitle": "Objectius principals",
+    "goals": [
+      "Crear una eina útil per centralitzar perfils del futbol amateur.",
+      "Reduir la dependència exclusiva dels contactes informals.",
+      "Fer més fàcil descobrir oportunitats segons rol, ubicació i disponibilitat.",
+      "Aplicar una arquitectura moderna basada en Next.js, Supabase i desplegament a Vercel.",
+      "Arribar a una versió prou completa per ser validada amb usuaris."
+    ],
+    "evolutionTitle": "FUTCON continua evolucionant",
+    "evolutionDescription": "El prototip actual representa una base sòlida sobre la qual es poden estudiar noves funcionalitats, com plans premium, millores de cerca, integracions de pagament en mode test o eines avançades per a clubs i professionals.",
+    "registerCta": "Crear compte",
+    "contactCta": "Contacta amb nosaltres"
+  },
   "auth": {
     "login": {
       "eyebrow": "Accés a FUTCON",
@@ -685,6 +732,53 @@ const es: Messages = {
       }
     ]
   },
+  "aboutPage": {
+    "eyebrow": "Sobre FUTCON",
+    "title": "Una plataforma creada para acercar oportunidades dentro del fútbol amateur.",
+    "description": "FUTCON nace como un proyecto académico con una ambición muy concreta: facilitar que clubes, jugadores, entrenadores y profesionales vinculados al fútbol amateur puedan encontrarse, contactar y generar confianza en un entorno digital más estructurado que los canales informales habituales.",
+    "originTitle": "El origen de la idea",
+    "originParagraphs": [
+      "El fútbol amateur depende a menudo de recomendaciones, contactos personales, grupos de mensajería o círculos muy reducidos. Este funcionamiento puede ser útil en algunos casos, pero también hace que muchas oportunidades queden ocultas o sean difíciles de encontrar para personas que no forman parte de una red concreta.",
+      "FUTCON surge de esta necesidad: convertir un proceso disperso y poco transparente en una experiencia más clara, accesible y orientada a perfiles reales."
+    ],
+    "motivationTitle": "La motivación personal",
+    "motivationParagraphs": [
+      "El proyecto ha sido impulsado por Nígel Boada en el marco de su Trabajo Final de Grado, con la voluntad de aplicar conocimientos de desarrollo web, diseño de experiencia de usuario, bases de datos, autenticación, seguridad y despliegue en un producto con sentido práctico.",
+      "El objetivo no es solo construir una aplicación funcional, sino demostrar cómo una idea vinculada a un contexto cercano puede evolucionar hasta convertirse en un prototipo completo, validable y con posibilidades de crecimiento."
+    ],
+    "solveTitle": "¿Qué quiere resolver FUTCON?",
+    "solveItems": [
+      {
+        "title": "Visibilidad",
+        "description": "Permitir que perfiles del fútbol amateur puedan mostrar su disponibilidad, experiencia, ubicación, rol e información deportiva en una ficha clara."
+      },
+      {
+        "title": "Conexión",
+        "description": "Facilitar el primer contacto entre personas y entidades mediante un buscador privado, filtros y mensajería interna."
+      },
+      {
+        "title": "Confianza",
+        "description": "Incorporar elementos como valoraciones, verificación, logros y avisos administrativos para reforzar la credibilidad de la plataforma."
+      }
+    ],
+    "productTitle": "Un proyecto con mirada de producto",
+    "productParagraphs": [
+      "FUTCON no se ha planteado únicamente como una demostración técnica. La plataforma incorpora una landing pública, páginas informativas, perfil editable, buscador, mensajería, valoraciones, verificación, administración, PWA, multidioma, tema claro/oscuro, logros y elementos de moderación.",
+      "Este conjunto de funcionalidades busca transmitir la sensación de un producto real, coherente y preparado para ser probado por personas usuarias antes de una posible evolución futura."
+    ],
+    "goalsTitle": "Objetivos principales",
+    "goals": [
+      "Crear una herramienta útil para centralizar perfiles del fútbol amateur.",
+      "Reducir la dependencia exclusiva de los contactos informales.",
+      "Facilitar el descubrimiento de oportunidades según rol, ubicación y disponibilidad.",
+      "Aplicar una arquitectura moderna basada en Next.js, Supabase y despliegue en Vercel.",
+      "Llegar a una versión suficientemente completa para validarla con usuarios."
+    ],
+    "evolutionTitle": "FUTCON sigue evolucionando",
+    "evolutionDescription": "El prototipo actual representa una base sólida sobre la que se pueden estudiar nuevas funcionalidades, como planes premium, mejoras de búsqueda, integraciones de pago en modo test o herramientas avanzadas para clubes y profesionales.",
+    "registerCta": "Crear cuenta",
+    "contactCta": "Contacta con nosotros"
+  },
   "auth": {
     "login": {
       "eyebrow": "Acceso a FUTCON",
@@ -1219,6 +1313,53 @@ const en: Messages = {
         "description": "Reviews and visible availability help increase profile credibility."
       }
     ]
+  },
+  "aboutPage": {
+    "eyebrow": "About FUTCON",
+    "title": "A platform created to bring opportunities closer in amateur football.",
+    "description": "FUTCON began as an academic project with a very specific ambition: to help clubs, players, coaches and professionals connected to amateur football find each other, get in touch and build trust in a more structured digital environment than the usual informal channels.",
+    "originTitle": "The origin of the idea",
+    "originParagraphs": [
+      "Amateur football often depends on recommendations, personal contacts, messaging groups or very small circles. This can be useful in some cases, but it also means many opportunities remain hidden or difficult to find for people who are not part of a specific network.",
+      "FUTCON comes from this need: turning a scattered and unclear process into a clearer, more accessible experience focused on real profiles."
+    ],
+    "motivationTitle": "The personal motivation",
+    "motivationParagraphs": [
+      "The project was driven by Nígel Boada as part of his Final Degree Project, with the goal of applying knowledge of web development, user experience design, databases, authentication, security and deployment to a product with practical value.",
+      "The goal is not only to build a functional application, but also to show how an idea linked to a close context can evolve into a complete, testable prototype with room to grow."
+    ],
+    "solveTitle": "What does FUTCON aim to solve?",
+    "solveItems": [
+      {
+        "title": "Visibility",
+        "description": "Allow amateur football profiles to show their availability, experience, location, role and sports information in a clear profile."
+      },
+      {
+        "title": "Connection",
+        "description": "Make first contact easier between people and organizations through a private search page, filters and internal messaging."
+      },
+      {
+        "title": "Trust",
+        "description": "Add elements such as reviews, verification, achievements and administrative notices to strengthen the credibility of the platform."
+      }
+    ],
+    "productTitle": "A project with a product mindset",
+    "productParagraphs": [
+      "FUTCON has not been designed only as a technical demo. The platform includes a public landing page, information pages, editable profiles, search, messaging, reviews, verification, administration, PWA support, multiple languages, light/dark theme, achievements and moderation elements.",
+      "This set of features aims to convey the feeling of a real, coherent product ready to be tested by users before a possible future evolution."
+    ],
+    "goalsTitle": "Main goals",
+    "goals": [
+      "Create a useful tool to centralize amateur football profiles.",
+      "Reduce exclusive dependence on informal contacts.",
+      "Make it easier to discover opportunities by role, location and availability.",
+      "Apply a modern architecture based on Next.js, Supabase and deployment on Vercel.",
+      "Reach a version complete enough to be validated with users."
+    ],
+    "evolutionTitle": "FUTCON keeps evolving",
+    "evolutionDescription": "The current prototype represents a solid foundation on which new features can be explored, such as premium plans, search improvements, test-mode payment integrations or advanced tools for clubs and professionals.",
+    "registerCta": "Create account",
+    "contactCta": "Contact us"
   },
   "auth": {
     "login": {

@@ -122,7 +122,7 @@ export async function AppHeader() {
                       {item.label}
 
                       {hasUnreadWarnings ? (
-                        <span className="ml-2 text-destructive">??</span>
+                        <span className="ml-2 text-destructive">?</span>
                       ) : null}
 
                       {hasUnreadMessages ? (

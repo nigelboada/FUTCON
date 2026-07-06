@@ -15,6 +15,7 @@ type ConversationMessagesProps = {
   conversationId: string
   currentProfileId: string
   initialMessages: Message[]
+  hiddenAt: string | null
   localeTag: string
   labels: {
     emptyThread: string
@@ -34,6 +35,7 @@ export function ConversationMessages({
   conversationId,
   currentProfileId,
   initialMessages,
+  hiddenAt,
   localeTag,
   labels,
 }: ConversationMessagesProps) {
@@ -96,6 +98,9 @@ export function ConversationMessages({
     <div className="space-y-3">
       {messages.map((message) => {
         const isOwnMessage = message.sender_profile_id === currentProfileId
+        const isBeforeHidden =
+          hiddenAt !== null &&
+          new Date(message.created_at).getTime() <= new Date(hiddenAt).getTime()
 
         return (
           <div
@@ -104,7 +109,11 @@ export function ConversationMessages({
           >
             <div
               className={`max-w-[80%] rounded-lg border px-4 py-3 ${
-                isOwnMessage ? 'bg-primary text-primary-foreground' : 'bg-background'
+                isBeforeHidden
+                  ? 'bg-muted text-muted-foreground opacity-60'
+                  : isOwnMessage
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-background'
               }`}
             >
               <p className="whitespace-pre-line text-sm">{message.content}</p>

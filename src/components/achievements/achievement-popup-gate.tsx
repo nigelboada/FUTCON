@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 import { AchievementPopup } from './achievement-popup'
 
 type PopupAchievement = {
@@ -14,39 +15,39 @@ type PopupAchievement = {
 }
 
 function iconFromKey(iconKey: string) {
-  if (iconKey === 'search') return '🔎'
-  if (iconKey === 'map') return '🗺️'
-  if (iconKey === 'cup') return '🏆'
+  if (iconKey === 'search') return '\u{1f50e}'
+  if (iconKey === 'map') return '\u{1f5fa}\ufe0f'
+  if (iconKey === 'cup') return '\u{1f3c6}'
 
   switch (iconKey) {
     case 'ball':
-      return '⚽'
+      return '\u26bd'
     case 'runner':
-      return '🏃‍♀️'
+      return '\u{1f3c3}'
     case 'whistle':
-      return '🪈'
+      return '\u{1fa88}'
     case 'boot':
-      return '👟'
+      return '\u{1f45f}'
     case 'chart':
-      return '📈'
+      return '\u{1f4c8}'
     case 'search':
-      return '🔎'
+      return '\u{1f50e}'
     case 'map':
-      return '🗺️'
+      return '\u{1f5fa}\ufe0f'
     case 'trophy':
-      return '🏆'
+      return '\u{1f3c6}'
     case 'player':
-      return '🧍'
+      return '\u{1f9cd}'
     case 'chat':
-      return '💬'
+      return '\u{1f4ac}'
     case 'medal':
-      return '🏅'
+      return '\u{1f3c5}'
     case 'badge':
-      return '✅'
+      return '\u2705'
     case 'cup':
-      return '🏆'
+      return '\u{1f3c6}'
     default:
-      return '⭐'
+      return '\u2b50'
   }
 }
 
@@ -63,6 +64,7 @@ function getJoinedAchievement(
 export async function AchievementPopupGate() {
   const supabase = await createClient()
   const locale = await getLocale()
+  const m = getMessages(locale)
 
   const {
     data: { user },
@@ -125,6 +127,11 @@ export async function AchievementPopupGate() {
       title={title}
       description={description}
       icon={iconFromKey(achievement.icon_key)}
+      labels={{
+        title: m.achievements.popupTitle,
+        viewAchievements: m.achievements.viewAchievements,
+        continue: m.common.continue,
+      }}
     />
   )
 }

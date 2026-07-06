@@ -301,3 +301,18 @@ export async function awardAvatarUploaded() {
 
   await awardAchievement(supabase, 'avatar_uploaded', user.id)
 }
+
+export async function deleteOwnProfile() {
+  const supabase = await createClient()
+
+  const { error } = await supabase.rpc('delete_own_profile')
+
+  if (error) {
+    redirect(`/profile/edit?error=${encodeURIComponent(error.message)}`)
+  }
+
+  await supabase.auth.signOut()
+
+  revalidatePath('/', 'layout')
+  redirect('/login?message=profile_deleted')
+}

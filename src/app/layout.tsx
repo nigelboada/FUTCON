@@ -61,14 +61,15 @@ export default async function RootLayout({
     <html lang={locale} className={theme === 'dark' ? 'dark' : undefined}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppHeader />
-        <GlobalBackButton />
-        <AppCompletenessBanner />
-        <AchievementPopupGate />
-        {children}
+        <div className="min-h-screen bg-muted/50">
+          <GlobalBackButton />
+          <AppCompletenessBanner />
+          <AchievementPopupGate />
+          {children}
+        </div>
         <AppFooter />
         <ServiceWorkerRegister />
         <GlobalLoadingOverlay />
-        
       </body>
     </html>
   );

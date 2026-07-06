@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { markAchievementSeen } from '@/app/achievements/actions'
@@ -10,6 +11,11 @@ type AchievementPopupProps = {
   title: string
   description: string
   icon: string
+  labels: {
+    title: string
+    viewAchievements: string
+    continue: string
+  }
 }
 
 export function AchievementPopup({
@@ -17,6 +23,7 @@ export function AchievementPopup({
   title,
   description,
   icon,
+  labels,
 }: AchievementPopupProps) {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(true)
@@ -40,10 +47,10 @@ export function AchievementPopup({
         <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 bg-cyan-300/25 blur-3xl" />
 
         <div className="pointer-events-none absolute left-6 top-4 text-3xl">
-          🎉
+          {'\u{1f389}'}
         </div>
         <div className="pointer-events-none absolute right-6 top-4 text-3xl">
-          🎉
+          {'\u{1f389}'}
         </div>
 
         <div className="mx-auto mb-5 flex h-28 w-28 animate-[futcon-achievement-pop_1.2s_ease-in-out] items-center justify-center rounded-full border-4 border-emerald-200 bg-emerald-50 text-5xl shadow-lg">
@@ -51,15 +58,24 @@ export function AchievementPopup({
         </div>
 
         <h2 className="mx-auto max-w-xs text-2xl font-extrabold tracking-wide text-green-600 [text-shadow:0_1px_0_white]">
-          Felicitats, has desbloquejat un nou assoliment!
+          {labels.title}
         </h2>
 
         <p className="mt-5 text-lg font-semibold">{title}</p>
         <p className="mt-2 text-sm text-muted-foreground">{description}</p>
 
-        <div className="mt-8">
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="bg-white text-black hover:bg-white/90"
+          >
+            <Link href="/achievements">{labels.viewAchievements}</Link>
+          </Button>
+
           <Button onClick={handleContinue} disabled={isClosing} size="lg">
-            Continuar
+            {labels.continue}
           </Button>
         </div>
       </div>

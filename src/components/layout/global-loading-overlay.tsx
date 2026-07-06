@@ -7,18 +7,25 @@ export function GlobalLoadingOverlay() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isVisible, setIsVisible] = useState(false)
-  const timeoutRef = useRef<number | null>(null)
+  const showTimeoutRef = useRef<number | null>(null)
+  const safetyTimeoutRef = useRef<number | null>(null)
 
   function startLoading() {
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current)
+    if (showTimeoutRef.current) {
+      window.clearTimeout(showTimeoutRef.current)
     }
 
-    setIsVisible(true)
+    if (safetyTimeoutRef.current) {
+      window.clearTimeout(safetyTimeoutRef.current)
+    }
 
-    timeoutRef.current = window.setTimeout(() => {
+    showTimeoutRef.current = window.setTimeout(() => {
+      setIsVisible(true)
+    }, 180)
+
+    safetyTimeoutRef.current = window.setTimeout(() => {
       setIsVisible(false)
-    }, 8000)
+    }, 3500)
   }
 
   useEffect(() => {
@@ -26,8 +33,12 @@ export function GlobalLoadingOverlay() {
       setIsVisible(false)
     }, 0)
 
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current)
+    if (showTimeoutRef.current) {
+      window.clearTimeout(showTimeoutRef.current)
+    }
+
+    if (safetyTimeoutRef.current) {
+      window.clearTimeout(safetyTimeoutRef.current)
     }
 
     return () => {
@@ -78,8 +89,12 @@ export function GlobalLoadingOverlay() {
         handleGlobalLoadingEvent
       )
 
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current)
+      if (showTimeoutRef.current) {
+        window.clearTimeout(showTimeoutRef.current)
+      }
+
+      if (safetyTimeoutRef.current) {
+        window.clearTimeout(safetyTimeoutRef.current)
       }
     }
   }, [])
@@ -91,7 +106,7 @@ export function GlobalLoadingOverlay() {
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/65 backdrop-blur-[2px]">
       <div className="flex flex-col items-center gap-3">
-        <div className="futcon-ball-loader">⚽</div>
+        <div className="futcon-ball-loader">{'\u26bd'}</div>
         <div className="h-px w-36 bg-black" />
       </div>
     </div>

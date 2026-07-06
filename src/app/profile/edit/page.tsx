@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { updateFullProfile } from './actions'
+import { deleteOwnProfile, updateFullProfile } from './actions'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -16,6 +16,7 @@ import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { AvatarUploader } from '@/components/profiles/avatar-uploader'
 import { LocationSelects } from '@/components/profiles/location-selects'
 import { FootballContextFields } from '@/components/profiles/football-context-fields'
+import { DeleteProfileButton } from '@/components/profiles/delete-profile-button'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
@@ -58,39 +59,39 @@ type EditableAchievementRow = {
 }
 
 function achievementIconFromKey(iconKey: string) {
-  if (iconKey === 'search') return '🔎'
-  if (iconKey === 'map') return '🗺️'
-  if (iconKey === 'cup') return '🏆'
+  if (iconKey === 'search') return '\u{1f50e}'
+  if (iconKey === 'map') return '\u{1f5fa}\ufe0f'
+  if (iconKey === 'cup') return '\u{1f3c6}'
 
   switch (iconKey) {
     case 'ball':
-      return '⚽'
+      return '\u26bd'
     case 'runner':
-      return '🏃‍♀️'
+      return '\u{1f3c3}'
     case 'whistle':
-      return '🪈'
+      return '\u{1fa88}'
     case 'boot':
-      return '👟'
+      return '\u{1f45f}'
     case 'chart':
-      return '📈'
+      return '\u{1f4c8}'
     case 'search':
-      return '🔎'
+      return '\u{1f50e}'
     case 'map':
-      return '🗺️'
+      return '\u{1f5fa}\ufe0f'
     case 'trophy':
-      return '🏆'
+      return '\u{1f3c6}'
     case 'player':
-      return '🧍'
+      return '\u{1f9cd}'
     case 'chat':
-      return '💬'
+      return '\u{1f4ac}'
     case 'medal':
-      return '🏅'
+      return '\u{1f3c5}'
     case 'badge':
-      return '✅'
+      return '\u2705'
     case 'cup':
-      return '🏆'
+      return '\u{1f3c6}'
     default:
-      return '⭐'
+      return '\u2b50'
   }
 }
 
@@ -782,6 +783,17 @@ export default async function ProfileEditPage({
 
           </CardContent>
         </Card>
+
+        <DeleteProfileButton
+          action={deleteOwnProfile}
+          labels={{
+            trigger: m.profileEdit.deleteProfile,
+            title: m.profileEdit.deleteProfileTitle,
+            description: m.profileEdit.deleteProfileDescription,
+            cancel: m.common.cancel,
+            confirm: m.profileEdit.deleteProfileConfirm,
+          }}
+        />
       </div>
     </main>
   )

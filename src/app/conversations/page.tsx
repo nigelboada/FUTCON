@@ -1,4 +1,10 @@
 import Link from 'next/link'
+import { Trash2 } from 'lucide-react'
+import {
+  hideConversation,
+  markConversationAsRead,
+  markConversationAsUnread,
+} from './conversation-actions'
 import { markWarningAsRead } from './warning-actions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,7 +22,10 @@ type ConversationOverview = {
   last_message_content: string | null
   last_message_at: string | null
   updated_at: string
+  viewer_hidden_at: string | null
+  viewer_marked_unread: boolean
   unread_count: number
+  has_unread: boolean
 }
 
 function formatDate(value: string | null, localeTag: string, fallback: string) {
@@ -41,12 +50,14 @@ export default async function ConversationsPage() {
     .from('conversation_overview_view')
     .select('*')
     .eq('viewer_profile_id', user.id)
+    .is('viewer_hidden_at', null)
     .order('updated_at', { ascending: false })
 
   const { data: adminWarnings } = await supabase
     .from('admin_warnings')
     .select('id, reason, message, created_at, read_at')
     .eq('profile_id', user.id)
+    .is('read_at', null)
     .order('created_at', { ascending: false })
 
   const conversations = (data ?? []) as ConversationOverview[]
@@ -121,30 +132,52 @@ export default async function ConversationsPage() {
               <Card
                 key={conversation.conversation_id}
                 className={
-                  conversation.unread_count > 0
+                  conversation.has_unread
                     ? 'border-emerald-700/40 bg-emerald-500/5'
                     : ''
                 }
               >
                 <CardHeader>
-                  <CardTitle className="text-xl">
-                    {conversation.other_display_name}
-                  </CardTitle>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <CardTitle className="truncate text-xl">
+                        {conversation.other_display_name}
+                      </CardTitle>
+
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {conversation.other_role
+                          ? m.roles[
+                              conversation.other_role as keyof typeof m.roles
+                            ] ?? conversation.other_role
+                          : m.common.roleNotSpecified}
+                        {' \u00b7 '}
+                        {[conversation.other_city, conversation.other_province]
+                          .filter(Boolean)
+                          .join(', ') || m.common.locationNotSpecified}
+                      </p>
+                    </div>
+
+                    <form action={hideConversation}>
+                      <input
+                        type="hidden"
+                        name="conversationId"
+                        value={conversation.conversation_id}
+                      />
+
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        size="icon"
+                        className="shrink-0 text-destructive hover:bg-destructive/10"
+                        title={m.conversations.deleteFromInbox}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </form>
+                  </div>
                 </CardHeader>
 
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    {conversation.other_role
-                      ? m.roles[
-                          conversation.other_role as keyof typeof m.roles
-                        ] ?? conversation.other_role
-                      : m.common.roleNotSpecified}
-                    {' · '}
-                    {[conversation.other_city, conversation.other_province]
-                      .filter(Boolean)
-                      .join(', ') || m.common.locationNotSpecified}
-                  </p>
-
+                <CardContent className="space-y-4">
                   <p className="text-sm">
                     {conversation.last_message_content ??
                       m.conversations.noConversationMessages}
@@ -158,31 +191,69 @@ export default async function ConversationsPage() {
                     )}
                   </p>
 
-                  {conversation.unread_count > 0 ? (
-                    <span className="w-fit rounded-full border border-emerald-700/30 bg-emerald-700/10 px-2 py-1 text-xs font-medium text-emerald-700">
-                      {m.conversations.unreadStatus
-                        .replace(
-                          '{count}',
-                          String(conversation.unread_count)
-                        )
-                        .replace(
-                          '{plural}',
-                          conversation.unread_count === 1
-                            ? ''
-                            : m.conversations.unreadPluralSuffix
-                        )}
-                    </span>
-                  ) : (
-                    <span className="w-fit rounded-full border px-2 py-1 text-xs text-muted-foreground">
-                      {m.conversations.readStatus}
-                    </span>
-                  )}
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    {conversation.has_unread ? (
+                      <span className="w-fit rounded-full border border-emerald-700/30 bg-emerald-700/10 px-2 py-1 text-xs font-medium text-emerald-700">
+                        {conversation.unread_count > 0
+                          ? m.conversations.unreadStatus
+                              .replace(
+                                '{count}',
+                                String(conversation.unread_count)
+                              )
+                              .replace(
+                                '{plural}',
+                                conversation.unread_count === 1
+                                  ? ''
+                                  : m.conversations.unreadPluralSuffix
+                              )
+                          : m.conversations.markedUnreadStatus}
+                      </span>
+                    ) : (
+                      <span className="w-fit rounded-full border px-2 py-1 text-xs text-muted-foreground">
+                        {m.conversations.readStatus}
+                      </span>
+                    )}
 
-                  <Button asChild>
-                    <Link href={`/conversations/${conversation.conversation_id}`}>
-                      {m.conversations.openConversation}
-                    </Link>
-                  </Button>
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Button asChild className="w-full sm:w-auto">
+                        <Link href={`/conversations/${conversation.conversation_id}`}>
+                          {m.conversations.openConversation}
+                        </Link>
+                      </Button>
+
+                      {conversation.has_unread ? (
+                        <form action={markConversationAsRead}>
+                          <input
+                            type="hidden"
+                            name="conversationId"
+                            value={conversation.conversation_id}
+                          />
+                          <Button
+                            type="submit"
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                          >
+                            {m.conversations.markAsRead}
+                          </Button>
+                        </form>
+                      ) : (
+                        <form action={markConversationAsUnread}>
+                          <input
+                            type="hidden"
+                            name="conversationId"
+                            value={conversation.conversation_id}
+                          />
+                          <Button
+                            type="submit"
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                          >
+                            {m.conversations.markAsUnread}
+                          </Button>
+                        </form>
+                      )}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}

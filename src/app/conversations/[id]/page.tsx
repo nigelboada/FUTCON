@@ -46,7 +46,7 @@ export default async function ConversationPage({
 
   const { data: participants } = await supabase
     .from('conversation_participants')
-    .select('profile_id')
+    .select('profile_id, hidden_at')
     .eq('conversation_id', id)
 
   if (!participants || participants.length === 0) {
@@ -60,6 +60,12 @@ export default async function ConversationPage({
   if (!isParticipant) {
     notFound()
   }
+
+  const currentParticipant = participants.find(
+    (participant) => participant.profile_id === user.id
+  )
+
+  const hiddenAt = currentParticipant?.hidden_at ?? null
 
   await supabase
     .from('messages')
@@ -143,6 +149,7 @@ export default async function ConversationPage({
                 conversationId={id}
                 currentProfileId={user.id}
                 initialMessages={messages}
+                hiddenAt={hiddenAt}
                 localeTag={m.localeTag}
                 labels={{ emptyThread: m.conversations.emptyThread }}
               />

@@ -96,6 +96,8 @@ const ca = {
     "hidden": "Ocultes",
     "hide": "Ocultar",
     "show": "Mostrar",
+    "popupTitle": "Felicitats, has desbloquejat un nou assoliment!",
+    "viewAchievements": "Assoliments",
     "emptyVisible": "No tens cap insígnia visible.",
     "emptyHidden": "No tens cap insígnia oculta."
   },
@@ -495,7 +497,11 @@ const ca = {
     "verificationPending": "La teva sol·licitud de verificació està pendent de revisió.",
     "optionalMessage": "Missatge opcional",
     "requestPlaceholder": "Ex: Sol·licito la verificació perquè soc responsable d’un club / jugador federat / professional de l’staff...",
-    "requestVerification": "Sol·licitar verificació"
+    "requestVerification": "Sol·licitar verificació",
+    "deleteProfile": "Eliminar perfil",
+    "deleteProfileTitle": "Eliminar perfil",
+    "deleteProfileDescription": "Aquesta acció eliminarà el teu perfil de FUTCON i les dades associades. Per continuar hauràs de crear un perfil nou.",
+    "deleteProfileConfirm": "Sí, eliminar perfil"
   },
   "conversations": {
     "title": "Missatges",
@@ -514,6 +520,10 @@ const ca = {
     "readStatus": "Llegida",
     "unreadStatus": "{count} missatge{plural} sense llegir",
     "unreadPluralSuffix": "s",
+    "markedUnreadStatus": "Marcada com a no llegida",
+    "markAsRead": "Marcar com a llegida",
+    "markAsUnread": "Marcar com a no llegida",
+    "deleteFromInbox": "Eliminar de la safata",
     "emptyThread": "Encara no hi ha missatges. Escriu el primer missatge per iniciar la conversa."
   },
   "admin": {
@@ -594,6 +604,7 @@ const ca = {
     "user_banned": "Usuari bloquejat correctament.",
     "user_unbanned": "Usuari desbloquejat correctament.",
     "warning_sent": "Advertència enviada correctament.",
+    "profile_deleted": "El perfil s’ha eliminat correctament.",
     "empty_message": "El missatge no pot estar buit."
   },
   "notFound": {
@@ -709,6 +720,8 @@ const es: Messages = {
     "hidden": "Ocultas",
     "hide": "Ocultar",
     "show": "Mostrar",
+    "popupTitle": "¡Felicidades, has desbloqueado un nuevo logro!",
+    "viewAchievements": "Logros",
     "emptyVisible": "No tienes ninguna insignia visible.",
     "emptyHidden": "No tienes ninguna insignia oculta."
   },
@@ -1108,7 +1121,11 @@ const es: Messages = {
     "verificationPending": "Tu solicitud de verificación está pendiente de revisión.",
     "optionalMessage": "Mensaje opcional",
     "requestPlaceholder": "Ej: Solicito la verificación porque soy responsable de un club / jugador federado / profesional del staff...",
-    "requestVerification": "Solicitar verificación"
+    "requestVerification": "Solicitar verificación",
+    "deleteProfile": "Eliminar perfil",
+    "deleteProfileTitle": "Eliminar perfil",
+    "deleteProfileDescription": "Esta acción eliminará tu perfil de FUTCON y los datos asociados. Para continuar tendrás que crear un perfil nuevo.",
+    "deleteProfileConfirm": "Sí, eliminar perfil"
   },
   "conversations": {
     "title": "Mensajes",
@@ -1127,6 +1144,10 @@ const es: Messages = {
     "readStatus": "Leída",
     "unreadStatus": "{count} mensaje{plural} sin leer",
     "unreadPluralSuffix": "s",
+    "markedUnreadStatus": "Marcada como no leída",
+    "markAsRead": "Marcar como leída",
+    "markAsUnread": "Marcar como no leída",
+    "deleteFromInbox": "Eliminar de la bandeja",
     "emptyThread": "Todavía no hay mensajes. Escribe el primer mensaje para iniciar la conversación."
   },
   "admin": {
@@ -1207,6 +1228,7 @@ const es: Messages = {
     "user_banned": "Usuario bloqueado correctamente.",
     "user_unbanned": "Usuario desbloqueado correctamente.",
     "warning_sent": "Advertencia enviada correctamente.",
+    "profile_deleted": "El perfil se ha eliminado correctamente.",
     "empty_message": "El mensaje no puede estar vacío."
   },
   "notFound": {
@@ -1312,6 +1334,8 @@ const en: Messages = {
     "hidden": "Hidden",
     "hide": "Hide",
     "show": "Show",
+    "popupTitle": "Congratulations, you unlocked a new achievement!",
+    "viewAchievements": "Achievements",
     "emptyVisible": "You do not have any visible badges.",
     "emptyHidden": "You do not have any hidden badges."
   },
@@ -1695,7 +1719,7 @@ const en: Messages = {
       "clubCategory": "E.g. 2a Catalana",
       "website": "https://...",
       "contactRole": "E.g. Sports coordinator",
-      "priceRange": "E.g. 20-30 ?/session",
+      "priceRange": "E.g. 20-30 €/session",
       "services": "E.g. injury recovery, return to play, sports nutrition..."
     },
     "verificationTitle": "Trust and verification",
@@ -1711,7 +1735,11 @@ const en: Messages = {
     "verificationPending": "Your verification request is pending review.",
     "optionalMessage": "Optional message",
     "requestPlaceholder": "E.g. I am requesting verification because I am a club manager / federated player / staff professional...",
-    "requestVerification": "Request verification"
+    "requestVerification": "Request verification",
+    "deleteProfile": "Delete profile",
+    "deleteProfileTitle": "Delete profile",
+    "deleteProfileDescription": "This action will delete your FUTCON profile and its associated data. To continue, you will need to create a new profile.",
+    "deleteProfileConfirm": "Yes, delete profile"
   },
   "conversations": {
     "title": "Messages",
@@ -1730,6 +1758,10 @@ const en: Messages = {
     "readStatus": "Read",
     "unreadStatus": "{count} unread message{plural}",
     "unreadPluralSuffix": "s",
+    "markedUnreadStatus": "Marked as unread",
+    "markAsRead": "Mark as read",
+    "markAsUnread": "Mark as unread",
+    "deleteFromInbox": "Remove from inbox",
     "emptyThread": "There are no messages yet. Write the first message to start the conversation."
   },
   "admin": {
@@ -1810,6 +1842,7 @@ const en: Messages = {
     "user_banned": "User banned successfully.",
     "user_unbanned": "User unbanned successfully.",
     "warning_sent": "Warning sent successfully.",
+    "profile_deleted": "Profile deleted successfully.",
     "empty_message": "The message cannot be empty."
   },
   "notFound": {

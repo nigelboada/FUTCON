@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { TriangleAlert } from 'lucide-react'
 import { signOut } from '@/app/(auth)/actions'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitcher } from '@/components/layout/language-switcher'
@@ -122,7 +123,7 @@ export async function AppHeader() {
                       {item.label}
 
                       {hasUnreadWarnings ? (
-                        <span className="ml-2 text-destructive">?</span>
+                        <TriangleAlert className="ml-2 h-4 w-4 text-destructive" />
                       ) : null}
 
                       {hasUnreadMessages ? (

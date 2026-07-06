@@ -23,6 +23,9 @@ export async function StaticInfoPage({ pageKey }: StaticInfoPageProps) {
   const locale = await getLocale()
   const content = getFooterContent(locale)
   const page = content.pages[pageKey]
+  const helpMore = content.helpMore
+  const sectionTitles = 'sectionTitles' in page ? page.sectionTitles : undefined
+  const additionalInfo = 'additionalInfo' in page ? page.additionalInfo : undefined
 
   if (!page) {
     notFound()
@@ -52,18 +55,18 @@ export async function StaticInfoPage({ pageKey }: StaticInfoPageProps) {
             ))}
 
             <section className="rounded-3xl border bg-background p-8 shadow-sm">
-              <h2 className="text-2xl font-semibold">🙂 Necessites més ajuda?</h2>
+              <h2 className="text-2xl font-semibold">{helpMore.title}</h2>
               <p className="mt-3 text-lg leading-8 text-muted-foreground">
-                Si no has trobat la resposta que buscaves, pots contactar amb nosaltres i t’ajudarem tan aviat com sigui possible.
+                {helpMore.description}
               </p>
 
               <div className="mt-5 flex flex-wrap gap-3">
                 <Button asChild>
-                  <Link href="/contact-us">Contacta amb nosaltres</Link>
+                  <Link href="/contact-us">{helpMore.contactUs}</Link>
                 </Button>
 
                 <Button asChild variant="outline">
-                  <Link href="/contact">Dades de contacte</Link>
+                  <Link href="/contact">{helpMore.contactDetails}</Link>
                 </Button>
               </div>
             </section>
@@ -78,15 +81,10 @@ export async function StaticInfoPage({ pageKey }: StaticInfoPageProps) {
                 className="rounded-2xl border bg-background p-7 shadow-sm"
               >
                 <h2 className="text-2xl font-semibold tracking-tight">
-                  {index === 0
-                    ? 'Objecte i abast'
-                    : index === 1
-                    ? 'Tractament de dades i responsabilitat'
-                    : index === 2
-                    ? 'Propietat intel·lectual i ús de la marca'
-                    : index === 3
-                    ? 'Cookies, seguretat i limitació de responsabilitat'
-                    : `Apartat ${index + 1}`}
+                  {sectionTitles?.[index] ??
+                    (index === 4
+                      ? content.legalInformativeSection
+                      : `${content.legalFallbackSection} ${index + 1}`)}
                 </h2>
 
                 <p className="mt-4 text-base leading-8 text-foreground -indent-4 pl-8">
@@ -95,23 +93,21 @@ export async function StaticInfoPage({ pageKey }: StaticInfoPageProps) {
               </div>
             ))}
 
-            <section className="rounded-2xl border bg-background p-7 shadow-sm">
-              <h2 className="text-2xl font-semibold tracking-tight">
-                Informació complementària
-              </h2>
+            {additionalInfo ? (
+              <section className="rounded-2xl border bg-background p-7 shadow-sm">
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {additionalInfo.title}
+                </h2>
 
-              <div className="mt-4 space-y-4 text-base leading-8">
-                <p className="-indent-4 pl-8">
-                  FUTCON pot actualitzar aquestes polítiques per adaptar-les a canvis normatius, tècnics o funcionals de la plataforma.
-                </p>
-                <p className="-indent-4 pl-8">
-                  L’ús del nom, logotip, continguts, interfícies, il·lustracions i estructura visual de la plataforma queda protegit per les normes aplicables de propietat intel·lectual i copyright.
-                </p>
-                <p className="-indent-4 pl-8">
-                  L’usuari es compromet a utilitzar la plataforma de manera lícita, respectuosa i coherent amb la finalitat professional del servei.
-                </p>
-              </div>
-            </section>
+                <div className="mt-4 space-y-4 text-base leading-8">
+                  {additionalInfo.paragraphs.map((paragraph) => (
+                    <p key={paragraph} className="-indent-4 pl-8">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </section>
         ) : null}
       </div>

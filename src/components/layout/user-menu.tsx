@@ -21,9 +21,9 @@ type UserMenuProps = {
     account: string
     language: string
     admin: string
-    achievements: string
     editProfile: string
     signOut: string
+    achievements: string
     theme: {
       light: string
       dark: string
@@ -78,8 +78,8 @@ export function UserMenu({
       </button>
 
       {isOpen ? (
-        <div className="absolute right-0 z-50 mt-3 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border bg-background p-4 shadow-xl">
-          <div className="flex items-start justify-between gap-3 border-b pb-4">
+        <div className="absolute right-0 z-50 mt-3 w-[min(22rem,calc(100vw-1.5rem))] rounded-3xl border bg-background p-4 shadow-2xl">
+          <div className="flex items-center justify-between gap-4 rounded-2xl bg-muted/50 p-3">
             <div className="flex min-w-0 items-center gap-3">
               <ProfileAvatar
                 src={avatarUrl}
@@ -92,7 +92,9 @@ export function UserMenu({
                 <p className="text-xs text-muted-foreground">
                   {labels.account}
                 </p>
-                <p className="truncate text-sm font-semibold">{displayName}</p>
+                <p className="truncate text-sm font-semibold">
+                  {displayName}
+                </p>
               </div>
             </div>
 
@@ -100,34 +102,44 @@ export function UserMenu({
           </div>
 
           <div className="mt-4 space-y-3">
-            <LanguageSwitcher
-              currentLocale={currentLocale}
-              label={labels.language}
-            />
+            <div className="rounded-2xl border bg-background p-3">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">
+                {labels.language}
+              </p>
+              <LanguageSwitcher
+                currentLocale={currentLocale}
+                label={labels.language}
+              />
+            </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" size="sm">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Button asChild variant="outline" size="sm" className="justify-center">
                 <Link href="/profile/edit" onClick={() => setIsOpen(false)}>
                   {labels.editProfile}
                 </Link>
               </Button>
 
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline" size="sm" className="justify-center">
                 <Link href="/achievements" onClick={() => setIsOpen(false)}>
                   {labels.achievements}
                 </Link>
               </Button>
 
               {isAdmin ? (
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="justify-center">
                   <Link href="/admin" onClick={() => setIsOpen(false)}>
                     {labels.admin}
                   </Link>
                 </Button>
               ) : null}
 
-              <form action={signOutAction}>
-                <Button type="submit" variant="outline" size="sm">
+              <form action={signOutAction} className={isAdmin ? '' : 'sm:col-span-2'}>
+                <Button
+                  type="submit"
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-center"
+                >
                   {labels.signOut}
                 </Button>
               </form>

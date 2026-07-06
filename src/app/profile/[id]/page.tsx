@@ -408,7 +408,7 @@ export default async function PublicProfilePage({
   const location = getLocation(profile)
 
   return (
-    <main className="min-h-screen bg-muted px-4 py-8">
+    <main className="bg-transparent px-4 py-8">
       <div className="mx-auto max-w-4xl space-y-6">
         <Card>
           <CardHeader className="space-y-4">

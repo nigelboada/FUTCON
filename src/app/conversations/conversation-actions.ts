@@ -21,10 +21,13 @@ export async function hideConversation(formData: FormData) {
     redirect('/conversations?error=invalid_request')
   }
 
+  const hiddenAt = new Date().toISOString()
+
   const { error } = await supabase
     .from('conversation_participants')
     .update({
-      hidden_at: new Date().toISOString(),
+      hidden_at: hiddenAt,
+      last_hidden_at: hiddenAt,
       marked_unread: false,
     })
     .eq('conversation_id', conversationId)

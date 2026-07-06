@@ -24,6 +24,7 @@ type UserMenuProps = {
     editProfile: string
     signOut: string
     signOutConfirm: string
+    cancel: string
     achievements: string
     theme: {
       light: string
@@ -44,6 +45,7 @@ export function UserMenu({
   labels,
 }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isSignOutOpen, setIsSignOutOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -134,23 +136,42 @@ export function UserMenu({
                 </Button>
               ) : null}
 
-              <form
-                action={signOutAction}
-                className={isAdmin ? '' : 'sm:col-span-2'}
-                onSubmit={(event) => {
-                  if (!window.confirm(labels.signOutConfirm)) {
-                    event.preventDefault()
-                  }
-                }}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={`w-full justify-center ${
+                  isAdmin ? '' : 'sm:col-span-2'
+                }`}
+                onClick={() => setIsSignOutOpen(true)}
               >
-                <Button
-                  type="submit"
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-center"
-                >
-                  {labels.signOut}
-                </Button>
+                {labels.signOut}
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isSignOutOpen ? (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border bg-background p-6 text-center shadow-2xl">
+            <h2 className="text-2xl font-bold">{labels.signOut}</h2>
+
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              {labels.signOutConfirm}
+            </p>
+
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsSignOutOpen(false)}
+              >
+                {labels.cancel}
+              </Button>
+
+              <form action={signOutAction}>
+                <Button type="submit">{labels.signOut}</Button>
               </form>
             </div>
           </div>

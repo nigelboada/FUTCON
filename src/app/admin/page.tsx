@@ -109,7 +109,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const error = resolveFeedbackMessage(params.error, m.feedback)
 
   return (
-    <main className="min-h-screen bg-muted/50 px-4 py-8">
+    <main className="bg-transparent px-4 py-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <section className="space-y-2">
           <p className="text-sm text-muted-foreground">{m.admin.eyebrow}</p>
@@ -282,40 +282,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               </Card>
             ))}
           </div>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold">Advertències recents</h2>
-
-          {adminWarnings.length > 0 ? (
-            <div className="space-y-3">
-              {adminWarnings.map((warning) => (
-                <Card key={warning.id} className="border-destructive/30">
-                  <CardContent className="p-4">
-                    <p className="font-medium">
-                      {Array.isArray(warning.profile)
-                        ? warning.profile[0]?.display_name
-                        : warning.profile?.display_name}
-                    </p>
-                    <p className="mt-1 text-sm text-destructive">
-                      {m.admin.warningReasons[
-                        warning.reason as keyof typeof m.admin.warningReasons
-                      ] ?? warning.reason}
-                    </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {warning.message}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="p-6 text-sm text-muted-foreground">
-                Encara no hi ha advertències registrades.
-              </CardContent>
-            </Card>
-          )}
         </section>
       </div>
     </main>

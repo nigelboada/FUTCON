@@ -61,7 +61,7 @@ export default async function AchievementsPage() {
   )
 
   return (
-    <main className="min-h-screen bg-muted/40 px-4 py-8">
+    <main className="bg-transparent px-4 py-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">

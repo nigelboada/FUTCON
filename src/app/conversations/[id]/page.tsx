@@ -76,6 +76,14 @@ export default async function ConversationPage({
     .neq('sender_profile_id', user.id)
     .is('read_at', null)
 
+  await supabase
+    .from('conversation_participants')
+    .update({
+      marked_unread: false,
+    })
+    .eq('conversation_id', id)
+    .eq('profile_id', user.id)
+
   const otherParticipant = participants.find(
     (participant) => participant.profile_id !== user.id
   )
@@ -97,7 +105,7 @@ export default async function ConversationPage({
   const messages = (messageData ?? []) as Message[]
 
   return (
-    <main className="min-h-screen bg-muted/50 px-4 py-8">
+    <main className="bg-transparent px-4 py-8">
       <div className="futcon-fade-up mx-auto max-w-5xl space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <Button asChild variant="secondary">
@@ -161,6 +169,7 @@ export default async function ConversationPage({
                 action={sendMessage}
                 placeholder={m.conversations.messagePlaceholder}
                 submitLabel={m.conversations.sendMessage}
+                sendingLabel={m.conversations.sendingMessage}
                 shortcutLabel={m.conversations.composerShortcut}
               />
             </div>

@@ -19,6 +19,8 @@ import { AchievementPopupGate } from '@/components/achievements/achievement-popu
 
 import { GlobalBackButton } from '@/components/layout/global-back-button'
 
+import { AppRealtimeRefreshGate } from '@/components/realtime/app-realtime-refresh-gate'
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -62,6 +64,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppHeader />
         <div className="min-h-screen bg-muted/50">
+          <AppRealtimeRefreshGate />
           <GlobalBackButton />
           <AppCompletenessBanner />
           <AchievementPopupGate />

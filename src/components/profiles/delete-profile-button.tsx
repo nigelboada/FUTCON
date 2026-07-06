@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type DeleteProfileButtonProps = {
@@ -22,26 +23,30 @@ export function DeleteProfileButton({
 
   return (
     <>
-      <div className="flex justify-end">
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={() => {
-            setIsOpen(true)
-            window.scrollTo({
-              top: window.scrollY,
-              behavior: 'smooth',
-            })
-          }}
-        >
-          {labels.trigger}
-        </Button>
-      </div>
+      <Button
+        type="button"
+        variant="destructive"
+        onClick={() => {
+          setIsOpen(true)
+          window.scrollTo({
+            top: window.scrollY,
+            behavior: 'smooth',
+          })
+        }}
+        className="transition hover:-translate-y-0.5 hover:shadow-sm"
+      >
+        <Trash2 className="mr-2 h-4 w-4" />
+        {labels.trigger}
+      </Button>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl border bg-background p-6 shadow-2xl">
-            <h2 className="text-2xl font-bold text-destructive">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border bg-background p-6 text-center shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <Trash2 className="h-7 w-7" />
+            </div>
+
+            <h2 className="mt-5 text-2xl font-bold text-destructive">
               {labels.title}
             </h2>
 
@@ -49,7 +54,7 @@ export function DeleteProfileButton({
               {labels.description}
             </p>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               <Button
                 type="button"
                 variant="outline"

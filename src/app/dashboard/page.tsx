@@ -178,7 +178,7 @@ export default async function DashboardPage({
   const completenessPercentage = profileCompleteness?.percentage ?? 0
 
   return (
-    <main className="min-h-screen bg-muted/50 px-4 py-8">
+    <main className="bg-transparent px-4 py-8">
       <div className="futcon-fade-up mx-auto max-w-7xl space-y-6">
         <FeedbackMessage message={message} error={error} />
 

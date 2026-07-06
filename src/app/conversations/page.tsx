@@ -208,28 +208,6 @@ export default async function ConversationsPage({
                   </p>
 
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    {conversation.has_unread ? (
-                      <span className="w-fit rounded-full border border-emerald-700/30 bg-emerald-700/10 px-2 py-1 text-xs font-medium text-emerald-700">
-                        {conversation.unread_count > 0
-                          ? m.conversations.unreadStatus
-                              .replace(
-                                '{count}',
-                                String(conversation.unread_count)
-                              )
-                              .replace(
-                                '{plural}',
-                                conversation.unread_count === 1
-                                  ? ''
-                                  : m.conversations.unreadPluralSuffix
-                              )
-                          : m.conversations.markedUnreadStatus}
-                      </span>
-                    ) : (
-                      <span className="w-fit rounded-full border px-2 py-1 text-xs text-muted-foreground">
-                        {m.conversations.readStatus}
-                      </span>
-                    )}
-
                     <div className="flex flex-col gap-2 sm:flex-row">
                       <Button asChild className="w-full sm:w-auto">
                         <Link href={`/conversations/${conversation.conversation_id}`}>

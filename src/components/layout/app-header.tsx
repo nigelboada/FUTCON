@@ -150,6 +150,7 @@ export async function AppHeader() {
                   editProfile: m.nav.editProfile,
                   signOut: m.nav.signOut,
                   signOutConfirm: m.nav.signOutConfirm,
+                  cancel: m.common.cancel,
                   theme: m.theme,
                 }}
               />

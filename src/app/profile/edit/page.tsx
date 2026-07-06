@@ -277,7 +277,7 @@ export default async function ProfileEditPage({
 
   const clubOptions = clubOptionsData ?? []
   return (
-    <main className="min-h-screen bg-muted/50 px-4 py-8">
+    <main className="bg-transparent px-4 py-8">
       <div className="futcon-fade-up mx-auto max-w-5xl space-y-6">
         <Card className="border-2">
           <CardHeader>
@@ -319,7 +319,11 @@ export default async function ProfileEditPage({
               }}
             />
 
-            <form action={updateFullProfile} className="space-y-10">
+            <form
+              id="profile-edit-form"
+              action={updateFullProfile}
+              className="space-y-10"
+            >
               <section className="space-y-4 rounded-xl border bg-background p-5">
                 <div>
                   <h2 className="text-lg font-semibold">
@@ -772,16 +776,19 @@ export default async function ProfileEditPage({
                 </section>
               ) : null}
 
-              <div className="flex flex-col gap-3 border-t pt-6 sm:flex-row">
-                <Button type="submit">{m.common.saveChanges}</Button>
+            </form>
+
+            <div className="mt-6 flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button type="submit" form="profile-edit-form">
+                  {m.common.saveChanges}
+                </Button>
 
                 <Button asChild variant="outline">
                   <Link href="/dashboard">{m.common.cancel}</Link>
                 </Button>
               </div>
-            </form>
 
-            <div className="border-t pt-6">
               <DeleteProfileButton
                 action={deleteOwnProfile}
                 labels={{

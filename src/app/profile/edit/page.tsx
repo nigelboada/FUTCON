@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { requestProfileVerification, updateFullProfile } from './actions'
+import { updateFullProfile } from './actions'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -40,13 +40,6 @@ type ProfileEditPageProps = {
 
 type UserRole = 'player' | 'coach' | 'club' | 'staff'
 
-const verificationClassNames: Record<string, string> = {
-  unverified: 'border-muted bg-muted text-muted-foreground',
-  pending: 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
-  verified: 'border-green-500 bg-green-500/10 text-green-700',
-  rejected: 'border-red-500 bg-red-500/10 text-red-700',
-}
-
 type EditableAchievementRecord = {
   id: number
   title_ca: string
@@ -65,6 +58,10 @@ type EditableAchievementRow = {
 }
 
 function achievementIconFromKey(iconKey: string) {
+  if (iconKey === 'search') return '🔎'
+  if (iconKey === 'map') return '🗺️'
+  if (iconKey === 'cup') return '🏆'
+
   switch (iconKey) {
     case 'ball':
       return '⚽'
@@ -76,6 +73,10 @@ function achievementIconFromKey(iconKey: string) {
       return '👟'
     case 'chart':
       return '📈'
+    case 'search':
+      return '🔎'
+    case 'map':
+      return '🗺️'
     case 'trophy':
       return '🏆'
     case 'player':
@@ -274,20 +275,9 @@ export default async function ProfileEditPage({
     })
 
   const clubOptions = clubOptionsData ?? []
-  const verification = profile.verification ?? 'unverified'
-
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-8">
       <div className="futcon-fade-up mx-auto max-w-5xl space-y-6">
-        <div>
-          <Link
-            href="/dashboard"
-            className="text-sm text-muted-foreground underline"
-          >
-            {m.common.backToDashboard}
-          </Link>
-        </div>
-
         <Card className="border-2">
           <CardHeader>
             <CardTitle>{m.profileEdit.title}</CardTitle>
@@ -790,69 +780,6 @@ export default async function ProfileEditPage({
               </div>
             </form>
 
-            <section className="mt-8 space-y-4 rounded-xl border bg-background p-5">
-              <SectionIntro
-                title={m.profileEdit.verificationTitle}
-                description={m.profileEdit.verificationDescription}
-              />
-
-              <div className="rounded-md border bg-background p-4">
-                <p className="text-sm text-muted-foreground">
-                  {m.profileEdit.currentStatus}
-                </p>
-
-                <span
-                  className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-medium ${
-                    verificationClassNames[verification]
-                  }`}
-                >
-                  {m.verification[verification as keyof typeof m.verification] ??
-                    verification}
-                </span>
-
-                <p className="mt-3 text-sm text-muted-foreground">
-                  {m.profileEdit.verificationDescriptions[
-                    verification as keyof typeof m.profileEdit.verificationDescriptions
-                  ] ?? verification}
-                </p>
-              </div>
-
-              {profile.verification === 'verified' ? (
-                <div className="rounded-md border bg-green-500/10 p-4 text-sm text-green-700">
-                  {m.profileEdit.alreadyVerified}
-                </div>
-              ) : profile.verification === 'pending' ? (
-                <div className="rounded-md border bg-yellow-500/10 p-4 text-sm text-yellow-700">
-                  {m.profileEdit.verificationPending}
-                </div>
-              ) : (
-                <form
-                  action={requestProfileVerification}
-                  className="space-y-3 rounded-md border bg-background p-4"
-                >
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="requestMessage"
-                      className="text-sm font-medium"
-                    >
-                      {m.profileEdit.optionalMessage}
-                    </label>
-
-                    <textarea
-                      id="requestMessage"
-                      name="requestMessage"
-                      rows={3}
-                      className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      placeholder={m.profileEdit.requestPlaceholder}
-                    />
-                  </div>
-
-                  <Button type="submit">
-                    {m.profileEdit.requestVerification}
-                  </Button>
-                </form>
-              )}
-            </section>
           </CardContent>
         </Card>
       </div>

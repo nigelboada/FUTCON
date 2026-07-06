@@ -23,6 +23,7 @@ type UserMenuProps = {
     admin: string
     editProfile: string
     signOut: string
+    signOutConfirm: string
     achievements: string
     theme: {
       light: string
@@ -78,7 +79,7 @@ export function UserMenu({
       </button>
 
       {isOpen ? (
-        <div className="absolute right-0 z-50 mt-3 w-[min(22rem,calc(100vw-1.5rem))] rounded-3xl border bg-background p-4 shadow-2xl">
+        <div className="fixed left-3 right-3 top-24 z-50 rounded-3xl border bg-background p-4 shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-[22rem]">
           <div className="flex items-center justify-between gap-4 rounded-2xl bg-muted/50 p-3">
             <div className="flex min-w-0 items-center gap-3">
               <ProfileAvatar
@@ -133,7 +134,15 @@ export function UserMenu({
                 </Button>
               ) : null}
 
-              <form action={signOutAction} className={isAdmin ? '' : 'sm:col-span-2'}>
+              <form
+                action={signOutAction}
+                className={isAdmin ? '' : 'sm:col-span-2'}
+                onSubmit={(event) => {
+                  if (!window.confirm(labels.signOutConfirm)) {
+                    event.preventDefault()
+                  }
+                }}
+              >
                 <Button
                   type="submit"
                   variant="outline"

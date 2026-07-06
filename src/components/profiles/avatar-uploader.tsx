@@ -152,6 +152,7 @@ export function AvatarUploader({
             name={displayName ?? 'FUTCON'}
             completeness={completeness}
             size="xl"
+            showCompletedBadge={false}
           />
         </div>
 

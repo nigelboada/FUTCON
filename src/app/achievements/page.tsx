@@ -2,6 +2,7 @@ import { AchievementMap } from '@/components/achievements/achievement-map'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { requireActiveUser } from '@/lib/auth/guards'
+import { awardAchievement } from '@/lib/achievements/award'
 
 type AchievementRow = {
   id: number
@@ -18,6 +19,8 @@ type AchievementRow = {
 
 export default async function AchievementsPage() {
   const { supabase, user } = await requireActiveUser()
+  await awardAchievement(supabase, 'achievement_explorer', user.id)
+
   const locale = await getLocale()
   const m = getMessages(locale)
 

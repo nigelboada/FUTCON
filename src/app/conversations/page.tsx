@@ -1,10 +1,10 @@
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { getLocale } from '@/lib/i18n/server'
-import { getMessages } from '@/lib/i18n/messages'
-import { requireActiveUser } from '@/lib/auth/guards'
 import { markWarningAsRead } from './warning-actions'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { requireActiveUser } from '@/lib/auth/guards'
+import { getMessages } from '@/lib/i18n/messages'
+import { getLocale } from '@/lib/i18n/server'
 
 type ConversationOverview = {
   conversation_id: string
@@ -16,6 +16,7 @@ type ConversationOverview = {
   last_message_content: string | null
   last_message_at: string | null
   updated_at: string
+  unread_count: number
 }
 
 function formatDate(value: string | null, localeTag: string, fallback: string) {
@@ -74,43 +75,57 @@ export default async function ConversationsPage() {
 
         {(adminWarnings ?? []).length > 0 ? (
           <section className="space-y-3">
-            {(adminWarnings ?? []).map((warning) => (
-              <div
-                key={warning.id}
-                className="rounded-xl border border-destructive/40 bg-destructive/10 p-4"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="font-semibold text-destructive">
-                      Advertència administrativa: {warning.reason}
-                    </p>
-                    <p className="mt-2 text-sm text-destructive/90">
-                      {warning.message}
-                    </p>
-                  </div>
+            {(adminWarnings ?? []).map((warning) => {
+              const translatedReason =
+                m.admin.warningReasons[
+                  warning.reason as keyof typeof m.admin.warningReasons
+                ] ?? warning.reason
 
-                  {!warning.read_at ? (
-                    <form action={markWarningAsRead}>
-                      <input
-                        type="hidden"
-                        name="warningId"
-                        value={warning.id}
-                      />
-                      <Button type="submit" variant="outline" size="sm">
-                        Marcar com llegida
-                      </Button>
-                    </form>
-                  ) : null}
+              return (
+                <div
+                  key={warning.id}
+                  className="rounded-xl border border-destructive/40 bg-destructive/10 p-4"
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="font-semibold text-destructive">
+                        {m.admin.warningLabel}: {translatedReason}
+                      </p>
+                      <p className="mt-2 text-sm text-destructive/90">
+                        {warning.message}
+                      </p>
+                    </div>
+
+                    {!warning.read_at ? (
+                      <form action={markWarningAsRead}>
+                        <input
+                          type="hidden"
+                          name="warningId"
+                          value={warning.id}
+                        />
+                        <Button type="submit" variant="outline" size="sm">
+                          {m.admin.markAsRead}
+                        </Button>
+                      </form>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </section>
         ) : null}
 
         {conversations.length > 0 ? (
           <div className="space-y-4">
             {conversations.map((conversation) => (
-              <Card key={conversation.conversation_id}>
+              <Card
+                key={conversation.conversation_id}
+                className={
+                  conversation.unread_count > 0
+                    ? 'border-emerald-700/40 bg-emerald-500/5'
+                    : ''
+                }
+              >
                 <CardHeader>
                   <CardTitle className="text-xl">
                     {conversation.other_display_name}
@@ -142,6 +157,26 @@ export default async function ConversationsPage() {
                       m.common.noMessages
                     )}
                   </p>
+
+                  {conversation.unread_count > 0 ? (
+                    <span className="w-fit rounded-full border border-emerald-700/30 bg-emerald-700/10 px-2 py-1 text-xs font-medium text-emerald-700">
+                      {m.conversations.unreadStatus
+                        .replace(
+                          '{count}',
+                          String(conversation.unread_count)
+                        )
+                        .replace(
+                          '{plural}',
+                          conversation.unread_count === 1
+                            ? ''
+                            : m.conversations.unreadPluralSuffix
+                        )}
+                    </span>
+                  ) : (
+                    <span className="w-fit rounded-full border px-2 py-1 text-xs text-muted-foreground">
+                      {m.conversations.readStatus}
+                    </span>
+                  )}
 
                   <Button asChild>
                     <Link href={`/conversations/${conversation.conversation_id}`}>

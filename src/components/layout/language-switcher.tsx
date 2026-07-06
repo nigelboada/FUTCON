@@ -28,7 +28,6 @@ export function LanguageSwitcher({
     }
 
     setIsChanging(true)
-    window.dispatchEvent(new Event('futcon:start-loading'))
 
     document.cookie = `${localeCookieName}=${value}; path=/; max-age=31536000; SameSite=Lax`
     router.refresh()

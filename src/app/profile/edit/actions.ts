@@ -288,36 +288,6 @@ export async function updateFullProfile(formData: FormData) {
   redirect('/dashboard?message=profile_updated')
 }
 
-export async function requestProfileVerification(formData: FormData) {
-  const supabase = await createClient()
-
-  const requestMessage = getStringValue(formData, 'requestMessage')
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  const { error } = await supabase.rpc('request_profile_verification', {
-    request_message: requestMessage || null,
-  })
-
-  if (error) {
-    redirect(`/profile/edit?error=${encodeURIComponent(error.message)}`)
-  }
-
-  await awardAchievement(supabase, 'verified_request', user.id)
-
-  revalidatePath('/dashboard')
-  revalidatePath('/profile/edit')
-  revalidatePath(`/profile/${user.id}`)
-
-  redirect('/profile/edit?message=verification_requested')
-}
-
 export async function awardAvatarUploaded() {
   const supabase = await createClient()
 

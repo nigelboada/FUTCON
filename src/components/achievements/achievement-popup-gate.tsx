@@ -14,6 +14,10 @@ type PopupAchievement = {
 }
 
 function iconFromKey(iconKey: string) {
+  if (iconKey === 'search') return '🔎'
+  if (iconKey === 'map') return '🗺️'
+  if (iconKey === 'cup') return '🏆'
+
   switch (iconKey) {
     case 'ball':
       return '⚽'
@@ -25,6 +29,10 @@ function iconFromKey(iconKey: string) {
       return '👟'
     case 'chart':
       return '📈'
+    case 'search':
+      return '🔎'
+    case 'map':
+      return '🗺️'
     case 'trophy':
       return '🏆'
     case 'player':

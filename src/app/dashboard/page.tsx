@@ -9,11 +9,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
-import { getLocale } from '@/lib/i18n/server'
-import { getMessages } from '@/lib/i18n/messages'
-import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
-import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
+import { ProfileAvatar } from '@/components/profiles/profile-avatar'
 import { requireActiveUser } from '@/lib/auth/guards'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
+import { getMessages } from '@/lib/i18n/messages'
+import { getLocale } from '@/lib/i18n/server'
+import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 
 type DashboardPageProps = {
   searchParams: Promise<{
@@ -134,6 +135,26 @@ export default async function DashboardPage({
     .order('last_message_at', { ascending: false, nullsFirst: false })
     .limit(3)
 
+  const { data: unreadMessagesCount } = await supabase.rpc(
+    'get_unread_message_count'
+  )
+
+  const { count: achievementCount } = await supabase
+    .from('user_achievements')
+    .select('achievement_id', { count: 'exact', head: true })
+    .eq('profile_id', user.id)
+
+  const { count: reviewCount } = await supabase
+    .from('reviews')
+    .select('id', { count: 'exact', head: true })
+    .eq('reviewed_profile_id', user.id)
+
+  const { count: unreadWarningsCount } = await supabase
+    .from('admin_warnings')
+    .select('id', { count: 'exact', head: true })
+    .eq('profile_id', user.id)
+    .is('read_at', null)
+
   const conversations = (conversationsData ?? []) as ConversationOverview[]
   const availability = profile?.availability ?? 'available'
   const profileCompleteness = profile
@@ -154,30 +175,94 @@ export default async function DashboardPage({
       })
     : null
 
+  const completenessPercentage = profileCompleteness?.percentage ?? 0
+
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-8">
       <div className="futcon-fade-up mx-auto max-w-7xl space-y-6">
         <FeedbackMessage message={message} error={error} />
 
-        <section className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
+        <section className="space-y-2">
+          <p className="text-sm text-muted-foreground">{m.dashboard.title}</p>
+          <h1 className="text-4xl font-bold tracking-tight">
+            {m.dashboard.welcome.replace(
+              '{name}',
+              profile?.display_name ?? m.common.unknownUser
+            )}
+          </h1>
+          <p className="max-w-3xl text-muted-foreground">
+            {m.dashboard.description}
+          </p>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl">
-                {m.dashboard.welcome.replace(
-                  '{name}',
-                  profile?.display_name ?? m.common.unknownUser
-                )}
-              </CardTitle>
-              <CardDescription>{m.dashboard.description}</CardDescription>
+              <CardTitle>{completenessPercentage}%</CardTitle>
             </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {m.dashboard.profileCompleteness}
+              </p>
+            </CardContent>
+          </Card>
 
-            <CardContent className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-lg border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">
-                    {m.dashboard.role}
+          <Card>
+            <CardHeader>
+              <CardTitle>{Number(unreadMessagesCount ?? 0)}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {m.dashboard.messagesPending}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{achievementCount ?? 0}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {m.dashboard.achievementsStat}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{reviewCount ?? 0}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {m.dashboard.reviewsReceived}
+              </p>
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <Card className="border-2">
+            <CardHeader>
+              <CardTitle>{m.dashboard.sportsProfileTitle}</CardTitle>
+              <CardDescription>
+                {m.dashboard.sportsProfileDescription}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <ProfileAvatar
+                  src={profile?.avatar_url ?? null}
+                  name={profile?.display_name ?? m.common.unknownUser}
+                  completeness={completenessPercentage}
+                  size="lg"
+                />
+
+                <div className="space-y-2">
+                  <p className="text-lg font-semibold">
+                    {profile?.display_name ?? m.common.unknownUser}
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {roles.map((item) => (
                       <span
                         key={item.role}
@@ -187,59 +272,25 @@ export default async function DashboardPage({
                       </span>
                     ))}
                   </div>
-                </div>
-
-                <div className="rounded-lg border bg-background p-4">
                   <p className="text-sm text-muted-foreground">
-                    {m.dashboard.availability}
+                    {[profile?.city, profile?.province]
+                      .filter(Boolean)
+                      .join(', ') || m.common.notSpecified}
                   </p>
                   <span
-                    className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-medium ${
+                    className={`inline-flex rounded-full border px-3 py-1 text-sm font-medium ${
                       availabilityClassNames[availability] ?? 'border bg-muted'
                     }`}
                   >
                     {formatAvailability(profile?.availability)}
                   </span>
                 </div>
-
-                <div className="rounded-lg border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">
-                    {m.dashboard.location}
-                  </p>
-                  <p className="mt-2 font-medium">
-                    {[profile?.city, profile?.province]
-                      .filter(Boolean)
-                      .join(', ') || m.common.notSpecified}
-                  </p>
-                </div>
-
-                {profileCompleteness ? (
-                  <div className="rounded-lg border bg-background p-4">
-                    <p className="text-sm text-muted-foreground">
-                      {m.dashboard.profileCompleteness}
-                    </p>
-
-                    <p className="mt-2 text-2xl font-semibold">
-                      {profileCompleteness.percentage}%
-                    </p>
-
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-primary"
-                        style={{ width: `${profileCompleteness.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                ) : null}
               </div>
 
               {profile?.bio ? (
-                <div className="rounded-lg border bg-background p-4">
-                  <p className="text-sm text-muted-foreground">
-                    {m.dashboard.biography}
-                  </p>
-                  <p className="mt-2 text-sm">{profile.bio}</p>
-                </div>
+                <p className="rounded-lg border bg-background p-4 text-sm text-muted-foreground">
+                  {profile.bio}
+                </p>
               ) : (
                 <div className="rounded-lg border bg-background p-4">
                   <p className="font-medium">{m.dashboard.completeBioTitle}</p>
@@ -249,55 +300,91 @@ export default async function DashboardPage({
                 </div>
               )}
 
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-wrap gap-2">
                 <Button asChild>
-                  <Link href="/profile/edit">{m.dashboard.editProfile}</Link>
+                  <Link href="/profile/edit">
+                    {m.dashboard.completeProfileCta}
+                  </Link>
                 </Button>
 
-                <Button asChild variant="secondary">
+                <Button asChild variant="outline">
                   <Link href="/search">{m.dashboard.searchProfiles}</Link>
                 </Button>
 
                 <Button asChild variant="outline">
-                  <Link href="/conversations">{m.dashboard.viewMessages}</Link>
+                  <Link href="/achievements">
+                    {m.dashboard.viewAchievements}
+                  </Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{m.dashboard.quickActionsTitle}</CardTitle>
-              <CardDescription>
-                {m.dashboard.quickActionsDescription}
-              </CardDescription>
-            </CardHeader>
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{m.dashboard.profileCompleteness}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{completenessPercentage}%</p>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-primary"
+                    style={{ width: `${completenessPercentage}%` }}
+                  />
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {m.dashboard.profileCompletenessHint}
+                </p>
+              </CardContent>
+            </Card>
 
-            <CardContent className="space-y-3">
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/search">{m.dashboard.exploreAvailableProfiles}</Link>
-              </Button>
-
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/profile/edit">{m.dashboard.updateAvailability}</Link>
-              </Button>
-
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link href="/conversations">{m.dashboard.checkConversations}</Link>
-              </Button>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>{m.dashboard.nextActionTitle}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {m.dashboard.nextActionCompleteProfile}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-2">
+        <section className="grid gap-4 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>{m.dashboard.latestConversations}</CardTitle>
+              <CardTitle>{m.dashboard.importantAlerts}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(unreadWarningsCount ?? 0) > 0 ||
+              Number(unreadMessagesCount ?? 0) > 0 ? (
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  {(unreadWarningsCount ?? 0) > 0 ? (
+                    <p>{m.admin.warningLabel}: {unreadWarningsCount}</p>
+                  ) : null}
+                  {Number(unreadMessagesCount ?? 0) > 0 ? (
+                    <p>
+                      {m.dashboard.messagesPending}: {Number(unreadMessagesCount)}
+                    </p>
+                  ) : null}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {m.dashboard.noImportantAlerts}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{m.dashboard.recentActivity}</CardTitle>
               <CardDescription>
                 {m.dashboard.latestConversationsDescription}
               </CardDescription>
             </CardHeader>
-
             <CardContent>
               {conversations.length > 0 ? (
                 <div className="space-y-3">
@@ -307,17 +394,12 @@ export default async function DashboardPage({
                       href={`/conversations/${conversation.conversation_id}`}
                       className="block rounded-lg border bg-background p-4 transition hover:bg-accent"
                     >
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="font-medium">
-                            {conversation.other_display_name}
-                          </p>
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            {formatRole(conversation.other_role)}
-                          </p>
-                        </div>
-                      </div>
-
+                      <p className="font-medium">
+                        {conversation.other_display_name}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {formatRole(conversation.other_role)}
+                      </p>
                       <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
                         {conversation.last_message_content ??
                           m.dashboard.conversationCreated}
@@ -333,25 +415,8 @@ export default async function DashboardPage({
                   <p className="mt-2 text-sm text-muted-foreground">
                     {m.dashboard.emptyConversationsDescription}
                   </p>
-
-                  <Button asChild className="mt-4" variant="secondary">
-                    <Link href="/search">{m.dashboard.searchProfiles}</Link>
-                  </Button>
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{m.dashboard.sprintTitle}</CardTitle>
-              <CardDescription>{m.dashboard.sprintDescription}</CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              {m.dashboard.sprintItems.map((item) => (
-                <p key={item}>{item}</p>
-              ))}
             </CardContent>
           </Card>
         </section>

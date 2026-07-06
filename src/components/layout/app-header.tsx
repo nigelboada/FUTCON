@@ -1,18 +1,15 @@
+import Image from 'next/image'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { signOut } from '@/app/(auth)/actions'
 import { Button } from '@/components/ui/button'
-
-import { getLocale } from '@/lib/i18n/server'
-import { getMessages } from '@/lib/i18n/messages'
-import { getTheme } from '@/lib/theme/server'
 import { LanguageSwitcher } from '@/components/layout/language-switcher'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
-
 import { UserMenu } from '@/components/layout/user-menu'
-
-import Image from 'next/image'
-import { signOut } from '@/app/(auth)/actions'
+import { getMessages } from '@/lib/i18n/messages'
+import { getLocale } from '@/lib/i18n/server'
 import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
+import { createClient } from '@/lib/supabase/server'
+import { getTheme } from '@/lib/theme/server'
 
 export async function AppHeader() {
   const supabase = await createClient()
@@ -56,6 +53,10 @@ export async function AppHeader() {
         .eq('profile_id', user.id)
         .is('read_at', null)
     : { count: 0 }
+
+  const { data: unreadMessagesCount } = user
+    ? await supabase.rpc('get_unread_message_count')
+    : { data: 0 }
 
   const displayName = profile?.display_name ?? user?.email ?? m.common.unknownUser
 
@@ -101,23 +102,36 @@ export async function AppHeader() {
         <nav className="flex flex-wrap items-center gap-2">
           {user ? (
             <>
-              {privateNavItems.map((item) => (
-                <Button
-                  key={item.href}
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="relative transition hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm"
-                >
-                  <Link href={item.href}>
-                    {item.label}
+              {privateNavItems.map((item) => {
+                const hasUnreadMessages =
+                  item.href === '/conversations' &&
+                  Number(unreadMessagesCount ?? 0) > 0
 
-                    {item.href === '/conversations' && unreadWarningsCount ? (
-                      <span className="ml-2 text-destructive">⚠️</span>
-                    ) : null}
-                  </Link>
-                </Button>
-              ))}
+                const hasUnreadWarnings =
+                  item.href === '/conversations' && Boolean(unreadWarningsCount)
+
+                return (
+                  <Button
+                    key={item.href}
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="relative transition hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm"
+                  >
+                    <Link href={item.href}>
+                      {item.label}
+
+                      {hasUnreadWarnings ? (
+                        <span className="ml-2 text-destructive">??</span>
+                      ) : null}
+
+                      {hasUnreadMessages ? (
+                        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border border-background bg-emerald-700" />
+                      ) : null}
+                    </Link>
+                  </Button>
+                )
+              })}
 
               <UserMenu
                 displayName={displayName}
@@ -134,6 +148,7 @@ export async function AppHeader() {
                   achievements: m.achievements.menu,
                   editProfile: m.nav.editProfile,
                   signOut: m.nav.signOut,
+                  signOutConfirm: m.nav.signOutConfirm,
                   theme: m.theme,
                 }}
               />

@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { getLocale } from '@/lib/i18n/server'
 import { getMessages } from '@/lib/i18n/messages'
 import { requireActiveUser } from '@/lib/auth/guards'
+import { awardAchievement } from '@/lib/achievements/award'
 
 type SearchPageProps = {
   searchParams: Promise<{
@@ -52,7 +53,8 @@ function normalizeParam(value: string | undefined) {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams
-  const { supabase } = await requireActiveUser()
+  const { supabase, user } = await requireActiveUser()
+  await awardAchievement(supabase, 'search_explorer', user.id)
 
   const locale = await getLocale()
   const m = getMessages(locale)

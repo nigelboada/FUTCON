@@ -1,9 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { banUser, sendAdminWarning, unbanUser } from './actions'
-import { getLocale } from '@/lib/i18n/server'
-import { getMessages } from '@/lib/i18n/messages'
-import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +12,9 @@ import {
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { requireActiveUser } from '@/lib/auth/guards'
+import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
+import { getMessages } from '@/lib/i18n/messages'
+import { getLocale } from '@/lib/i18n/server'
 
 type AdminPageProps = {
   searchParams: Promise<{
@@ -40,16 +40,17 @@ type AdminWarning = {
     | null
 }
 
-const moderationReasons = [
-  'Nom inapropiat',
-  'Activitat sospitosa',
-  'Ús abusiu de missatges',
-  'Contingut ofensiu',
-  'Possible perfil fals',
-  'Falta d’activitat',
-  'Incompliment de condicions d’ús',
-  'Altres',
-]
+const moderationReasonKeys = [
+  'inappropriate_name',
+  'suspicious_activity',
+  'abusive_messages',
+  'offensive_content',
+  'fake_profile',
+  'inactivity',
+  'terms_violation',
+  'spam',
+  'other',
+] as const
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const params = await searchParams
@@ -71,7 +72,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   const { data: warnings } = await supabase
     .from('admin_warnings')
-    .select(`
+    .select(
+      `
       id,
       profile_id,
       reason,
@@ -81,7 +83,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       profile:profiles (
         display_name
       )
-    `)
+    `
+    )
     .order('created_at', { ascending: false })
     .limit(20)
 
@@ -94,7 +97,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     <main className="min-h-screen bg-muted/50 px-4 py-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <section className="space-y-2">
-          <p className="text-sm text-muted-foreground">Administració</p>
+          <p className="text-sm text-muted-foreground">{m.admin.eyebrow}</p>
           <h1 className="text-3xl font-bold tracking-tight">
             Panell de moderació
           </h1>
@@ -131,7 +134,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               <CardTitle>{adminWarnings.length}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Advertències recents</p>
+              <p className="text-sm text-muted-foreground">
+                Advertències recents
+              </p>
             </CardContent>
           </Card>
         </section>
@@ -147,8 +152,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <div>
                       <CardTitle>{profile.display_name}</CardTitle>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {[profile.city, profile.province].filter(Boolean).join(', ') ||
-                          'Ubicació no indicada'}
+                        {[profile.city, profile.province]
+                          .filter(Boolean)
+                          .join(', ') || m.common.locationNotSpecified}
                       </p>
 
                       {profile.is_banned ? (
@@ -160,14 +166,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/profile/${profile.id}`}>
-                        Veure perfil
+                        {m.common.viewProfile}
                       </Link>
                     </Button>
                   </div>
                 </CardHeader>
 
                 <CardContent className="grid gap-4 lg:grid-cols-2">
-                  <form action={sendAdminWarning} className="space-y-3 rounded-xl border p-4">
+                  <form
+                    action={sendAdminWarning}
+                    className="space-y-3 rounded-xl border p-4"
+                  >
                     <input type="hidden" name="profileId" value={profile.id} />
 
                     <div className="space-y-2">
@@ -178,9 +187,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         required
                       >
                         <option value="">Selecciona un motiu</option>
-                        {moderationReasons.map((reason) => (
-                          <option key={reason} value={reason}>
-                            {reason}
+                        {moderationReasonKeys.map((reasonKey) => (
+                          <option key={reasonKey} value={reasonKey}>
+                            {m.admin.warningReasons[reasonKey]}
                           </option>
                         ))}
                       </select>
@@ -217,9 +226,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             required
                           >
                             <option value="">Selecciona un motiu</option>
-                            {moderationReasons.map((reason) => (
-                              <option key={reason} value={reason}>
-                                {reason}
+                            {moderationReasonKeys.map((reasonKey) => (
+                              <option key={reasonKey} value={reasonKey}>
+                                {m.admin.warningReasons[reasonKey]}
                               </option>
                             ))}
                           </select>
@@ -255,7 +264,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         : warning.profile?.display_name}
                     </p>
                     <p className="mt-1 text-sm text-destructive">
-                      {warning.reason}
+                      {m.admin.warningReasons[
+                        warning.reason as keyof typeof m.admin.warningReasons
+                      ] ?? warning.reason}
                     </p>
                     <p className="mt-2 text-sm text-muted-foreground">
                       {warning.message}

@@ -30,13 +30,13 @@ const positions = [
 const actionRoutes: Record<string, string> = {
   welcome: '/dashboard',
   profile_25: '/profile/edit',
-  profile_50: '/profile/edit',
-  profile_100: '/profile/edit',
   avatar_uploaded: '/profile/edit#profile-avatar',
+  profile_50: '/profile/edit',
+  search_explorer: '/search',
   first_message: '/conversations',
   first_review: '/search',
-  verified_request: '/profile/edit',
-  verified_profile: '/profile/edit',
+  achievement_explorer: '/achievements',
+  profile_100: '/profile/edit',
 }
 
 function iconFromKey(iconKey: string) {
@@ -51,6 +51,10 @@ function iconFromKey(iconKey: string) {
       return '👟'
     case 'chart':
       return '📈'
+    case 'search':
+      return '🔎'
+    case 'map':
+      return '🗺️'
     case 'trophy':
     case 'cup':
       return '🏆'

@@ -61,6 +61,15 @@ export default async function ConversationPage({
     notFound()
   }
 
+  await supabase
+    .from('messages')
+    .update({
+      read_at: new Date().toISOString(),
+    })
+    .eq('conversation_id', id)
+    .neq('sender_profile_id', user.id)
+    .is('read_at', null)
+
   const otherParticipant = participants.find(
     (participant) => participant.profile_id !== user.id
   )
@@ -84,11 +93,7 @@ export default async function ConversationPage({
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-8">
       <div className="futcon-fade-up mx-auto max-w-5xl space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <Button asChild variant="outline">
-            <Link href="/conversations">{m.conversations.backToMessages}</Link>
-          </Button>
-
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <Button asChild variant="secondary">
             <Link href="/search">{m.common.searchProfiles}</Link>
           </Button>

@@ -92,6 +92,10 @@ const availabilityClassNames: Record<string, string> = {
 }
 
 function iconFromKey(iconKey: string) {
+  if (iconKey === 'search') return '🔎'
+  if (iconKey === 'map') return '🗺️'
+  if (iconKey === 'cup') return '🏆'
+
   switch (iconKey) {
     case 'ball':
       return '⚽'
@@ -103,6 +107,10 @@ function iconFromKey(iconKey: string) {
       return '👟'
     case 'chart':
       return '📈'
+    case 'search':
+      return '🔎'
+    case 'map':
+      return '🗺️'
     case 'trophy':
       return '🏆'
     case 'player':
@@ -402,12 +410,6 @@ export default async function PublicProfilePage({
   return (
     <main className="min-h-screen bg-muted px-4 py-8">
       <div className="mx-auto max-w-4xl space-y-6">
-        <div>
-          <Link href="/search" className="text-sm text-muted-foreground underline">
-            {m.common.backToSearch}
-          </Link>
-        </div>
-
         <Card>
           <CardHeader className="space-y-4">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">

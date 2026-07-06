@@ -29,7 +29,12 @@ export function MessageComposer({
   }
 
   return (
-    <form ref={formRef} action={action} className="space-y-3 border-t pt-4">
+    <form
+      ref={formRef}
+      action={action}
+      data-no-loading="true"
+      className="space-y-3 border-t pt-4"
+    >
       <input type="hidden" name="conversationId" value={conversationId} />
 
       <Textarea

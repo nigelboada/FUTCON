@@ -1,28 +1,68 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+
+const historyKey = 'futcon-route-history'
+
+function getCurrentPath(pathname: string, searchParams: URLSearchParams) {
+  const query = searchParams.toString()
+  return query ? `${pathname}?${query}` : pathname
+}
+
+function readHistory() {
+  try {
+    return JSON.parse(sessionStorage.getItem(historyKey) ?? '[]') as string[]
+  } catch {
+    return []
+  }
+}
+
+function writeHistory(history: string[]) {
+  sessionStorage.setItem(historyKey, JSON.stringify(history.slice(-20)))
+}
 
 export function GlobalBackButton() {
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
-  if (pathname === '/') return null
+  const currentPath = getCurrentPath(pathname, searchParams)
+
+  useEffect(() => {
+    const history = readHistory()
+    const lastPath = history[history.length - 1]
+
+    if (lastPath !== currentPath) {
+      writeHistory([...history, currentPath])
+    }
+  }, [currentPath])
 
   function goBack() {
-    if (
-      document.referrer &&
-      new URL(document.referrer).origin === window.location.origin
-    ) {
-      router.back()
-      return
+    const history = readHistory()
+
+    if (history.length > 1) {
+      history.pop()
+      const previousPath = history.pop()
+
+      writeHistory(history)
+
+      if (previousPath) {
+        router.push(previousPath)
+        return
+      }
     }
 
     router.push('/')
   }
 
+  if (pathname === '/') {
+    return null
+  }
+
   return (
-    <div className="border-b bg-background/80 px-4 py-2 backdrop-blur">
+    <div className="bg-muted/50 px-4 pt-3">
       <div className="mx-auto flex max-w-7xl justify-start">
         <Button
           type="button"

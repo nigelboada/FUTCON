@@ -86,10 +86,6 @@ export default async function ConversationsPage({
               {m.conversations.description}
             </p>
           </div>
-
-          <Button asChild variant="outline">
-            <Link href="/search">{m.common.searchProfiles}</Link>
-          </Button>
         </div>
 
         {error ? (

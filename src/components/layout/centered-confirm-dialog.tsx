@@ -34,7 +34,7 @@ export function CenteredConfirmDialog({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex min-h-dvh items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-9999 flex min-h-dvh items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-3xl border bg-background p-6 text-center shadow-2xl">
         {icon ? (
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-muted text-foreground">

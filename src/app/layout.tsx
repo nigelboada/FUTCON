@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AppHeader } from '@/components/layout/app-header'
 
 import { getLocale } from '@/lib/i18n/server'
+import { getMessages } from '@/lib/i18n/messages'
 import { getTheme } from '@/lib/theme/server'
 
 import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register'
@@ -58,6 +59,7 @@ export default async function RootLayout({
 }>) {
   const theme = await getTheme()
   const locale = await getLocale()
+  const m = getMessages(locale)
 
   return (
     <html lang={locale} className={theme === 'dark' ? 'dark' : undefined}>
@@ -65,7 +67,7 @@ export default async function RootLayout({
         <AppHeader />
         <div className="min-h-screen bg-muted/50">
           <AppRealtimeRefreshGate />
-          <GlobalBackButton />
+          <GlobalBackButton label={m.common.back} />
           <AppCompletenessBanner />
           <AchievementPopupGate />
           {children}

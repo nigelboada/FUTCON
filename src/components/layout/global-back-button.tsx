@@ -23,7 +23,11 @@ function writeHistory(history: string[]) {
   sessionStorage.setItem(historyKey, JSON.stringify(history.slice(-20)))
 }
 
-export function GlobalBackButton() {
+type GlobalBackButtonProps = {
+  label: string
+}
+
+export function GlobalBackButton({ label }: GlobalBackButtonProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -71,7 +75,7 @@ export function GlobalBackButton() {
           onClick={goBack}
           className="transition hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm"
         >
-          Tornar
+          {label}
         </Button>
       </div>
     </div>

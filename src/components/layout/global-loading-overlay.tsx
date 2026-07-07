@@ -104,7 +104,7 @@ export function GlobalLoadingOverlay() {
   }
 
   return (
-    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/65 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/65 backdrop-blur-[2px]">
       <div className="flex flex-col items-center gap-3">
         <div className="futcon-ball-loader">{'\u26bd'}</div>
         <div className="h-px w-36 bg-black" />

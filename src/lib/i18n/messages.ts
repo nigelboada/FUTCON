@@ -525,6 +525,9 @@ const ca = {
     "markAsRead": "Marcar com a llegida",
     "markAsUnread": "Marcar com a no llegida",
     "deleteFromInbox": "Eliminar de la safata",
+    "deleteConfirmTitle": "Eliminar conversa",
+    "deleteConfirmDescription": "Aquesta conversa s’eliminarà de la teva safata. Si l’altra persona torna a escriure, reapareixerà.",
+    "deleteConfirm": "Eliminar conversa",
     "emptyThread": "Encara no hi ha missatges. Escriu el primer missatge per iniciar la conversa."
   },
   "admin": {
@@ -1153,6 +1156,9 @@ const es: Messages = {
     "markAsRead": "Marcar como leída",
     "markAsUnread": "Marcar como no leída",
     "deleteFromInbox": "Eliminar de la bandeja",
+    "deleteConfirmTitle": "Eliminar conversación",
+    "deleteConfirmDescription": "Esta conversación se eliminará de tu bandeja. Si la otra persona vuelve a escribir, reaparecerá.",
+    "deleteConfirm": "Eliminar conversación",
     "emptyThread": "Todavía no hay mensajes. Escribe el primer mensaje para iniciar la conversación."
   },
   "admin": {
@@ -1771,6 +1777,9 @@ const en: Messages = {
     "markAsRead": "Mark as read",
     "markAsUnread": "Mark as unread",
     "deleteFromInbox": "Remove from inbox",
+    "deleteConfirmTitle": "Remove conversation",
+    "deleteConfirmDescription": "This conversation will be removed from your inbox. If the other person writes again, it will reappear.",
+    "deleteConfirm": "Remove conversation",
     "emptyThread": "There are no messages yet. Write the first message to start the conversation."
   },
   "admin": {

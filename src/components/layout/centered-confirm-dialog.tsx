@@ -14,6 +14,7 @@ type CenteredConfirmDialogProps = {
   icon?: ReactNode
   onCancel: () => void
   confirmAction: (formData: FormData) => void | Promise<void>
+  hiddenFields?: Record<string, string>
 }
 
 export function CenteredConfirmDialog({
@@ -26,6 +27,7 @@ export function CenteredConfirmDialog({
   icon,
   onCancel,
   confirmAction,
+  hiddenFields,
 }: CenteredConfirmDialogProps) {
   const portalRoot = typeof document === 'undefined' ? null : document.body
 
@@ -34,7 +36,7 @@ export function CenteredConfirmDialog({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-9999 flex min-h-dvh items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] flex min-h-dvh items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-3xl border bg-background p-6 text-center shadow-2xl">
         {icon ? (
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-muted text-foreground">
@@ -60,6 +62,12 @@ export function CenteredConfirmDialog({
           </Button>
 
           <form action={confirmAction}>
+            {hiddenFields
+              ? Object.entries(hiddenFields).map(([name, value]) => (
+                  <input key={name} type="hidden" name={name} value={value} />
+                ))
+              : null}
+
             <Button
               type="submit"
               variant={variant === 'destructive' ? 'destructive' : 'default'}

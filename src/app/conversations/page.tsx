@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { Trash2 } from 'lucide-react'
 import {
   hideConversation,
   markConversationAsRead,
   markConversationAsUnread,
 } from './conversation-actions'
 import { markWarningAsRead } from './warning-actions'
+import { DeleteConversationButton } from '@/components/conversations/delete-conversation-button'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -226,22 +226,17 @@ export default async function ConversationsPage({
                         </form>
                       )}
 
-                      <form action={hideConversation}>
-                        <input
-                          type="hidden"
-                          name="conversationId"
-                          value={conversation.conversation_id}
-                        />
-
-                        <Button
-                          type="submit"
-                          variant="outline"
-                          className="w-full text-destructive hover:bg-destructive/10 lg:w-40"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          {m.conversations.deleteFromInbox}
-                        </Button>
-                      </form>
+                      <DeleteConversationButton
+                        conversationId={conversation.conversation_id}
+                        action={hideConversation}
+                        labels={{
+                          trigger: m.conversations.deleteFromInbox,
+                          title: m.conversations.deleteConfirmTitle,
+                          description: m.conversations.deleteConfirmDescription,
+                          cancel: m.common.cancel,
+                          confirm: m.conversations.deleteConfirm,
+                        }}
+                      />
                     </div>
                   </div>
                 </CardContent>

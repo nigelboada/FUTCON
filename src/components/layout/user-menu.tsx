@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { CenteredConfirmDialog } from '@/components/layout/centered-confirm-dialog'
 import { LanguageSwitcher } from '@/components/layout/language-switcher'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { ProfileAvatar } from '@/components/profiles/profile-avatar'
@@ -140,9 +142,7 @@ export function UserMenu({
                 type="button"
                 variant="outline"
                 size="sm"
-                className={`w-full justify-center ${
-                  isAdmin ? '' : 'sm:col-span-2'
-                }`}
+                className="w-full justify-center"
                 onClick={() => setIsSignOutOpen(true)}
               >
                 {labels.signOut}
@@ -152,31 +152,16 @@ export function UserMenu({
         </div>
       ) : null}
 
-      {isSignOutOpen ? (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl border bg-background p-6 text-center shadow-2xl">
-            <h2 className="text-2xl font-bold">{labels.signOut}</h2>
-
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              {labels.signOutConfirm}
-            </p>
-
-            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsSignOutOpen(false)}
-              >
-                {labels.cancel}
-              </Button>
-
-              <form action={signOutAction}>
-                <Button type="submit">{labels.signOut}</Button>
-              </form>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <CenteredConfirmDialog
+        open={isSignOutOpen}
+        title={labels.signOut}
+        description={labels.signOutConfirm}
+        cancelLabel={labels.cancel}
+        confirmLabel={labels.signOut}
+        confirmAction={signOutAction}
+        icon={<LogOut className="h-7 w-7" />}
+        onCancel={() => setIsSignOutOpen(false)}
+      />
     </div>
   )
 }

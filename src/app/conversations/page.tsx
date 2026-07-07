@@ -8,7 +8,7 @@ import {
 import { markWarningAsRead } from './warning-actions'
 import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { requireActiveUser } from '@/lib/auth/guards'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 import { getMessages } from '@/lib/i18n/messages'
@@ -153,63 +153,46 @@ export default async function ConversationsPage({
                     : ''
                 }
               >
-                <CardHeader>
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0">
-                      <CardTitle className="truncate text-xl">
-                        {conversation.other_display_name}
-                      </CardTitle>
+                <CardContent className="p-4">
+                  <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                    <div className="min-w-0 space-y-3">
+                      <div>
+                        <h2 className="truncate text-xl font-semibold">
+                          {conversation.other_display_name}
+                        </h2>
 
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {conversation.other_role
-                          ? m.roles[
-                              conversation.other_role as keyof typeof m.roles
-                            ] ?? conversation.other_role
-                          : m.common.roleNotSpecified}
-                        {' \u00b7 '}
-                        {[conversation.other_city, conversation.other_province]
-                          .filter(Boolean)
-                          .join(', ') || m.common.locationNotSpecified}
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {conversation.other_role
+                            ? m.roles[
+                                conversation.other_role as keyof typeof m.roles
+                              ] ?? conversation.other_role
+                            : m.common.roleNotSpecified}
+                          {' \u00b7 '}
+                          {[
+                            conversation.other_city,
+                            conversation.other_province,
+                          ]
+                            .filter(Boolean)
+                            .join(', ') || m.common.locationNotSpecified}
+                        </p>
+                      </div>
+
+                      <p className="line-clamp-2 text-sm">
+                        {conversation.last_message_content ??
+                          m.conversations.noConversationMessages}
+                      </p>
+
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(
+                          conversation.last_message_at,
+                          m.localeTag,
+                          m.common.noMessages
+                        )}
                       </p>
                     </div>
 
-                    <form action={hideConversation}>
-                      <input
-                        type="hidden"
-                        name="conversationId"
-                        value={conversation.conversation_id}
-                      />
-
-                      <Button
-                        type="submit"
-                        variant="outline"
-                        size="icon"
-                        className="shrink-0 text-destructive hover:bg-destructive/10"
-                        title={m.conversations.deleteFromInbox}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </form>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <p className="text-sm">
-                    {conversation.last_message_content ??
-                      m.conversations.noConversationMessages}
-                  </p>
-
-                  <p className="text-xs text-muted-foreground">
-                    {formatDate(
-                      conversation.last_message_at,
-                      m.localeTag,
-                      m.common.noMessages
-                    )}
-                  </p>
-
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <Button asChild className="w-full sm:w-auto">
+                    <div className="flex flex-col gap-2 sm:flex-row lg:flex-col lg:items-stretch">
+                      <Button asChild className="w-full lg:w-40">
                         <Link href={`/conversations/${conversation.conversation_id}`}>
                           {m.conversations.openConversation}
                         </Link>
@@ -225,7 +208,7 @@ export default async function ConversationsPage({
                           <Button
                             type="submit"
                             variant="outline"
-                            className="w-full sm:w-auto"
+                            className="w-full lg:w-40"
                           >
                             {m.conversations.markAsRead}
                           </Button>
@@ -240,12 +223,29 @@ export default async function ConversationsPage({
                           <Button
                             type="submit"
                             variant="outline"
-                            className="w-full sm:w-auto"
+                            className="w-full lg:w-40"
                           >
                             {m.conversations.markAsUnread}
                           </Button>
                         </form>
                       )}
+
+                      <form action={hideConversation}>
+                        <input
+                          type="hidden"
+                          name="conversationId"
+                          value={conversation.conversation_id}
+                        />
+
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          className="w-full text-destructive hover:bg-destructive/10 lg:w-40"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          {m.conversations.deleteFromInbox}
+                        </Button>
+                      </form>
                     </div>
                   </div>
                 </CardContent>

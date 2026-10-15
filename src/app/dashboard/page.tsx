@@ -94,7 +94,7 @@ export default async function DashboardPage({
     primaryRole === 'player'
       ? await supabase
           .from('player_profiles')
-          .select('position, category, current_club')
+          .select('position, category, current_club, modality, division_level')
           .eq('profile_id', user.id)
           .maybeSingle()
       : { data: null }
@@ -103,7 +103,7 @@ export default async function DashboardPage({
     primaryRole === 'coach'
       ? await supabase
           .from('coach_profiles')
-          .select('category, current_club, coaching_license')
+          .select('category, current_club, coaching_license, modality, division_level')
           .eq('profile_id', user.id)
           .maybeSingle()
       : { data: null }
@@ -112,7 +112,7 @@ export default async function DashboardPage({
     primaryRole === 'club'
       ? await supabase
           .from('club_profiles')
-          .select('club_name, category')
+          .select('club_name, category, modality, division_level')
           .eq('profile_id', user.id)
           .maybeSingle()
       : { data: null }
@@ -164,11 +164,17 @@ export default async function DashboardPage({
         player_position: playerProfile?.position ?? null,
         player_category: playerProfile?.category ?? null,
         player_current_club: playerProfile?.current_club ?? null,
+        player_modality: playerProfile?.modality ?? null,
+        player_division_level: playerProfile?.division_level ?? null,
         coach_category: coachProfile?.category ?? null,
         coach_current_club: coachProfile?.current_club ?? null,
         coaching_license: coachProfile?.coaching_license ?? null,
+        coach_modality: coachProfile?.modality ?? null,
+        coach_division_level: coachProfile?.division_level ?? null,
         club_name: clubProfile?.club_name ?? null,
         club_category: clubProfile?.category ?? null,
+        club_modality: clubProfile?.modality ?? null,
+        club_division_level: clubProfile?.division_level ?? null,
         staff_kind: staffProfile?.staff_kind ?? null,
         staff_services: staffProfile?.services ?? null,
         price_range: staffProfile?.price_range ?? null,

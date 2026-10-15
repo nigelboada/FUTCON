@@ -24,23 +24,6 @@ type AdminPageProps = {
   }>
 }
 
-type AdminWarning = {
-  id: string
-  profile_id: string
-  reason: string
-  message: string
-  read_at: string | null
-  created_at: string
-  profile:
-    | {
-        display_name: string | null
-      }
-    | {
-        display_name: string | null
-      }[]
-    | null
-}
-
 const moderationReasonKeys = [
   'inappropriate_name',
   'suspicious_activity',
@@ -84,26 +67,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   }
 
   const { data: profiles } = await profilesQuery
-
-  const { data: warnings } = await supabase
-    .from('admin_warnings')
-    .select(
-      `
-      id,
-      profile_id,
-      reason,
-      message,
-      read_at,
-      created_at,
-      profile:profiles (
-        display_name
-      )
-    `
-    )
-    .order('created_at', { ascending: false })
-    .limit(20)
-
-  const adminWarnings = (warnings ?? []) as AdminWarning[]
 
   const message = resolveFeedbackMessage(params.message, m.feedback)
   const error = resolveFeedbackMessage(params.error, m.feedback)

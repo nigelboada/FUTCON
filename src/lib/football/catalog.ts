@@ -133,3 +133,15 @@ export function getLocalizedLabel(
 ) {
   return item.labels[locale] ?? item.labels.ca
 }
+
+export function getModalityLabel(value: string | null | undefined, locale: Locale) {
+  const item = footballModalities.find((modality) => modality.value === value)
+
+  return item ? getLocalizedLabel(item, locale) : value ?? null
+}
+
+export function getCategoryLabel(value: string | null | undefined, locale: Locale) {
+  const item = footballCategories.find((category) => category.value === value)
+
+  return item ? getLocalizedLabel(item, locale) : value ?? null
+}

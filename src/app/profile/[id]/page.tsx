@@ -20,6 +20,8 @@ import { AchievementBadges } from '@/components/achievements/achievement-badges'
 import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 import { notFound } from 'next/navigation'
 import { requireActiveUser } from '@/lib/auth/guards'
+import { getCategoryLabel, getModalityLabel } from '@/lib/football/catalog'
+import type { Locale } from '@/lib/i18n/config'
 
 type PublicProfilePageProps = {
   params: Promise<{
@@ -164,9 +166,11 @@ function ProfileInfoRow({
 function RoleSpecificInfo({
   profile,
   labels,
+  locale,
 }: {
   profile: PublicProfile
   labels: PublicProfileLabels
+  locale: Locale
 }) {
   const p = labels.profile
 
@@ -183,10 +187,10 @@ function RoleSpecificInfo({
         <div className="grid gap-4 md:grid-cols-2">
           <ProfileInfoRow
             label={labels.profileEdit.modality}
-            value={profile.player_modality}
+            value={getModalityLabel(profile.player_modality, locale)}
           />
           <ProfileInfoRow label={p.position} value={profile.player_position} />
-          <ProfileInfoRow label={p.category} value={profile.player_category} />
+          <ProfileInfoRow label={p.category} value={getCategoryLabel(profile.player_category, locale)} />
           <ProfileInfoRow
             label={labels.profileEdit.division}
             value={profile.player_division_level}
@@ -213,9 +217,9 @@ function RoleSpecificInfo({
         <div className="grid gap-4 md:grid-cols-2">
           <ProfileInfoRow
             label={labels.profileEdit.modality}
-            value={profile.coach_modality}
+            value={getModalityLabel(profile.coach_modality, locale)}
           />
-          <ProfileInfoRow label={p.category} value={profile.coach_category} />
+          <ProfileInfoRow label={p.category} value={getCategoryLabel(profile.coach_category, locale)} />
           <ProfileInfoRow
             label={labels.profileEdit.division}
             value={profile.coach_division_level}
@@ -244,9 +248,9 @@ function RoleSpecificInfo({
           <ProfileInfoRow label={p.clubName} value={profile.club_name} />
           <ProfileInfoRow
             label={labels.profileEdit.modality}
-            value={profile.club_modality}
+            value={getModalityLabel(profile.club_modality, locale)}
           />
-          <ProfileInfoRow label={p.category} value={profile.club_category} />
+          <ProfileInfoRow label={p.category} value={getCategoryLabel(profile.club_category, locale)} />
           <ProfileInfoRow
             label={labels.profileEdit.division}
             value={profile.club_division_level}
@@ -488,7 +492,7 @@ export default async function PublicProfilePage({
 
             {profiles.map((item) => (
               <div key={`${item.profile_id}-${item.role}`}>
-                <RoleSpecificInfo profile={item} labels={labels} />
+                <RoleSpecificInfo profile={item} labels={labels} locale={locale} />
               </div>
             ))}
 

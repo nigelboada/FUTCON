@@ -62,8 +62,11 @@ export default async function RootLayout({
   const m = getMessages(locale)
 
   return (
-    <html lang={locale} className={theme === 'dark' ? 'dark' : undefined}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html
+      lang={locale}
+      className={`${geistSans.variable} ${geistMono.variable}${theme === 'dark' ? ' dark' : ''}`}
+    >
+      <body className="antialiased">
         <AppHeader />
         <div className="min-h-screen bg-muted/50">
           <AppRealtimeRefreshGate />

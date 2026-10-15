@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { calculateProfileCompleteness } from '@/lib/profiles/completeness'
 import { ProfileAvatar } from './profile-avatar'
+import { getCategoryLabel } from '@/lib/football/catalog'
+import type { Locale } from '@/lib/i18n/config'
 
 type ProfileCardLabels = {
   roles: Record<string, string>
@@ -54,6 +56,7 @@ type ProfileCardProps = {
     average_rating: number | string | null
   }
   labels: ProfileCardLabels
+  locale: Locale
 }
 
 const availabilityClassNames: Record<string, string> = {
@@ -76,11 +79,11 @@ function formatAverageRating(value: number | string | null) {
   return parsed.toFixed(1)
 }
 
-function getRoleDetail(profile: ProfileCardProps['profile']) {
+function getRoleDetail(profile: ProfileCardProps['profile'], locale: Locale) {
   if (profile.role === 'player') {
     return [
       profile.player_position,
-      profile.player_category,
+      getCategoryLabel(profile.player_category, locale),
       profile.player_current_club,
     ]
       .filter(Boolean)
@@ -89,7 +92,7 @@ function getRoleDetail(profile: ProfileCardProps['profile']) {
 
   if (profile.role === 'coach') {
     return [
-      profile.coach_category,
+      getCategoryLabel(profile.coach_category, locale),
       profile.coach_current_club,
       profile.coaching_license,
     ]
@@ -98,7 +101,7 @@ function getRoleDetail(profile: ProfileCardProps['profile']) {
   }
 
   if (profile.role === 'club') {
-    return [profile.club_name, profile.club_category].filter(Boolean).join(' · ')
+    return [profile.club_name, getCategoryLabel(profile.club_category, locale)].filter(Boolean).join(' · ')
   }
 
   if (profile.role === 'staff') {
@@ -108,9 +111,9 @@ function getRoleDetail(profile: ProfileCardProps['profile']) {
   return ''
 }
 
-export function ProfileCard({ profile, labels }: ProfileCardProps) {
+export function ProfileCard({ profile, labels, locale }: ProfileCardProps) {
   const availability = profile.availability ?? 'available'
-  const roleDetail = getRoleDetail(profile)
+  const roleDetail = getRoleDetail(profile, locale)
   const averageRating = formatAverageRating(profile.average_rating)
   const reviewCount = profile.review_count ?? 0
   const completeness = calculateProfileCompleteness(profile).percentage

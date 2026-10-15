@@ -219,6 +219,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   key={`${profile.profile_id}-${profile.role}`}
                   profile={profile}
                   labels={profileCardLabels}
+                  locale={locale}
                 />
               ))}
             </div>

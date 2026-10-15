@@ -6,6 +6,10 @@ export const defaultLocale: Locale = 'ca'
 
 export const localeCookieName = 'futcon-locale'
 
+// Dates are formatted on the server (UTC on Vercel) and in the browser, so both
+// must use the same zone to show the right time and avoid hydration mismatches.
+export const appTimeZone = 'Europe/Madrid'
+
 export const localeLabels: Record<Locale, string> = {
   ca: 'Català',
   es: 'Español',

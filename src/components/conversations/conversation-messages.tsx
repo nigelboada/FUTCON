@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { markConversationAsViewed } from '@/app/conversations/conversation-actions'
+import { appTimeZone } from '@/lib/i18n/config'
 import { createClient } from '@/lib/supabase/client'
 
 type Message = {
@@ -29,6 +30,7 @@ function formatDate(value: string, localeTag: string) {
     minute: '2-digit',
     day: '2-digit',
     month: '2-digit',
+    timeZone: appTimeZone,
   }).format(new Date(value))
 }
 

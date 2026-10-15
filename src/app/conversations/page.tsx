@@ -10,6 +10,7 @@ import { FeedbackMessage } from '@/components/layout/feedback-message'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { requireActiveUser } from '@/lib/auth/guards'
+import { appTimeZone } from '@/lib/i18n/config'
 import { resolveFeedbackMessage } from '@/lib/i18n/feedback'
 import { getMessages } from '@/lib/i18n/messages'
 import { getLocale } from '@/lib/i18n/server'
@@ -47,6 +48,7 @@ function formatDate(value: string | null, localeTag: string, fallback: string) {
     month: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: appTimeZone,
   }).format(new Date(value))
 }
 

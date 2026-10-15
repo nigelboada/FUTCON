@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { signIn, signInWithGoogle } from '../actions'
+import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -25,6 +27,17 @@ type LoginPageProps = {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // Errors like profile_load_failed are sent here with an active session, so only
+  // skip the form when there is nothing to show.
+  if (user && !params.error) {
+    redirect('/dashboard')
+  }
+
   const locale = await getLocale()
   const m = getMessages(locale)
   const message = resolveFeedbackMessage(params.message, m.feedback)

@@ -21,9 +21,13 @@ export default async function BannedPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('banned_reason, banned_at')
+    .select('is_banned, banned_reason, banned_at')
     .eq('id', user.id)
     .single()
+
+  if (!profile?.is_banned) {
+    redirect('/dashboard')
+  }
 
   return (
     <main className="min-h-screen bg-muted/50 px-4 py-12">

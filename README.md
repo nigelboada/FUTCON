@@ -52,7 +52,7 @@ Per provar l'aplicació sense registrar-te:
 | Framework | [Next.js 16](https://nextjs.org) (App Router, Server Components, Server Actions) |
 | UI | React 19, TypeScript, Tailwind CSS 4, components de [shadcn/ui](https://ui.shadcn.com) (Radix UI), Lucide |
 | Backend | [Supabase](https://supabase.com): PostgreSQL, Auth, Realtime i Storage |
-| Seguretat | Row Level Security (RLS) a PostgreSQL i funcions RPC per a les operacions sensibles |
+| Seguretat | Row Level Security (RLS), permisos d'actualització per columna i funcions RPC per a les operacions sensibles |
 | Desplegament | Vercel |
 
 ## Estructura
@@ -63,11 +63,13 @@ src/
 ├── components/   # Components per domini: profiles, conversations, achievements, layout, ui…
 ├── lib/          # Lògica compartida: clients de Supabase, i18n, assoliments, completesa del perfil…
 └── proxy.ts      # Refresc de la sessió de Supabase a cada petició
+supabase/
+└── schema.sql    # Esquema de la base de dades: taules, vistes, funcions, triggers i polítiques RLS
 ```
 
 ## Execució en local
 
-Requisits: Node.js 20 o superior, [pnpm](https://pnpm.io) i un projecte de Supabase amb l'esquema de l'aplicació.
+Requisits: Node.js 20 o superior, [pnpm](https://pnpm.io) i un projecte de Supabase amb l'esquema de [`supabase/schema.sql`](supabase/schema.sql) aplicat (per exemple, des de l'editor SQL de Supabase).
 
 1. Clona el repositori i instal·la les dependències:
 

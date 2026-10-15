@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { markConversationAsViewed } from '@/app/conversations/conversation-actions'
 import { createClient } from '@/lib/supabase/client'
 
 type Message = {
@@ -51,6 +52,10 @@ export function ConversationMessages({
   }, [messages])
 
   useEffect(() => {
+    void markConversationAsViewed(conversationId)
+  }, [conversationId])
+
+  useEffect(() => {
     const supabase = createClient()
 
     const channel = supabase
@@ -65,6 +70,10 @@ export function ConversationMessages({
         },
         (payload) => {
           const incomingMessage = payload.new as Message
+
+          if (incomingMessage.sender_profile_id !== currentProfileId) {
+            void markConversationAsViewed(conversationId)
+          }
 
           setMessages((currentMessages) => {
             const alreadyExists = currentMessages.some(
@@ -84,7 +93,7 @@ export function ConversationMessages({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [conversationId])
+  }, [conversationId, currentProfileId])
 
   if (messages.length === 0) {
     return (

@@ -82,6 +82,39 @@ export async function markConversationAsRead(formData: FormData) {
   redirect('/conversations?message=conversation_marked_read')
 }
 
+// Called from the open conversation view. Revalidating the layout refreshes the
+// unread indicator in the header, which is rendered outside the page.
+export async function markConversationAsViewed(conversationId: string) {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user || !conversationId) {
+    return
+  }
+
+  await supabase
+    .from('messages')
+    .update({
+      read_at: new Date().toISOString(),
+    })
+    .eq('conversation_id', conversationId)
+    .neq('sender_profile_id', user.id)
+    .is('read_at', null)
+
+  await supabase
+    .from('conversation_participants')
+    .update({
+      marked_unread: false,
+    })
+    .eq('conversation_id', conversationId)
+    .eq('profile_id', user.id)
+
+  revalidatePath('/', 'layout')
+}
+
 export async function markConversationAsUnread(formData: FormData) {
   const supabase = await createClient()
   const conversationId = getStringValue(formData, 'conversationId')

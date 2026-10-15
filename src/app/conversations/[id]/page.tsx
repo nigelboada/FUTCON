@@ -67,23 +67,6 @@ export default async function ConversationPage({
 
   const hiddenAt = currentParticipant?.hidden_at ?? null
 
-  await supabase
-    .from('messages')
-    .update({
-      read_at: new Date().toISOString(),
-    })
-    .eq('conversation_id', id)
-    .neq('sender_profile_id', user.id)
-    .is('read_at', null)
-
-  await supabase
-    .from('conversation_participants')
-    .update({
-      marked_unread: false,
-    })
-    .eq('conversation_id', id)
-    .eq('profile_id', user.id)
-
   const otherParticipant = participants.find(
     (participant) => participant.profile_id !== user.id
   )

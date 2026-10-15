@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { signInWithGoogle, signUp } from '../actions'
+import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -26,6 +28,15 @@ export default async function RegisterPage({
   searchParams,
 }: RegisterPageProps) {
   const params = await searchParams
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (user && !params.error) {
+    redirect('/dashboard')
+  }
+
   const locale = await getLocale()
   const m = getMessages(locale)
   const error = resolveFeedbackMessage(params.error, m.feedback)
